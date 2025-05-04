@@ -41,6 +41,22 @@ También se integrarán pagos en línea y mostrará la ubicación del local.
 
 ## Tecnologías Utilizadas
 
+### Figma
+
+Figma Design permite crear, compartir y probar diseños para sitios web, aplicaciones móviles y otros productos y experiencias digitales . Es una herramienta popular para diseñadores, gerentes de producto, escritores y desarrolladores, y ayuda a todos los involucrados en el proceso de diseño a contribuir, brindar retroalimentación y tomar mejores decisiones con mayor rapidez.
+
+### Visual Studio Code
+
+Visual Studio Code, es un editor de código para programadores gratuito, de código abierto y multiplataforma. Está desarrollado por Microsoft, una compañía con una dilatada experiencia en la creación de IDEs (entornos de desarrollo integrados), que ha conseguido plasmar su larga tradición en el sector para ofrecer una herramienta ligera y práctica que la comunidad ha adoptado en masa.
+
+### Power Bi
+
+Microsoft Power BI es la solución de business intelligence que te permite tomar decisiones informadas rápidamente. Es un servicio analítico basado en la nube que habilita a cualquier usuario de negocio a visualizar y analizar sus datos de forma rápida, eficiente y entendible. Forma parte de la Power Platform de Microsoft, el conjunto de soluciones low-code que te permiten aumentar la productividad de tu negocio sin necesidad de programación. Además, Microsoft Power BI te permite conectar un amplio abanico de fuentes a través de cuadros de mando de fácil uso, informes interactivos y visualizaciones atractivas que dan vida a los datos.
+
+### Google Docs
+
+Google Docs es una herramienta de procesamiento de textos basada en la web. En la práctica, esto significa que permite crear y editar documentos de texto a través del navegador de Internet, sin tener que descargar un software dedicado. Google Docs tiene la función de simplificar la creación y edición de textos en equipo (e individualmente también). Por lo tanto, ofrece características para ayudar a los equipos a colaborar, compartir, editar, chatear y comentar en varios archivos en tiempo real.
+
 ### MongoDB
 
 MongoDB es una de las bases de datos NoSQL más sorprendentes que se conoce y está orientada a documentos. Una base de datos MongoDB se puede utilizar para almacenar los datos de la aplicación, cada registro es un documento que consta de pares clave-valor que son similares a los objetos JSON (JavaScript Object Notation). MongoDB es flexible y permite a sus usuarios crear esquemas, bases de datos, tablas, etc sin los requerimientos de una pesada base de datos SQL.
