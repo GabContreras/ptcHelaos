@@ -26,7 +26,7 @@ A nivel interno, se busca mejorar el control del negocio mediante una plataforma
 - Registro de caja chica
 - Roles diferenciados
 
-El Super Admin (dueño) tendrá acceso completo, mientras que los empleados tendrán acceso limitado a la gestión de pedidos e inventario, sin acceso a la información financiera.
+El Admin (dueño) tendrá acceso completo, mientras que los empleados tendrán acceso limitado a la gestión de pedidos e inventario, sin acceso a la información financiera.
 
 El sitio web contará con las siguientes secciones:
 
