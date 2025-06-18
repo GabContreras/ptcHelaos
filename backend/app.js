@@ -2,8 +2,14 @@
 
 //inserto todo lo de la libreria express
 import express from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
+import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
+
 //import employeesRoutes from "./routes/employees.js";
+//import swaggerUi from "swagger-ui-express";
+//import fs from "fs";
+//import path from "path";
 
 // Creo una constante que es igual a la libreria que acabo de importar, y la ejecuto 
 
