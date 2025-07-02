@@ -1,4 +1,5 @@
 import React from "react";
+import "./App.css";
 import { BrowserRouter as Router } from "react-router-dom";
 import Navegation from "./components/Navegation";
 import { Toaster } from "react-hot-toast";

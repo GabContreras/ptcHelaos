@@ -1,17 +1,27 @@
-function Button({ titulo, color }) {
-    return (
-        <button style={{ 
-        backgroundColor: color, 
-        color: 'white', 
-        padding: '10px 20px', 
-        border: '#fff 2px solid', 
+function Button({ titulo, color, tipoColor }) {
+  const isBackground = tipoColor === 'background';
+
+  const backgroundColor = isBackground ? color : '#fff';
+  const borderColor = !isBackground ? color : '#fff';
+  const shadowColor = !isBackground ? color : '#fff';
+
+  return (
+    <button
+      style={{
+        backgroundColor,
+        color: isBackground ? 'white' : color,
+        padding: '10px 20px',
+        border: `none`,
         borderRadius: '8px',
         cursor: 'pointer',
         fontSize: '16px',
-        boxShadow: '4px 4px 0px #fff',}}>
-        {titulo}
-        </button>
-    );
+        boxShadow: `4px 4px 0px ${shadowColor}, -4px -4px 0px ${shadowColor}`,
+        transition: 'all 0.3s ease',
+      }}
+    >
+      {titulo}
+    </button>
+  );
 }
 
 export default Button;

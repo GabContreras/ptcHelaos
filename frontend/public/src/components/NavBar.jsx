@@ -1,10 +1,10 @@
-//import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import Button from "../assets/Button"
 import imgLogo from "../imgs/logo.jpg"
 import "../styles/Navbar.css"
 
 function NavBar() {
-    //const navigate = useNavigate()
+    const navigate = useNavigate()
 
     return (
         <div className='navbar'>
@@ -13,14 +13,18 @@ function NavBar() {
                 <p>Moon's ice cream rolls</p>
             </div>
             <div className='links'>
-                <a>Inicio</a>
+                <a 
+                onClick={() => navigate('/')}
+                className={location.pathname === '/' ? 'nav-link active' : 'nav-link'}>Inicio</a>
                 <a>Menu</a>
                 <a>Contacto</a>
-                <a>Sobre nosotros</a>
+                <a 
+                onClick={() => navigate('/AboutUs')}
+                className={location.pathname === '/AboutUs' ? 'nav-link active' : 'nav-link'}>Sobre nosotros</a>
             </div>
             <div className="logs">
-                <Button titulo="Registrarse" color="#99DBFF"/>
-                <Button titulo="Iniciar sesion" color="#FFBAE7"/>
+                <Button titulo="Registrarse" color="#33A9FE" tipoColor="background"/>
+                <Button titulo="Iniciar sesion" color="#33A9FE" tipoColor="border"/>
             </div>
         </div>
     )

@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 
 import Page404 from "../pages/404";
+import AboutUs from "../pages/AboutUs";
 
 function Navegation() {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ function Navegation() {
     return(
     <Routes>
         <Route path="/" element={<Page404 />} />
-              
+        <Route path="/AboutUs" element={<AboutUs />} />
       </Routes>
   )
 }
