@@ -1,0 +1,37 @@
+.navbar {
+    background-color: #8d6cff;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.navbar .logo {
+    width: 40%;
+    display: flex;
+    align-items: center;
+}
+
+.navbar .logo p {
+    color: white;
+    margin-left: 10px;
+    font-size: 24px;
+}
+
+.navbar img {
+    width: 80px;
+    border-radius: 50%;
+}
+
+.navbar .links a {
+    padding: 20px;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.navbar .logs {
+    width: 20%;
+    display: flex;
+    justify-content: space-between;
+}
