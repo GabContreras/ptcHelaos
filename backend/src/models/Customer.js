@@ -1,7 +1,11 @@
 import {Schema, model} from "mongoose";
 
-const employeesSchema = new Schema({
+const customersSchema = new Schema({
   name: {
+    type: String,
+    required: true
+  },
+  phone: {
     type: String,
     required: true
   },
@@ -10,34 +14,29 @@ const employeesSchema = new Schema({
     required: true,
     unique: true
   },
-  phone: {
-    type: String,
-    required: true
-  },
   password: {
     type: String,
     required: true
   },
-  hireDate: {
+  address: {
+    type: String,
+    required: true
+  },
+  birthday: {
     type: Date,
     required: true
   },
-  salary: {
-    type: Number,
-    required: true
+  frequentCustomer: {
+    type: Boolean,
+    default: false
   },
-  dui: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  image: {
-    type: String,
-    default: ""
+  isVerified: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true,
   strict: false
 });
 
-export default model("employee", employeesSchema)
+export default model("customer", customersSchema)
