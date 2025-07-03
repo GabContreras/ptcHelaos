@@ -30,6 +30,10 @@ const employeesSchema = new Schema({
     type: String,
     required: true,
     unique: true
+  },
+  image: {
+    type: String,
+    default: ""
   }
 }, {
   timestamps: true,
