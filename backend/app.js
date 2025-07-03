@@ -3,19 +3,30 @@
 //inserto todo lo de la libreria express
 import express from "express";
 import cookieParser from "cookie-parser";
-//import employeesRoutes from "./routes/employees.js";
+import employeesRoutes from "./src/routes/employeeRoutes.js";
+import customersRoutes from "./src/routes/customerRoutes.js";
+import categoryRoutes from "./src/routes/catergoryRoutes.js";
 
 // Creo una constante que es igual a la libreria que acabo de importar, y la ejecuto 
 
 const app = express();
 
-//Middleware para que acepte datos JSON
 app.use(express.json());
-//Que acepte cookies en postman
-app.use(cookieParser());
+app.use(cookieParser())
+app.use(cors({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
 
-//app.use("/api/employees/", employeesRoutes);
+app.get('/api/status', (req, res) => {
+    res.status(200).json({ message: 'Servidor en línea ✅' })
+})
 
+app.use("/api/employees", employeesRoutes);
+app.use("/api/customers", customersRoutes);
+app.use("/api/category", categoryRoutes);
 
 //Exporto esta constante para usar express en todos lados
 export default app;
