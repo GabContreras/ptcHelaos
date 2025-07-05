@@ -4,11 +4,11 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import cors from "cors";
 
 import employeesRoutes from "./src/routes/employeeRoutes.js";
 import customersRoutes from "./src/routes/customerRoutes.js";
 import categoryRoutes from "./src/routes/catergoryRoutes.js";
+import inventoryRoutes from "./src/routes/inventoryRoutes.js";
 import loginRoutes from "./src/routes/loginRoutes.js";
 import logoutRoutes from "./src/routes/logoutRoutes.js";
 import registerCustomerRoutes from "./src/routes/registerCustomerRoutes.js";
@@ -41,6 +41,7 @@ app.get('/api/status', (req, res) => {
 app.use("/api/employees", employeesRoutes);
 app.use("/api/customers", customersRoutes);
 app.use("/api/category", categoryRoutes);
+app.use("/api/inventory", inventoryRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/logout", logoutRoutes);       
 app.use("/api/registerCustomer", registerCustomerRoutes);
