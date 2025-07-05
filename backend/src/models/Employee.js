@@ -6,7 +6,7 @@ const employeesSchema = new Schema({
     required: true
   },
   email: {
-    type: String,
+    type: String, 
     required: true,
     unique: true
   },
@@ -22,7 +22,7 @@ const employeesSchema = new Schema({
     type: Date,
     required: true
   },
-  salary: {
+  salary: { 
     type: Number,
     required: true
   },
@@ -30,10 +30,6 @@ const employeesSchema = new Schema({
     type: String,
     required: true,
     unique: true
-  },
-  image: {
-    type: String,
-    default: ""
   }
 }, {
   timestamps: true,
