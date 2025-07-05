@@ -1,0 +1,47 @@
+.orderDetails {
+    width: 60%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.orderDetails h1 {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.orderDetails .direction {
+    width: 50%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.orderDetails .direction iframe {
+    width: 80%;
+    aspect-ratio: 1 / 0.6;
+}
+
+ .orderDetails .direction h4 {
+    width: 80%;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.orderDetails .direction textarea {
+    width: 80%;
+    resize: none;
+    padding: 12px;
+    font-size: 16px;
+    line-height: 1.5;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.orderDetails .orderDetails .total {
+    width: 50%;
+}
