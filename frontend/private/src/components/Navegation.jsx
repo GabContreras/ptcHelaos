@@ -8,8 +8,11 @@ import {
   useLocation,
 } from "react-router-dom";
 import Login from "../pages/Login/Login";
+import Recuperacion from "../pages/passwordRecovery/Recuperacion";
+import RecuperacionCodigo from "../pages/passwordRecovery/RecuperacionCodigo";
+import CambiarPassword from "../pages/passwordRecovery/CambiarPassword";
 import Dashboard from "../pages/Dashboard/Graficas";
-import Clients from "../pages/Clients/Clients"
+import Clients from "../pages/Clients/Clients";
 import Employees from "../pages/Employees/Employees";
 import PrivateRoute from "./PrivateRoute";
 import { useAuth } from "../context/AuthContext";
@@ -69,7 +72,7 @@ function Navegation() {
 
   return (
     <Routes>
-      {/* Rutas públicas (sin layout/navbar) */}
+      {/* ===== RUTAS PÚBLICAS (sin layout/navbar) ===== */}
       <Route 
         path="/" 
         element={authCokie ? <Navigate to="/dashboard" /> : <Login />} 
@@ -79,12 +82,40 @@ function Navegation() {
         element={authCokie ? <Navigate to="/dashboard" /> : <Login />} 
       />
       
-      {/* Rutas privadas (CON layout y navbar) */}
+      {/* 🔄 RUTAS DE RECUPERACIÓN DE CONTRASEÑA */}
+      <Route 
+        path="/recuperacion" 
+        element={authCokie ? <Navigate to="/dashboard" /> : <Recuperacion />} 
+      />
+      <Route 
+        path="/recuperacioncodigo" 
+        element={authCokie ? <Navigate to="/dashboard" /> : <RecuperacionCodigo />} 
+      />
+      <Route 
+        path="/cambiarpassword" 
+        element={authCokie ? <Navigate to="/dashboard" /> : <CambiarPassword />} 
+      />
+      
+      {/* ===== RUTAS PRIVADAS (CON layout y navbar) ===== */}
       <Route element={<PrivateRoute />}>
-        {/* Dashboard - ENVUELTO CON LAYOUT */}
+        {/* Dashboard */}
         <Route path="/dashboard" element={
           <Layout>
             <Dashboard />
+          </Layout>
+        } />
+        
+        {/* Clientes */}
+        <Route path="/clients" element={
+          <Layout>
+            <Clients />
+          </Layout>
+        } />
+        
+        {/* Empleados */}
+        <Route path="/employees" element={
+          <Layout>
+            <Employees />
           </Layout>
         } />
         
@@ -104,12 +135,6 @@ function Navegation() {
               <h1>Inventario</h1>
               <p>Control de stock y productos - En desarrollo</p>
             </div>
-          </Layout>
-        } />
-        
-        <Route path="/clients" element={
-          <Layout>
-            <Clients />
           </Layout>
         } />
         
@@ -137,12 +162,6 @@ function Navegation() {
               <h1>Delivery</h1>
               <p>Gestión de entregas - En desarrollo</p>
             </div>
-          </Layout>
-        } />
-        
-        <Route path="/employees" element={
-          <Layout>
-            <Employees />
           </Layout>
         } />
         
