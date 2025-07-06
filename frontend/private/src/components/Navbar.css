@@ -1,0 +1,164 @@
+/* Navbar.css - Exacto a la imagen con ancho corregido */
+.image-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px; /* Aumentado de 205px a 250px */
+  height: 100vh;
+  background: #8D6CFF;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  padding: 0;
+}
+
+/* Header section */
+.image-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.2rem 1.25rem 1rem 1.25rem;
+  background: #8D6CFF;
+}
+
+.header-icon {
+  font-size: 1.2rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.header-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.header-subtitle {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2px;
+}
+
+/* User section */
+.user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25rem 1.25rem 1.5rem 1.25rem;
+  background: #8D6CFF;
+  gap: 0.6rem;
+}
+
+.user-avatar-section {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.user-circle {
+  width: 55px;
+  height: 55px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.username {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+}
+
+.logout-badge {
+  font-size: 0.75rem;
+  color: #8D6CFF;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.logout-badge:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Navigation buttons */
+.nav-buttons {
+  flex: 1;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  padding: 0.60rem 1.25rem;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  justify-content: center;
+  background: transparent;
+  min-height: 42px;
+}
+
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.nav-button.nav-active {
+  background: white;
+  color: #8D6CFF;
+  font-weight: 600;
+  border-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .image-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .image-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+}
