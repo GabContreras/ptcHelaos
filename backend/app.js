@@ -15,6 +15,7 @@ import registerCustomerRoutes from "./src/routes/registerCustomerRoutes.js";
 import registerEmployeeRoutes from "./src/routes/registerEmployeeRoutes.js";
 import passwordRecoveryRoutes from "./src/routes/passwordRecoveryRoutes.js";
 import pettyCashRoutes from "./src/routes/pettyCashRoutes.js"
+import productRoutes from "./src/routes/productRoutes.js";
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
 
 //import employeesRoutes from "./routes/employees.js";
@@ -42,13 +43,14 @@ app.get('/api/status', (req, res) => {
 app.use("/api/employees", employeesRoutes);
 app.use("/api/customers", customersRoutes);
 app.use("/api/category", categoryRoutes);
-app.use("/api/inventory", inventoryRoutes);
+app.use("/api/inventory", validateAuthToken(['admin', 'employee']), inventoryRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/logout", logoutRoutes);       
 app.use("/api/registerCustomer", registerCustomerRoutes);
 app.use("/api/pettyCash", validateAuthToken(['admin', 'employee']), pettyCashRoutes); 
 app.use("/api/registerEmployee", registerEmployeeRoutes);
 app.use("/api/passwordRecovery", passwordRecoveryRoutes);
+app.use("/api/products", productRoutes);
 
 //Exporto esta constante para usar express en todos lados
 export default app;

@@ -18,14 +18,22 @@ inventoryCtrl.getInventory = async (req, res) => {
 // GET - Obtener todos los lotes
 inventoryCtrl.getAllBatches = async (req, res) => {
     try {
-        const batches = await Batch.find()
-        .populate('movements.employeeId', 'name email');
+        const batches = await Batch.find();
+        
+        // Populate selectivo para movements.employeeId
+        for (let batch of batches) {
+            for (let movement of batch.movements) {
+                if (movement.employeeId !== 'admin' && typeof movement.employeeId === 'object') {
+                    await batch.populate('movements.employeeId', 'name email');
+                }
+            }
+        }
+        
         res.json(batches);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
-
 
 // GET - Obtener inventario específico con sus lotes
 inventoryCtrl.getInventoryById = async (req, res) => {
@@ -65,7 +73,7 @@ inventoryCtrl.createInventory = async (req, res) => {
             extraPrice,
             unitType,
             description,
-            batchId: [], // Corregido: batchId en lugar de batchIds
+            batchId: [],
             currentStock: 0
         });
 
@@ -84,14 +92,8 @@ inventoryCtrl.createInventory = async (req, res) => {
 inventoryCtrl.createBatch = async (req, res) => {
     try {
         const inventoryId = req.params.id;
-        const {
-            quantity,
-            expirationDate,
-            purchaseDate,
-            notes,
-            employeeId,
-            reason
-        } = req.body;
+        const { quantity, expirationDate, purchaseDate, notes, reason } = req.body;
+        const { userType, user } = req.user; // Viene del middleware de autenticación
 
         // Verificar que el inventario existe
         const inventory = await Inventory.findById(inventoryId);
@@ -99,7 +101,7 @@ inventoryCtrl.createBatch = async (req, res) => {
             return res.status(404).json({ message: 'Inventario no encontrado' });
         }
 
-        // Crear nuevo lote (SIN inventoryId, supplier, costPerUnit, etc.)
+        // Crear nuevo lote
         const newBatch = new Batch({
             quantity,
             expirationDate,
@@ -109,15 +111,15 @@ inventoryCtrl.createBatch = async (req, res) => {
                 type: 'entrada',
                 quantity,
                 reason: reason || 'Lote inicial',
-                employeeId
+                employeeId: userType === 'admin' ? 'admin' : user
             }]
         });
 
         await newBatch.save();
 
         // Agregar el lote al inventario
-        inventory.batchId.push(newBatch._id); // Corregido: batchId
-        inventory.currentStock += quantity; // Actualizar stock manualmente
+        inventory.batchId.push(newBatch._id);
+        inventory.currentStock += quantity;
         await inventory.save();
 
         res.json({
@@ -157,7 +159,8 @@ inventoryCtrl.updateInventory = async (req, res) => {
 inventoryCtrl.batchOperation = async (req, res) => {
     try {
         const { batchId } = req.params;
-        const { operationType, quantity, reason, employeeId } = req.body;
+        const { operationType, quantity, reason } = req.body;
+        const { userType, user } = req.user; // Viene del middleware de autenticación
 
         const batch = await Batch.findById(batchId);
         if (!batch) {
@@ -197,7 +200,7 @@ inventoryCtrl.batchOperation = async (req, res) => {
                     type: 'salida',
                     quantity,
                     reason: reason || 'Consumo',
-                    employeeId
+                    employeeId: userType === 'admin' ? 'admin' : user
                 });
 
                 await batch.save();
@@ -225,7 +228,7 @@ inventoryCtrl.batchOperation = async (req, res) => {
                     type: 'entrada',
                     quantity,
                     reason: reason || 'Ingreso adicional',
-                    employeeId
+                    employeeId: userType === 'admin' ? 'admin' : user
                 });
 
                 await batch.save();
@@ -259,7 +262,7 @@ inventoryCtrl.batchOperation = async (req, res) => {
                     type: 'daño',
                     quantity,
                     reason: reason || 'Producto dañado',
-                    employeeId
+                    employeeId: userType === 'admin' ? 'admin' : user
                 });
 
                 await batch.save();
@@ -289,11 +292,17 @@ inventoryCtrl.getBatchMovements = async (req, res) => {
     try {
         const { batchId } = req.params;
 
-        const batch = await Batch.findById(batchId)
-            .populate('movements.employeeId', 'name email');
+        const batch = await Batch.findById(batchId);
 
         if (!batch) {
             return res.status(404).json({ message: 'Lote no encontrado' });
+        }
+
+        // Populate selectivo para movements.employeeId
+        for (let movement of batch.movements) {
+            if (movement.employeeId !== 'admin' && typeof movement.employeeId === 'object') {
+                await batch.populate('movements.employeeId', 'name email');
+            }
         }
 
         res.json(batch.movements);
@@ -312,7 +321,7 @@ inventoryCtrl.deleteInventory = async (req, res) => {
 
         // Verificar que no tenga lotes activos
         const activeBatches = await Batch.find({
-            _id: { $in: inventory.batchId }, // Corregido: batchId
+            _id: { $in: inventory.batchId },
             status: 'En uso',
             quantity: { $gt: 0 }
         });
@@ -324,7 +333,7 @@ inventoryCtrl.deleteInventory = async (req, res) => {
         }
 
         // Eliminar todos los lotes asociados
-        await Batch.deleteMany({ _id: { $in: inventory.batchId } }); // Corregido: batchId
+        await Batch.deleteMany({ _id: { $in: inventory.batchId } });
 
         // Eliminar el inventario
         await Inventory.findByIdAndDelete(req.params.id);
@@ -356,7 +365,7 @@ inventoryCtrl.deleteBatch = async (req, res) => {
         const inventory = await Inventory.findOne({ batchId: batchId });
         if (inventory) {
             inventory.batchId = inventory.batchId.filter(id => !id.equals(batchId));
-            inventory.currentStock -= batch.quantity; // Restar cantidad del stock
+            inventory.currentStock -= batch.quantity;
             await inventory.save();
         }
 

@@ -4,7 +4,8 @@ const categoriesSchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    trim: true
   }
 }, {
   timestamps: true,
