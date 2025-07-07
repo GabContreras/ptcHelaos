@@ -1,9 +1,9 @@
 import PettyCash from '../models/PettyCash.js';
 
-const pettyCashCtrl = {};
+const pettyCashController = {};
 
 // GET - Obtener todos los movimientos de caja chica
-pettyCashCtrl.getAllMovements = async (req, res) => {
+pettyCashController.getAllMovements = async (req, res) => {
     try {
         const movements = await PettyCash.find().sort({ date: -1 });
         
@@ -21,7 +21,7 @@ pettyCashCtrl.getAllMovements = async (req, res) => {
 };
 
 // GET - Obtener balance actual de caja chica
-pettyCashCtrl.getCurrentBalance = async (req, res) => {
+pettyCashController.getCurrentBalance = async (req, res) => {
     try {
         const lastMovement = await PettyCash.findOne()
             .sort({ date: -1, createdAt: -1 })
@@ -36,7 +36,7 @@ pettyCashCtrl.getCurrentBalance = async (req, res) => {
 };
 
 // POST - Operación unificada para caja chica (ingresos y egresos)
-pettyCashCtrl.cashOperation = async (req, res) => {
+pettyCashController.cashOperation = async (req, res) => {
     try {
         const { operationType, amount, reason, employeeId } = req.body;
         const { userType, user } = req.user; // Viene del middleware de autenticación
@@ -125,4 +125,4 @@ pettyCashCtrl.cashOperation = async (req, res) => {
     }
 };
 
-export default pettyCashCtrl;
+export default pettyCashController;

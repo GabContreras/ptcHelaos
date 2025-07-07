@@ -1,10 +1,10 @@
 import Inventory from '../models/Inventory.js';
 import Batch from '../models/Batches.js';
 
-const inventoryCtrl = {};
+const inventoryController = {};
 
 // GET - Obtener todos los inventarios con sus lotes
-inventoryCtrl.getInventory = async (req, res) => {
+inventoryController.getInventory = async (req, res) => {
     try {
         const inventories = await Inventory.find()
             .populate('categoryId', 'name')
@@ -16,7 +16,7 @@ inventoryCtrl.getInventory = async (req, res) => {
 };
 
 // GET - Obtener todos los lotes
-inventoryCtrl.getAllBatches = async (req, res) => {
+inventoryController.getAllBatches = async (req, res) => {
     try {
         const batches = await Batch.find();
         
@@ -36,7 +36,7 @@ inventoryCtrl.getAllBatches = async (req, res) => {
 };
 
 // GET - Obtener inventario específico con sus lotes
-inventoryCtrl.getInventoryById = async (req, res) => {
+inventoryController.getInventoryById = async (req, res) => {
     try {
         const inventory = await Inventory.findById(req.params.id)
             .populate('categoryId', 'name')
@@ -52,7 +52,7 @@ inventoryCtrl.getInventoryById = async (req, res) => {
 };
 
 // POST - Crear nuevo inventario
-inventoryCtrl.createInventory = async (req, res) => {
+inventoryController.createInventory = async (req, res) => {
     try {
         const { name, categoryId, supplier, extraPrice, unitType, description } = req.body;
 
@@ -89,7 +89,7 @@ inventoryCtrl.createInventory = async (req, res) => {
 };
 
 // POST - Crear nuevo lote para un inventario
-inventoryCtrl.createBatch = async (req, res) => {
+inventoryController.createBatch = async (req, res) => {
     try {
         const inventoryId = req.params.id;
         const { quantity, expirationDate, purchaseDate, notes, reason } = req.body;
@@ -132,7 +132,7 @@ inventoryCtrl.createBatch = async (req, res) => {
 };
 
 // PUT - Actualizar inventario básico
-inventoryCtrl.updateInventory = async (req, res) => {
+inventoryController.updateInventory = async (req, res) => {
     try {
         const { name, categoryId, supplier, extraPrice, unitType, description } = req.body;
 
@@ -156,7 +156,7 @@ inventoryCtrl.updateInventory = async (req, res) => {
 };
 
 // PUT - Operación unificada para lotes
-inventoryCtrl.batchOperation = async (req, res) => {
+inventoryController.batchOperation = async (req, res) => {
     try {
         const { batchId } = req.params;
         const { operationType, quantity, reason } = req.body;
@@ -288,7 +288,7 @@ inventoryCtrl.batchOperation = async (req, res) => {
 };
 
 // GET - Obtener historial de movimientos de un lote
-inventoryCtrl.getBatchMovements = async (req, res) => {
+inventoryController.getBatchMovements = async (req, res) => {
     try {
         const { batchId } = req.params;
 
@@ -312,7 +312,7 @@ inventoryCtrl.getBatchMovements = async (req, res) => {
 };
 
 // DELETE - Eliminar inventario (solo si no tiene lotes activos)
-inventoryCtrl.deleteInventory = async (req, res) => {
+inventoryController.deleteInventory = async (req, res) => {
     try {
         const inventory = await Inventory.findById(req.params.id);
         if (!inventory) {
@@ -345,7 +345,7 @@ inventoryCtrl.deleteInventory = async (req, res) => {
 };
 
 // DELETE - Eliminar lote específico
-inventoryCtrl.deleteBatch = async (req, res) => {
+inventoryController.deleteBatch = async (req, res) => {
     try {
         const { batchId } = req.params;
 
@@ -378,4 +378,4 @@ inventoryCtrl.deleteBatch = async (req, res) => {
     }
 };
 
-export default inventoryCtrl;
+export default inventoryController;
