@@ -109,6 +109,14 @@ const EmployeeCard = ({ data, onEdit, onDelete, isLoading }) => {
         >
           ✏️
         </button>
+        <button 
+          className="delete-btn"
+          onClick={handleDelete}
+          disabled={isLoading}
+          title="Eliminar empleado"
+        >
+          🗑️
+        </button>
       </div>
     </div>
   );

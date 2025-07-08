@@ -83,6 +83,14 @@ const ClientCard = ({ data, onEdit, onDelete, isLoading }) => {
           ✏️
         </button>
         <button 
+          className="delete-btn"
+          onClick={handleDelete}
+          disabled={isLoading}
+          title="Eliminar cliente"
+        >
+          🗑️
+        </button>
+        <button 
           className="view-map-btn"
           onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(address)}`, '_blank')}
           disabled={!address || address === 'Sin dirección'}

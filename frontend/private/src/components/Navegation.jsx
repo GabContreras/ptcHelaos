@@ -15,6 +15,10 @@ import Dashboard from "../pages/Dashboard/Graficas";
 import Clients from "../pages/Clients/Clients";
 import Employees from "../pages/Employees/Employees";
 import PrivateRoute from "./PrivateRoute";
+import Orders from "../pages/Orders/Orders";
+import Storage from "../pages/Storage/Storage";
+import Delivery from "../pages/Delivery/Delivery"
+import Finances from "../pages/Finances/Finances";
 import { useAuth } from "../context/AuthContext";
 
 function Navegation() {
@@ -122,28 +126,19 @@ function Navegation() {
         {/* Otras rutas con layout */}
         <Route path="/orders" element={
           <Layout>
-            <div style={{ padding: '2rem', background: 'white', minHeight: '100vh' }}>
-              <h1>Toma de Órdenes</h1>
-              <p>Sistema de gestión de pedidos - En desarrollo</p>
-            </div>
+            <Orders />
           </Layout>
         } />
         
         <Route path="/inventory" element={
           <Layout>
-            <div style={{ padding: '2rem', background: 'white', minHeight: '100vh' }}>
-              <h1>Inventario</h1>
-              <p>Control de stock y productos - En desarrollo</p>
-            </div>
+            < Storage />
           </Layout>
         } />
         
         <Route path="/pos" element={
           <Layout>
-            <div style={{ padding: '2rem', background: 'white', minHeight: '100vh' }}>
-              <h1>Caja Chica</h1>
-              <p>Punto de venta - En desarrollo</p>
-            </div>
+            <Finances/>
           </Layout>
         } />
         
@@ -158,10 +153,7 @@ function Navegation() {
         
         <Route path="/delivery" element={
           <Layout>
-            <div style={{ padding: '2rem', background: 'white', minHeight: '100vh' }}>
-              <h1>Delivery</h1>
-              <p>Gestión de entregas - En desarrollo</p>
-            </div>
+            <Delivery />
           </Layout>
         } />
         
