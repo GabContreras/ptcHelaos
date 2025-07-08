@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useClientsManager } from '../../hooks/ClientsHook/useClient';
 import ClientCard from '../../components/Cards/ClientsCard/ClientCard';
-import ClientEditModal from '../../components/Modals/ClientsModal/ClientEditModal';
-import DeleteConfirmationModal from '../../components/Modals/DeleteConfirmationModal/DeleteConfirmationModal';
+import UniversalModal from '../../components/Modals/UniversalModal/UniversalModal';
 import toast, { Toaster } from 'react-hot-toast';
 import './Clients.css';
 
@@ -147,8 +146,6 @@ const ClientsPage = () => {
   
   return (
     <div className="clients-page">
-      
-
       {/* Mostrar indicador de carga */}
       {isLoading && (
         <div className="loading-indicator">
@@ -209,47 +206,147 @@ const ClientsPage = () => {
         )}
       </div>
       
+      {/* Modal de edición/creación usando UniversalModal */}
+      <UniversalModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          resetForm();
+        }}
+        type="form"
+        title={isEditing ? 'Editar Cliente' : 'Nuevo Cliente'}
+        size="medium"
+      >
+        <form onSubmit={handleSubmit} className="client-form">
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="name">Nombre Completo</label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ingresa el nombre completo"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="correo@ejemplo.com"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="phone">Teléfono</label>
+              <input
+                type="tel"
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="0000-0000"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">
+                {isEditing ? 'Nueva Contraseña (opcional)' : 'Contraseña'}
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={isEditing ? 'Dejar vacío para mantener actual' : 'Contraseña'}
+                disabled={isLoading}
+                required={!isEditing}
+                minLength="6"
+              />
+            </div>
+
+            <div className="form-group full-width">
+              <label htmlFor="address">Dirección</label>
+              <input
+                type="text"
+                id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Dirección completa"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="birthday">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                id="birthday"
+                value={birthday}
+                onChange={(e) => setBirthday(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group checkbox-group">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={frequentCustomer}
+                  onChange={(e) => setFrequentCustomer(e.target.checked)}
+                  disabled={isLoading}
+                />
+                <span className="checkmark"></span>
+                Cliente Frecuente
+              </label>
+            </div>
+          </div>
+          
+          <div className="form-actions">
+            <button
+              type="button"
+              className="cancel-button"
+              onClick={() => {
+                setShowModal(false);
+                resetForm();
+              }}
+              disabled={isLoading}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="save-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Guardar'}
+            </button>
+          </div>
+        </form>
+      </UniversalModal>
       
-      
-      {/* Modal de edición/creación */}
-      {showModal && (
-        <ClientEditModal 
-          name={name}
-          setName={setName}
-          email={email}
-          setEmail={setEmail}
-          phone={phone}
-          setPhone={setPhone}
-          password={password}
-          setPassword={setPassword}
-          address={address}
-          setAddress={setAddress}
-          birthday={birthday}
-          setBirthday={setBirthday}
-          frequentCustomer={frequentCustomer}
-          setFrequentCustomer={setFrequentCustomer}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          isEditing={isEditing}
-          onClose={() => {
-            setShowModal(false);
-            resetForm();
-          }}
-        />
-      )}
-      
-      {/* Modal de confirmación de eliminación */}
-      {showDeleteModal && (
-        <DeleteConfirmationModal
-          isOpen={showDeleteModal}
-          onClose={cancelDeleteClient}
-          onConfirm={confirmDeleteClient}
-          title="Eliminar Cliente"
-          message="¿Estás seguro de que deseas eliminar este cliente?"
-          itemName={clientToDelete?.name || ""}
-          isLoading={isLoading}
-        />
-      )}
+      {/* Modal de confirmación de eliminación usando UniversalModal */}
+      <UniversalModal
+        isOpen={showDeleteModal}
+        onClose={cancelDeleteClient}
+        onConfirm={confirmDeleteClient}
+        type="delete"
+        title="Eliminar Cliente"
+        message="¿Estás seguro de que deseas eliminar este cliente?"
+        itemName={clientToDelete?.name || ""}
+        isLoading={isLoading}
+      />
 
       <Toaster position="top-right" />
     </div>

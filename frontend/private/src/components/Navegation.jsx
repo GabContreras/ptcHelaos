@@ -19,6 +19,7 @@ import Orders from "../pages/Orders/Orders";
 import Storage from "../pages/Storage/Storage";
 import Delivery from "../pages/Delivery/Delivery"
 import Finances from "../pages/Finances/Finances";
+import Category from "../pages/Categories/Categories";
 import { useAuth } from "../context/AuthContext";
 
 function Navegation() {
@@ -154,6 +155,12 @@ function Navegation() {
         <Route path="/delivery" element={
           <Layout>
             <Delivery />
+          </Layout>
+        } />
+
+        <Route path="/category" element={
+          <Layout>
+            <Category />
           </Layout>
         } />
         

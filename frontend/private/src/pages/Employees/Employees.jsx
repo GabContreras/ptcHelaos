@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useEmployeesManager } from '../../hooks/EmployeesHook/useEmployees';
 import EmployeeCard from '../../components/Cards/EmployeesCard/EmployeeCard';
-import EmployeeEditModal from '../../components/Modals/EmployeesModal/EmployeeEditModal';
-import DeleteConfirmationModal from '../../components/Modals/DeleteConfirmationModal/DeleteConfirmationModal';
+import UniversalModal from '../../components/Modals/UniversalModal/UniversalModal';
 import toast, { Toaster } from 'react-hot-toast';
 import './Employees.css';
 
@@ -212,45 +211,150 @@ const EmployeesPage = () => {
         )}
       </div>
       
-      {/* Modal de edición/creación */}
-      {showModal && (
-        <EmployeeEditModal 
-          name={name}
-          setName={setName}
-          email={email}
-          setEmail={setEmail}
-          phone={phone}
-          setPhone={setPhone}
-          password={password}
-          setPassword={setPassword}
-          hireDate={hireDate}
-          setHireDate={setHireDate}
-          salary={salary}
-          setSalary={setSalary}
-          dui={dui}
-          setDui={setDui}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          isEditing={isEditing}
-          onClose={() => {
-            setShowModal(false);
-            resetForm();
-          }}
-        />
-      )}
+      {/* Modal de edición/creación usando UniversalModal */}
+      <UniversalModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          resetForm();
+        }}
+        type="form"
+        title={isEditing ? 'Editar Empleado' : 'Nuevo Empleado'}
+        size="large"
+      >
+        <form onSubmit={handleSubmit} className="employee-form">
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="name">Nombre Completo</label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ingresa el nombre completo"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="correo@ejemplo.com"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="phone">Teléfono</label>
+              <input
+                type="tel"
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="0000-0000"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="dui">DUI</label>
+              <input
+                type="text"
+                id="dui"
+                value={dui}
+                onChange={(e) => setDui(e.target.value)}
+                placeholder="12345678-9"
+                disabled={isLoading}
+                required
+                maxLength="10"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="hireDate">Fecha de Contratación</label>
+              <input
+                type="date"
+                id="hireDate"
+                value={hireDate}
+                onChange={(e) => setHireDate(e.target.value)}
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="salary">Salario</label>
+              <input
+                type="number"
+                id="salary"
+                value={salary}
+                onChange={(e) => setSalary(e.target.value)}
+                placeholder="1000.00"
+                disabled={isLoading}
+                required
+                min="0"
+                step="0.01"
+              />
+            </div>
+
+            <div className="form-group full-width">
+              <label htmlFor="password">
+                {isEditing ? 'Nueva Contraseña (opcional)' : 'Contraseña'}
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={isEditing ? 'Dejar vacío para mantener actual' : 'Contraseña'}
+                disabled={isLoading}
+                required={!isEditing}
+                minLength="6"
+              />
+            </div>
+          </div>
+          
+          <div className="form-actions">
+            <button
+              type="button"
+              className="cancel-button"
+              onClick={() => {
+                setShowModal(false);
+                resetForm();
+              }}
+              disabled={isLoading}
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="save-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Guardar'}
+            </button>
+          </div>
+        </form>
+      </UniversalModal>
       
-      {/* Modal de confirmación de eliminación */}
-      {showDeleteModal && (
-        <DeleteConfirmationModal
-          isOpen={showDeleteModal}
-          onClose={cancelDeleteEmployee}
-          onConfirm={confirmDeleteEmployee}
-          title="Eliminar Empleado"
-          message="¿Estás seguro de que deseas eliminar este empleado?"
-          itemName={employeeToDelete?.name || ""}
-          isLoading={isLoading}
-        />
-      )}
+      {/* Modal de confirmación de eliminación usando UniversalModal */}
+      <UniversalModal
+        isOpen={showDeleteModal}
+        onClose={cancelDeleteEmployee}
+        onConfirm={confirmDeleteEmployee}
+        type="delete"
+        title="Eliminar Empleado"
+        message="¿Estás seguro de que deseas eliminar este empleado?"
+        itemName={employeeToDelete?.name || ""}
+        isLoading={isLoading}
+      />
 
       <Toaster position="top-right" />
     </div>

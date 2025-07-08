@@ -25,7 +25,7 @@ const batchSchema = new Schema({
         type: String,
         trim: true
     },
-    // Array de movimientos embebidos
+    // Array de movimientos asociados a este lote
     movements: [
         {
             type: {
@@ -48,7 +48,7 @@ const batchSchema = new Schema({
                 trim: true
             },
             employeeId: {
-                type: Schema.Types.ObjectId,
+                type: Schema.Types.Mixed,
                 ref: "employee",
                 required: true
             },

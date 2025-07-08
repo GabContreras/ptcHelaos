@@ -16,7 +16,9 @@ const pettyCashSchema = new Schema({
     },
     reason: {
         type: String,
-        required: true
+        required: true,
+        trim: true
+
     },
     type: {
         type: String,
@@ -36,4 +38,4 @@ const pettyCashSchema = new Schema({
     strict: false
 });
 
-export default model("PettyCash", pettyCashSchema);
+export default model("pettyCash", pettyCashSchema);

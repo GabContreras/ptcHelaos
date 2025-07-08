@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SuccessModal from '../../components/Modals/passwordRecoveryModal/SuccessModal';
+import UniversalModal from '../../components/Modals/UniversalModal/UniversalModal';
 import './CambiarPassword.css';
 
 const CambiarPassword = () => {
@@ -60,7 +60,7 @@ const CambiarPassword = () => {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           password: newPassword
         }),
       });
@@ -83,10 +83,10 @@ const CambiarPassword = () => {
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
-    navigate('/login', { 
-      state: { 
-        message: 'Contraseña cambiada exitosamente. Inicia sesión con tu nueva contraseña.' 
-      } 
+    navigate('/login', {
+      state: {
+        message: 'Contraseña cambiada exitosamente. Inicia sesión con tu nueva contraseña.'
+      }
     });
   };
 
@@ -105,7 +105,7 @@ const CambiarPassword = () => {
           <p className="change-password-description">
             Ingresa una nueva contraseña (se asociara a esta cuenta)
           </p>
-          
+
           <div className="user-info">
             <div className="user-icon">👤</div>
             <span className="user-email">{userEmail}</span>
@@ -141,8 +141,8 @@ const CambiarPassword = () => {
             </div>
 
             <div className="form-group">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="change-password-button"
                 disabled={!isFormValid || loading}
               >
@@ -153,9 +153,11 @@ const CambiarPassword = () => {
         </div>
       </div>
 
-      <SuccessModal 
+      {/* Modal de éxito usando UniversalModal */}
+      <UniversalModal
         isOpen={showSuccessModal}
         onClose={handleModalClose}
+        type="success"
         title="¡Éxito!"
         message="Tu contraseña se restableció exitosamente."
       />

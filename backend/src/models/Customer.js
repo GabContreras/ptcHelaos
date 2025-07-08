@@ -3,24 +3,29 @@ import {Schema, model} from "mongoose";
 const customersSchema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   phone: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    trim: true
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   address: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   birthday: {
     type: Date,
