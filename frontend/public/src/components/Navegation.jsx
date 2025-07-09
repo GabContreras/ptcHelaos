@@ -9,6 +9,7 @@ import {
 
 import Page404 from "../pages/404";
 import AboutUs from "../pages/AboutUs";
+import FinishOrder from "../pages/FinishOrder";
 
 function Navegation() {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ function Navegation() {
     <Routes>
         <Route path="/" element={<Page404 />} />
         <Route path="/AboutUs" element={<AboutUs />} />
+        <Route path="/FinishOrder" element={<FinishOrder/>} />
       </Routes>
   )
 }
