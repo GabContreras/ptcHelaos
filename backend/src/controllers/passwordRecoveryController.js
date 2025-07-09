@@ -98,8 +98,37 @@ passRecov.verifyCode = async (req, res) => {
     }
 }
 
+// Nuevo endpoint para obtener información del token
+passRecov.getTokenInfo = async (req, res) => {
+    try {
+        const token = req.cookies.tokenRecoveryCode
+
+        if (!token) {
+            return res.status(401).json({ message: 'No se proporcionó token' })
+        }
+
+        const decoded = jsonwebtoken.verify(token, config.JWT.secret)
+
+        // Devolver solo la información necesaria (email)
+        res.status(200).json({ 
+            email: decoded.email,
+            userType: decoded.userType,
+            verified: decoded.verified
+        })
+
+    } catch (error) {
+        console.error("Error getting token info:", error)
+        res.status(500).json({ message: "Error interno del servidor" })
+    }
+}
+
 passRecov.resetPassword = async (req, res) => {
     const { password } = req.body
+
+    // Agregar validación aquí
+    if (!password || typeof password !== 'string') {
+        return res.status(400).json({ message: 'La contraseña es requerida' })
+    }
 
     try {
         const token = req.cookies.tokenRecoveryCode
