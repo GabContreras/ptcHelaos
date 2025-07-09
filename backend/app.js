@@ -43,15 +43,9 @@ app.get('/api/status', (req, res) => {
     res.status(200).json({ message: 'Servidor en línea ✅' })
 })
 
-<<<<<<< HEAD
 app.use("/api/employees", validateAuthToken(['admin']), employeesRoutes);
 app.use("/api/customers", validateAuthToken(['admin', 'employee']), customersRoutes);
 app.use("/api/category", validateAuthToken(['admin', 'employee']), categoryRoutes);
-=======
-app.use("/api/employees", employeesRoutes);
-app.use("/api/customers", customersRoutes);
-app.use("/api/category", categoryRoutes);
->>>>>>> origin/Gabriel
 app.use("/api/inventory", validateAuthToken(['admin', 'employee']), inventoryRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/logout", logoutRoutes);       

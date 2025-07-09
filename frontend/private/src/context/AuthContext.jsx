@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { config } from '../config.jsx';
 
 // Actualizada la URL del servidor para Moon Ice Cream
-const SERVER_URL = "http://localhost:4000/api";
+const SERVER_URL = config.api.API_BASE;
 
 const AuthContext = createContext();
 
@@ -28,9 +29,9 @@ export const AuthProvider = ({ children }) => {
 
             // Permitir solo employees y admin para Moon Ice Cream dashboard
             if (data.userType === "customer") {
-                return { 
-                    success: false, 
-                    message: "Los clientes no tienen acceso al panel administrativo." 
+                return {
+                    success: false,
+                    message: "Los clientes no tienen acceso al panel administrativo."
                 };
             }
 
@@ -45,13 +46,13 @@ export const AuthProvider = ({ children }) => {
             // Guardar en localStorage
             localStorage.setItem("authToken", "authenticated");
             localStorage.setItem("user", JSON.stringify(userData));
-            
+
             // Actualizar estado inmediatamente
             setAuthCokie("authenticated");
             setUser(userData);
 
-            console.log("Login exitoso Moon Ice Cream:", { 
-                userType: data.userType, 
+            console.log("Login exitoso Moon Ice Cream:", {
+                userType: data.userType,
                 userId: data.userId,
                 name: userData.name
             });
@@ -116,7 +117,7 @@ export const AuthProvider = ({ children }) => {
 
         try {
             const response = await fetch(url, config);
-            
+
             // Si el token expiró o es inválido, hacer logout automático
             if (response.status === 401 || response.status === 403) {
                 console.log("Token expirado o sin permisos, haciendo logout automático...");
@@ -156,9 +157,9 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         const savedUser = localStorage.getItem("user");
-        
+
         console.log("useEffect - Checking stored auth for Moon Ice Cream:", { token, savedUser });
-        
+
         if (token && savedUser && savedUser !== "undefined") {
             try {
                 const parsedUser = JSON.parse(savedUser);
@@ -171,7 +172,7 @@ export const AuthProvider = ({ children }) => {
                 localStorage.removeItem("authToken");
             }
         }
-        
+
         setIsLoading(false);
     }, []);
 

@@ -1,96 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { usePasswordRecovery } from '../../hooks/PasswordRecoveryHook/usePasswordRecovery';
 import UniversalModal from '../../components/Modals/UniversalModal/UniversalModal';
 import './CambiarPassword.css';
 
 const CambiarPassword = () => {
-  const navigate = useNavigate();
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
+  const {
+    newPassword,
+    setNewPassword,
+    confirmPassword,
+    setConfirmPassword,
+    loading,
+    error,
+    showSuccessModal,
+    handleModalClose,
+    resetPassword,
+    userEmail,
+    fetchUserEmailFromToken, // <-- Asegúrate de extraer esto
+  } = usePasswordRecovery();
 
-  // Obtener el email del token cuando el componente se monta
   useEffect(() => {
-    const getUserEmailFromToken = async () => {
-      try {
-        const response = await fetch(`http://localhost:4000/api/passwordRecovery/getTokenInfo`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUserEmail(data.email || 'usuario@moonicecream.com');
-        } else {
-          setUserEmail('usuario@moonicecream.com');
-        }
-      } catch (err) {
-        console.error('Error getting user email:', err);
-        setUserEmail('usuario@moonicecream.com');
-      }
-    };
-
-    getUserEmailFromToken();
+    fetchUserEmailFromToken();
+    // eslint-disable-next-line
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    // Validaciones
-    if (newPassword.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await fetch(`http://localhost:4000/api/passwordRecovery/resetPassword`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          password: newPassword
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Mostrar modal de éxito en lugar de redirigir inmediatamente
-        setShowSuccessModal(true);
-      } else {
-        setError(data.message || 'Error al cambiar contraseña');
-      }
-    } catch (err) {
-      setError('Error de conexión con el servidor');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleModalClose = () => {
-    setShowSuccessModal(false);
-    navigate('/login', {
-      state: {
-        message: 'Contraseña cambiada exitosamente. Inicia sesión con tu nueva contraseña.'
-      }
-    });
-  };
-
   const isFormValid = newPassword.length >= 6 && newPassword === confirmPassword;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    resetPassword();
+  };
 
   return (
     <>

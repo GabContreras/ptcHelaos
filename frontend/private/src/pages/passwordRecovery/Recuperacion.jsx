@@ -1,53 +1,30 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Recuperacion.css';
+import { config } from '../../config.jsx';
+import { usePasswordRecovery } from '../../hooks/PasswordRecoveryHook/usePasswordRecovery';
+
+const API_BASE = config.api.API_BASE;
 
 const Recuperacion = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const {
+    email,
+    setEmail,
+    loading,
+    error,
+    message,
+    requestCode,
+  } = usePasswordRecovery();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-    setMessage('');
-
-    try {
-      const response = await fetch(`http://localhost:4000/api/passwordRecovery/requestCode`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage('Código de recuperación enviado a tu email');
-        setTimeout(() => {
-          navigate('/recuperacioncodigo');
-        }, 2000);
-      } else {
-        setError(data.message || 'Error al enviar código');
-      }
-    } catch (err) {
-      setError('Error de conexión con el servidor');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
-    }
+    requestCode();
   };
 
   const goToLogin = () => {
     navigate('/login');
   };
-
-  const isEmailValid = email.trim() !== '';
 
   return (
     <div className="recovery-container">
@@ -80,7 +57,7 @@ const Recuperacion = () => {
             <button 
               type="submit" 
               className="recovery-button" 
-              disabled={!isEmailValid || loading}
+              disabled={loading}
             >
               {loading ? 'Enviando...' : 'Continuar'}
             </button>
