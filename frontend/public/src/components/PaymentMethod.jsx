@@ -1,6 +1,6 @@
 import React from 'react';
 
-function PaymentMethod() {
+function PaymentMethod({subtotal, descuento, total}) {
     const [opcion, setOpcion] = React.useState(null);
 
   const seleccionarOpcion = (op) => {
@@ -8,7 +8,7 @@ function PaymentMethod() {
   };
 
   return (
-    <div style={{ maxWidth: '500px', margin: '20px auto', fontFamily: 'Arial' }}>
+    <div style={{ fontFamily: 'Arial', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <h3 style={{ marginBottom: '10px' }}>Selecciona un método de pago:</h3>
 
       <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', justifyContent: 'center' }}>
@@ -41,13 +41,13 @@ function PaymentMethod() {
         </button>
       </div>
 
-      {/* Campos adicionales si se elige tarjeta */}
       {opcion === 'tarjeta' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', flexDirection: 'column', gap: '12px' }}>
           <input
             type="text"
             placeholder="Nombre del titular"
             style={{
+              width: '70%',
               padding: '10px',
               borderRadius: '6px',
               border: '1px solid #ccc',
@@ -59,23 +59,24 @@ function PaymentMethod() {
             placeholder="Número de tarjeta"
             maxLength="16"
             style={{
+              width: '70%',
               padding: '10px',
               borderRadius: '6px',
               border: '1px solid #ccc',
               fontSize: '14px',
             }}
           />
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ width: '70%', display: 'flex', justifyContent: 'space-around'}}>
             <input
               type="text"
               placeholder="MM/AA"
               maxLength="5"
               style={{
+                width: '45%',
                 padding: '10px',
                 borderRadius: '6px',
                 border: '1px solid #ccc',
                 fontSize: '14px',
-                flex: 1,
               }}
             />
             <input
@@ -83,16 +84,23 @@ function PaymentMethod() {
               placeholder="CVC"
               maxLength="4"
               style={{
+                width: '45%',
                 padding: '10px',
                 borderRadius: '6px',
                 border: '1px solid #ccc',
                 fontSize: '14px',
-                flex: 1,
               }}
             />
           </div>
         </div>
       )}
+
+      <div>
+        <h4>subtotal: {subtotal}</h4>
+        <h4>descuento: {descuento}</h4>
+        <h2>Total: {total}</h2>
+      </div>
+
     </div>
   );
 }

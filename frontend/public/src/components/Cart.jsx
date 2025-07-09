@@ -1,9 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router";
 import imgExample from "../imgs/imgExample.jpeg";
 import "../styles/Cart.css";
 import ItemCard from "./ItemCartCard";
+import Button from "../assets/Button"
 
 function Cart() {
+
+  const navigate = useNavigate()
+
   return (
       <div className="cart">
         <div className="items">

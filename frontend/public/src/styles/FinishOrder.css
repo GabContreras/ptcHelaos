@@ -1,35 +1,54 @@
-.orderDetails {
-    width: 60%;
+.finishOrder {
+    width: 100%;
+    height: 100vh;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    align-items: center;
 }
 
-.orderDetails h1 {
+.finishOrder .resume {
+    width: 25%;
+    background-color: bisque;
+    padding: 20px;
+    border-radius: 10px;
+    height: 70vh;
+    overflow-y:scroll;
+    scrollbar-width:none;
+}
+
+.finishOrder .orderDetails {
+    width: 70%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.finishOrder h1 {
     width: 100%;
     text-align: center;
     margin-bottom: 20px;
 }
 
-.orderDetails .direction {
-    width: 50%;
+.finishOrder .direction {
+    background-color: #ccc;
+    width: 40%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
 }
 
-.orderDetails .direction iframe {
+.finishOrder .direction iframe {
     width: 80%;
     aspect-ratio: 1 / 0.6;
 }
 
- .orderDetails .direction h4 {
+ .finishOrder .direction h4 {
     width: 80%;
     text-align: left;
     margin-bottom: 10px;
 }
 
-.orderDetails .direction textarea {
+.finishOrder .direction textarea {
     width: 80%;
     resize: none;
     padding: 12px;
@@ -42,6 +61,7 @@
     white-space: pre-wrap;
 }
 
-.orderDetails .orderDetails .total {
-    width: 50%;
+.finishOrder .total {
+    width: 40%;
+    background-color: #ccc;
 }

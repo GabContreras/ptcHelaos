@@ -43,11 +43,10 @@ function NavBar() {
                 </div>
             </div>
 
-            {/* Mostrar carrito lateral si está activado */}
             {mostrarCart && (
                 <div className="cart-slide">
                     <Cart />
-                    <a onClick={() => navigate('/FinishOrder')}/>Finalizar Orden<a/>
+                    <Button titulo="Finalizar orden" color="#33A9FE" tipoColor="background" onClick={() => navigate('/FinishOrder')}/>
                 </div>
             )}
         </div>
