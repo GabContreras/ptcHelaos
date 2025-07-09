@@ -7,7 +7,6 @@ const router = express.Router();
 
 // Rutas públicas
 router.route('/:id')
-    .get(validateAuthToken(['admin', 'employee']), reviewController.getReviewById)
     .delete(validateAuthToken(['admin', 'employee']), reviewController.deleteReview)
 // .put(validateAuthToken(['admin', 'employee',]), reviewCtrl.updateReview)
 

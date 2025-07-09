@@ -1,4 +1,3 @@
-// models/Batch.js
 import { Schema, model } from "mongoose";
 const batchSchema = new Schema({
     quantity: {
