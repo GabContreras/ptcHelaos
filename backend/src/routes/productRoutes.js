@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Configuración de multer para múltiples archivos
 const upload = multer({
-    dest: 'uploads/'
+    dest: 'public/'
 });
 
 // Rutas para filtrar productos disponibles

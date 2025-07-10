@@ -3,11 +3,13 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import './Navbar.css';
+import { config } from '../config.jsx';
+const API_BASE = config.api.API_BASE;
 
 const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout, user } = useAuth();
+    const { logout, user, isAdmin } = useAuth();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -46,10 +48,10 @@ const Navbar = () => {
 
     // Función para obtener el nombre a mostrar
     const getDisplayName = () => {
-        if (!user) return 'MisterBeast';
-        
+        if (!user) return 'Usuario';
+
         if (user.name && user.name !== user.email) return user.name;
-        
+
         if (user.email) {
             const emailName = user.email.split('@')[0];
             return emailName
@@ -58,13 +60,13 @@ const Navbar = () => {
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                 .join(' ');
         }
-        
-        return 'MisterBeast';
+
+        return 'Usuario';
     };
 
     const handleLogout = async () => {
         try {
-            await fetch('http://localhost:4000/api/logout', {
+            await fetch(API_BASE + 'logout', {
                 method: 'POST',
                 credentials: 'include'
             });
@@ -76,48 +78,66 @@ const Navbar = () => {
         }
     };
 
-    const menuItems = [
+    // Definir todos los elementos del menú con sus roles
+    const allMenuItems = [
+        {
+            path: "/dashboard",
+            label: "Gráficas",
+            icon: "📊",
+            adminOnly: false
+        },
         {
             path: "/orders",
             label: "Toma de órdenes",
-            icon: ""
+            icon: "📝",
+            adminOnly: false
         },
         {
-            path: "/inventory", 
+            path: "/inventory",
             label: "Inventario",
-            icon: ""
+            icon: "📦",
+            adminOnly: false
         },
         {
             path: "/clients",
             label: "Control de clientes",
-            icon: ""
-        },
-        {
-            path: "/pos",
-            label: "Caja chica",
-            icon: ""
-        },
-        {
-            path: "/dashboard",
-            label: "Gráficas",
-            icon: ""
+            icon: "👥",
+            adminOnly: false
         },
         {
             path: "/delivery",
             label: "Delivery",
-            icon: ""
+            icon: "🚚",
+            adminOnly: false
         },
         {
-            path: "/employees", 
+            path: "/employees",
             label: "Empleados",
-            icon: ""
+            icon: "👨‍💼",
+            adminOnly: true // Solo admin
         },
         {
-            path: "/category", 
+            path: "/category",
             label: "Categorías",
-            icon: ""
+            icon: "🏷️",
+            adminOnly: true // Solo admin
+        },
+        {
+            path: "/pettyCash",
+            label: "Caja Chica",
+            icon: "💳",
+            adminOnly: false 
         }
     ];
+
+    // Filtrar elementos del menú según el rol del usuario
+    const menuItems = allMenuItems.filter(item => {
+        // Si el item es solo para admin y el usuario no es admin, no mostrarlo
+        if (item.adminOnly && !isAdmin()) {
+            return false;
+        }
+        return true;
+    });
 
     const isActive = (path) => {
         return location.pathname === path;
@@ -125,10 +145,10 @@ const Navbar = () => {
 
     return (
         <>
-            {/* Botón hamburguesa para móvil */}
-            {isMobile && (
-                <button 
-                    className={`hamburger-menu ${isMobileMenuOpen ? 'open' : ''}`}
+            {/* Botón hamburguesa para móvil - solo mostrar cuando el menú está cerrado */}
+            {isMobile && !isMobileMenuOpen && (
+                <button
+                    className={`hamburger-menu`}
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     aria-label="Abrir menú"
                 >
@@ -152,16 +172,7 @@ const Navbar = () => {
                         <h1 className="header-title">Moon's Ice Cream Rolls</h1>
                         <span className="header-subtitle">Management System</span>
                     </div>
-                    {/* Botón cerrar en móvil */}
-                    {isMobile && (
-                        <button 
-                            className="close-mobile-menu"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            aria-label="Cerrar menú"
-                        >
-                            ✕
-                        </button>
-                    )}
+                    {/* Eliminamos el botón X ya que se puede cerrar clickeando fuera */}
                 </div>
 
                 {/* User section */}
@@ -171,7 +182,11 @@ const Navbar = () => {
                     </div>
                     <div className="user-details">
                         <span className="username">{getDisplayName()}</span>
-                        <button 
+                        {/* Mostrar el rol del usuario */}
+                        <span className="user-role">
+                            {isAdmin() ? 'Administrador' : 'Empleado'}
+                        </span>
+                        <button
                             className="logout-badge"
                             onClick={handleLogout}
                             title="Cerrar sesión"

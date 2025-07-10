@@ -43,7 +43,7 @@ export function useEmployeesManager() {
             setIsLoading(true);
             setError('');
             
-            const response = await authenticatedFetch(`${API_BASE}/employees`, {
+            const response = await authenticatedFetch(`${API_BASE}employees`, {
                 credentials: 'include'
             });
             

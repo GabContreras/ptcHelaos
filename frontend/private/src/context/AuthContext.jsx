@@ -11,10 +11,19 @@ export const AuthProvider = ({ children }) => {
     const [authCokie, setAuthCokie] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Función simple para verificar si existe la cookie authToken
+    const checkAuthTokenCookie = () => {
+        const cookies = document.cookie.split(';');
+        const authCookie = cookies.find(cookie => 
+            cookie.trim().startsWith('authToken=')
+        );
+        return authCookie ? authCookie.split('=')[1].trim() : null;
+    };
+
     // Login adaptado para Moon Ice Cream
     const Login = async (email, password) => {
         try {
-            const response = await fetch(`${SERVER_URL}/login`, {
+            const response = await fetch(`${SERVER_URL}login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -67,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             // Llamar al endpoint de logout del servidor
-            await fetch(`${SERVER_URL}/logout`, {
+            await fetch(`${SERVER_URL}logout`, {
                 method: "POST",
                 credentials: "include",
                 headers: getAuthHeaders()
@@ -157,10 +166,33 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         const savedUser = localStorage.getItem("user");
+        const cookieExists = checkAuthTokenCookie(); // NUEVO: verificar cookie
 
-        console.log("useEffect - Checking stored auth for Moon Ice Cream:", { token, savedUser });
+        console.log("useEffect - Checking stored auth for Moon Ice Cream:", { 
+            token, 
+            savedUser, 
+            cookieExists: !!cookieExists 
+        });
 
-        if (token && savedUser && savedUser !== "undefined") {
+        // NUEVO: Si no hay cookie authToken, limpiar todo y redirigir
+        if (!cookieExists) {
+            console.log("Cookie authToken no encontrada, limpiando datos...");
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("user");
+            setAuthCokie(null);
+            setUser(null);
+            
+            // Solo redirigir si no estamos en rutas públicas
+            const currentPath = window.location.pathname;
+            const publicPaths = ['/', '/login', '/register', '/recuperacion', '/recuperacioncodigo', '/cambiarpassword'];
+            
+            if (!publicPaths.includes(currentPath)) {
+                console.log("Redirigiendo al login...");
+                window.location.href = '/login';
+            }
+        }
+        // Si hay cookie Y datos locales, restaurar sesión
+        else if (token && savedUser && savedUser !== "undefined") {
             try {
                 const parsedUser = JSON.parse(savedUser);
                 setUser(parsedUser);

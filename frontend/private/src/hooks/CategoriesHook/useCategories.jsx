@@ -37,7 +37,7 @@ export function useCategoriesManager() {
             setIsLoading(true);
             setError('');
             
-            const response = await authenticatedFetch(`${API_BASE}/category`, {
+            const response = await authenticatedFetch(`${API_BASE}category`, {
                 credentials: 'include'
             });
             
@@ -81,7 +81,7 @@ export function useCategoriesManager() {
             
             if (isEditing) {
                 // Actualizar categoría existente (PUT)                
-                response = await authenticatedFetch(`${API_BASE}/category/${currentCategoryId}`, {
+                response = await authenticatedFetch(`${API_BASE}category/${currentCategoryId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export function useCategoriesManager() {
                 });
             } else {
                 // Crear nueva categoría (POST)
-                response = await authenticatedFetch(`${API_BASE}/category`, {
+                response = await authenticatedFetch(`${API_BASE}category`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ export function useCategoriesManager() {
             setIsLoading(true);
             setError('');
                         
-            const response = await authenticatedFetch(`${API_BASE}/category/${categoryToDelete._id}`, {
+            const response = await authenticatedFetch(`${API_BASE}category/${categoryToDelete._id}`, {
                 method: 'DELETE',
             });
             

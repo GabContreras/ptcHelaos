@@ -1,4 +1,4 @@
-/* Navbar.css - Responsive con menú hamburguesa */
+/* Navbar.css - Responsive con menú hamburguesa y roles */
 .image-sidebar {
   position: fixed;
   left: 0;
@@ -111,6 +111,18 @@
   text-align: center;
 }
 
+/* Nuevo estilo para mostrar el rol del usuario */
+.user-role {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  margin-bottom: 0.2rem;
+  font-weight: 500;
+}
+
 .logout-badge {
   font-size: 0.75rem;
   color: #8D6CFF;
@@ -189,7 +201,7 @@
   position: fixed;
   top: 1rem;
   left: 1rem;
-  z-index: 1001;
+  z-index: 1002;
   background: #8D6CFF;
   border: none;
   width: 50px;
@@ -249,6 +261,7 @@
     transform: translateX(-100%);
     width: 280px;
     box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
   }
   
   .image-sidebar.mobile-open {
@@ -263,14 +276,9 @@
     display: block;
   }
   
-  .close-mobile-menu {
-    display: block;
-  }
-  
-  /* Ajustar header en móvil */
+  /* Ajustar header en móvil - remover padding extra ya que no hay botón X */
   .image-header {
-    padding: 1rem 1rem 1rem 1.25rem;
-    justify-content: space-between;
+    padding: 1.2rem 1.25rem 1rem 1.25rem;
   }
   
   /* Ajustar navegación en móvil */
@@ -297,6 +305,10 @@
   
   .username {
     font-size: 0.9rem;
+  }
+  
+  .user-role {
+    font-size: 0.7rem;
   }
 }
 

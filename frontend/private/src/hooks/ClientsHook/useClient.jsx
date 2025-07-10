@@ -43,7 +43,7 @@ export function useClientsManager() {
             setIsLoading(true);
             setError('');
             
-            const response = await authenticatedFetch(`${API_BASE}/customers`, {
+            const response = await authenticatedFetch(`${API_BASE}customers`, {
                 credentials: 'include'
             });
             
@@ -131,7 +131,7 @@ export function useClientsManager() {
             
             if (isEditing) {
                 // Actualizar cliente existente (PUT)                
-                response = await authenticatedFetch(`${API_BASE}/customers/${currentClientId}`, {
+                response = await authenticatedFetch(`${API_BASE}customers/${currentClientId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ export function useClientsManager() {
                 });
             } else {
                 // Crear nuevo cliente (POST)
-                response = await authenticatedFetch(`${API_BASE}/customers`, {
+                response = await authenticatedFetch(`${API_BASE}customers`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -212,7 +212,7 @@ export function useClientsManager() {
             setIsLoading(true);
             setError('');
                         
-            const response = await authenticatedFetch(`${API_BASE}/customers/${clientToDelete._id}`, {
+            const response = await authenticatedFetch(`${API_BASE}customers/${clientToDelete._id}`, {
                 method: 'DELETE',
             });
             

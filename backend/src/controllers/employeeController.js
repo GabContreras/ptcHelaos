@@ -16,8 +16,10 @@ employeesController.getEmployees = async (req, res) => {
 employeesController.insertEmployee = async (req, res) => {
     try {
         const { name, email, phone, password, hireDate, salary, dui } = req.body;
+        const passwordHash = await bcryptjs.hash(password, 10);
+
         const newEmployee = new employeesModel({
-            name, email, phone, password, hireDate, salary, dui
+            name, email, phone, password: passwordHash, hireDate, salary, dui
         })
         await newEmployee.save()
         res.status(201).json({ message: "Empleado guardado correctamente" })
@@ -46,8 +48,10 @@ employeesController.deleteEmployee = async (req, res) => {
 employeesController.updateEmployee = async (req, res) => {
     try {
         const { name, email, phone, password, hireDate, salary, dui } = req.body;
+        const passwordHash = await bcryptjs.hash(password, 10);
+
         const updateEmployee = await employeesModel.findByIdAndUpdate(req.params.id,
-            { name, email, phone, password, hireDate, salary, dui },
+            { name, email, phone, password: passwordHash, hireDate, salary, dui },
             { new: true }
         )
         res.json({ message: "Updated successfully" })
