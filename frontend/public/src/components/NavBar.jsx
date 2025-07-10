@@ -23,8 +23,8 @@ function NavBar() {
                 className={location.pathname === '/AboutUs' ? 'nav-link active' : 'nav-link'}>Sobre nosotros</a>
             </div>
             <div className="logs">
-                <Button titulo="Registrarse" color="#33A9FE" tipoColor="background"/>
-                <Button titulo="Iniciar sesion" color="#33A9FE" tipoColor="border"/>
+                <Button titulo="Registrarse" color="#33A9FE" tipoColor="background" onClick={() => navigate('/RegistroPage')} />
+                <Button titulo="Iniciar sesion" color="#33A9FE" tipoColor="border" onClick={() => navigate('/LoginPage')}  />
             </div>
         </div>
     )
