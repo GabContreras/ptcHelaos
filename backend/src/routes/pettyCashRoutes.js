@@ -1,15 +1,16 @@
 import express from 'express';
-import pettyCashCtrl from '../controllers/pettyCashController.js';
+import pettyCashController from '../controllers/pettyCashController.js';
 
 const router = express.Router();
 
 // Obtener todos los movimientos de caja chica
-router.get('/', pettyCashCtrl.getAllMovements);
-
+router.route("/")
+    .get(pettyCashController.getAllMovements)
+    // Crear una nueva operación de caja chica (ingreso/egreso)
+    .post(pettyCashController.cashOperation)
 // Obtener el balance actual de caja chica
-router.get('/balance', pettyCashCtrl.getCurrentBalance);
+router.get('/balance', pettyCashController.getCurrentBalance)
 
-// Crear una nueva operación de caja chica (ingreso/egreso)
-router.post('/', pettyCashCtrl.cashOperation);
+
 
 export default router;

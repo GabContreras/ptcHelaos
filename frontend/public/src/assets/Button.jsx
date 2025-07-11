@@ -1,4 +1,4 @@
-function Button({ titulo, color, tipoColor }) {
+function Button({ titulo, color, tipoColor, onClick }) {
   const isBackground = tipoColor === 'background';
 
   const backgroundColor = isBackground ? color : '#fff';
@@ -18,6 +18,7 @@ function Button({ titulo, color, tipoColor }) {
         boxShadow: `4px 4px 0px ${shadowColor}, -4px -4px 0px ${shadowColor}`,
         transition: 'all 0.3s ease',
       }}
+      onClick={onClick}
     >
       {titulo}
     </button>

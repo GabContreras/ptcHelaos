@@ -6,8 +6,23 @@
     padding: 0px 20px;
 }
 
+.navbar-container {
+    position: relative;
+}
+
+.cart-slide {
+    position: absolute;
+    background-color: #00000020;
+    top: 100%;
+    right: 0;
+    width: 30%;
+    z-index: 100;
+    padding: 20px;
+}
+
+
 .navbar .logo {
-    width: 41%;
+    width: 36%;
     display: flex;
     align-items: center;
 }
@@ -18,7 +33,7 @@
     margin: 0 0 0 10px;
 }
 
-.navbar img {
+.navbar .imgLogo {
     width: 50px;
     border-radius: 50%;
 }
@@ -30,14 +45,27 @@
 }
 
 .navbar .links a {
-    padding: 28px 16px;
+    padding: 28px 0px;
     font-size: 18px;
     color: #fff;
     cursor: pointer;
 }
 
+.navbar .linkCart {
+    padding: 10px 15px;
+    margin: 0px 10px;
+    border-left: #B9B8FF 1px solid;
+    border-right: #B9B8FF 1px solid;
+    cursor: pointer;
+}
+
+.navbar .linkCart img {
+    width: 30px;
+    height: 30px;
+}
+
 .navbar .logs {
-    width: 24%;
+    width: 23%;
 }
 
 .navbar .logs Button {
@@ -50,7 +78,7 @@
   cursor: pointer;
   text-decoration: none;
   color: #333;
-  transition: all 0.2s ease;
+  transition: all 1s ease;
 }
 
 .nav-link.active::after {

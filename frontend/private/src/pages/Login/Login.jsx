@@ -1,5 +1,6 @@
 // Login.jsx
 import { useLogin } from '../../hooks/LoginHook/useLogin';
+import { Link } from 'react-router-dom';
 import './Login.css';
 
 function Login() {
@@ -61,7 +62,7 @@ function Login() {
                     </div>
 
                     <div className="forgot-password">
-                        <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+                        <Link to="/recuperacion">¿Olvidaste tu contraseña?</Link>
                     </div>
                 </form>
             </div>

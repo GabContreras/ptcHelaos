@@ -1,458 +1,332 @@
 import React, { useState } from 'react';
-import { Cookie, IceCream, Layers, Sandwich } from 'lucide-react';
+import { MapPin, Clock, Phone, User, Package, ChevronDown, ChevronUp, Star, Copy } from 'lucide-react';
 import './Orders.css';
 
-const Orders = () => {
-  const [activeTab, setActiveTab] = useState('waffles');
-  const [selectedOptions, setSelectedOptions] = useState({
-    waffles: { tamano: '', sabor: [], complemento: [], etcetera: [] },
-    helados: { tamano: '', sabor: [], complemento: [], etcetera: [] },
-    pancakes: { tamano: '', sabor: [], complemento: [], etcetera: [] },
-    panes: { tamano: '', sabor: [], complemento: [], etcetera: [] }
-  });
-  const [quantity, setQuantity] = useState(1);
+const Delivery = () => {
+  const [expandedOrder, setExpandedOrder] = useState(null);
 
-  const menuItems = {
-    waffles: { icon: Cookie, name: 'Waffles', basePrice: 5.80 },
-    helados: { icon: IceCream, name: 'Helados', basePrice: 4.50 },
-    pancakes: { icon: Layers, name: 'Pancakes', basePrice: 6.20 },
-    panes: { icon: Sandwich, name: 'Panes', basePrice: 3.80 }
-  };
-
-  const optionsData = {
-    waffles: {
-      tamano: [
-        { id: 'opcion1', name: 'Mini', price: 0 },
-        { id: 'opcion2', name: 'Regular', price: 1.20 },
-        { id: 'opcion3', name: 'Grande', price: 2.50 },
-        { id: 'opcion4', name: 'Jumbo', price: 3.80 },
-        { id: 'opcion5', name: 'Familiar', price: 5.00 }
+  const orders = [
+    {
+      id: '00',
+      status: 'en preparacion',
+      client: {
+        name: 'Nombre Apellido',
+        phone: '0000-0000',
+        rating: 4.5
+      },
+      address: 'Calle Principal #123, San Salvador',
+      coordinates: { lat: 13.7028, lng: -89.2181 },
+      products: [
+        {
+          name: 'Producto 3',
+          quantity: 1,
+          size: 'opcion 2',
+          flavors: ['opcion 2', 'opcion 8'],
+          complements: ['opcion 6'],
+          extras: ['opcion 8'],
+          price: 5.80
+        }
       ],
-      sabor: [
-        { id: 'opcion1', name: 'Original', price: 0 },
-        { id: 'opcion2', name: 'Chocolate', price: 0.50 },
-        { id: 'opcion3', name: 'Vainilla', price: 0.50 },
-        { id: 'opcion4', name: 'Fresa', price: 0.80 },
-        { id: 'opcion5', name: 'Canela', price: 0.60 },
-        { id: 'opcion6', name: 'Limón', price: 0.70 },
-        { id: 'opcion7', name: 'Nutella', price: 1.20 },
-        { id: 'opcion8', name: 'Red Velvet', price: 1.50 },
-        { id: 'opcion9', name: 'Coco', price: 0.40 },
-        { id: 'opcion10', name: 'Maple', price: 0.80 }
-      ],
-      complemento: [
-        { id: 'opcion1', name: 'Mantequilla', price: 0.50 },
-        { id: 'opcion2', name: 'Miel', price: 1.00 },
-        { id: 'opcion3', name: 'Jarabe Maple', price: 0.80 },
-        { id: 'opcion4', name: 'Chantilly', price: 0.30 },
-        { id: 'opcion5', name: 'Helado', price: 1.40 },
-        { id: 'opcion6', name: 'Frutas Frescas', price: 1.60 },
-        { id: 'opcion7', name: 'Nutella', price: 1.50 },
-        { id: 'opcion8', name: 'Dulce de Leche', price: 1.20 },
-        { id: 'opcion9', name: 'Chocolate Chips', price: 0.90 },
-        { id: 'opcion10', name: 'Caramelo', price: 1.20 }
-      ],
-      etcetera: [
-        { id: 'opcion1', name: 'Extra Crujiente', price: 0.20 },
-        { id: 'opcion2', name: 'Sin Gluten', price: 0.80 },
-        { id: 'opcion3', name: 'Vegano', price: 0.50 },
-        { id: 'opcion4', name: 'Integral', price: 0.30 },
-        { id: 'opcion5', name: 'Proteína Extra', price: 1.00 },
-        { id: 'opcion6', name: 'Bajo en Azúcar', price: 0.30 },
-        { id: 'opcion7', name: 'Caliente', price: 0.20 },
-        { id: 'opcion8', name: 'Para Llevar', price: 0.10 },
-        { id: 'opcion9', name: 'Doble Porción', price: 2.50 },
-        { id: 'opcion10', name: 'Presentación Especial', price: 1.00 }
-      ]
+      subtotal: 13.45,
+      discount: 0.00,
+      total: 15.95,
+      estimatedTime: '25-30 min',
+      orderTime: '14:30',
+      paymentMethod: 'contra entrega'
     },
-    helados: {
-      tamano: [
-        { id: 'opcion1', name: 'Una Bola', price: 0 },
-        { id: 'opcion2', name: 'Dos Bolas', price: 1.20 },
-        { id: 'opcion3', name: 'Tres Bolas', price: 2.50 },
-        { id: 'opcion4', name: 'Sundae', price: 3.80 },
-        { id: 'opcion5', name: 'Banana Split', price: 5.00 }
+    {
+      id: '01',
+      status: 'recibido',
+      client: {
+        name: 'María González',
+        phone: '2222-3333',
+        rating: 5.0
+      },
+      address: 'Colonia Escalón, Block A, Casa 45',
+      coordinates: { lat: 13.7089, lng: -89.2348 },
+      products: [
+        {
+          name: 'Producto 1',
+          quantity: 2,
+          size: 'opcion 2',
+          flavors: ['opcion 2', 'opcion 8'],
+          complements: ['opcion 6'],
+          extras: ['opcion 8'],
+          price: 7.65
+        }
       ],
-      sabor: [
-        { id: 'opcion1', name: 'Vainilla', price: 0 },
-        { id: 'opcion2', name: 'Chocolate', price: 0.50 },
-        { id: 'opcion3', name: 'Fresa', price: 0.50 },
-        { id: 'opcion4', name: 'Cookies & Cream', price: 0.80 },
-        { id: 'opcion5', name: 'Menta Chip', price: 0.60 },
-        { id: 'opcion6', name: 'Caramelo Salado', price: 0.70 },
-        { id: 'opcion7', name: 'Pistacho', price: 1.20 },
-        { id: 'opcion8', name: 'Ron con Pasas', price: 1.50 },
-        { id: 'opcion9', name: 'Limón', price: 0.40 },
-        { id: 'opcion10', name: 'Coconut', price: 0.80 }
-      ],
-      complemento: [
-        { id: 'opcion1', name: 'Chantilly', price: 0.50 },
-        { id: 'opcion2', name: 'Frutas', price: 1.00 },
-        { id: 'opcion3', name: 'Granola', price: 0.80 },
-        { id: 'opcion4', name: 'Sprinkles', price: 0.30 },
-        { id: 'opcion5', name: 'Jarabe Chocolate', price: 0.40 },
-        { id: 'opcion6', name: 'Cerezas', price: 0.60 },
-        { id: 'opcion7', name: 'Salsa Fresa', price: 0.50 },
-        { id: 'opcion8', name: 'Canela', price: 0.20 },
-        { id: 'opcion9', name: 'Almendras', price: 0.90 },
-        { id: 'opcion10', name: 'Brownie', price: 1.20 }
-      ],
-      etcetera: [
-        { id: 'opcion1', name: 'Sin Lactosa', price: 0.20 },
-        { id: 'opcion2', name: 'Sugar Free', price: 0.30 },
-        { id: 'opcion3', name: 'Yogurt Frozen', price: 0.50 },
-        { id: 'opcion4', name: 'Orgánico', price: 0.80 },
-        { id: 'opcion5', name: 'Probióticos', price: 1.00 },
-        { id: 'opcion6', name: 'Bajo en Grasa', price: 0.30 },
-        { id: 'opcion7', name: 'Extra Frío', price: 0.10 },
-        { id: 'opcion8', name: 'Keto', price: 1.20 },
-        { id: 'opcion9', name: 'Copa Premium', price: 0.60 },
-        { id: 'opcion10', name: 'Milkshake', price: 1.40 }
-      ]
+      subtotal: 18.30,
+      discount: 0.00,
+      total: 18.30,
+      estimatedTime: '20-25 min',
+      orderTime: '14:45',
+      paymentMethod: 'tarjeta'
     },
-    pancakes: {
-      tamano: [
-        { id: 'opcion1', name: 'Stack de 2', price: 0 },
-        { id: 'opcion2', name: 'Stack de 3', price: 1.20 },
-        { id: 'opcion3', name: 'Stack de 4', price: 2.50 },
-        { id: 'opcion4', name: 'Stack Jumbo', price: 3.80 },
-        { id: 'opcion5', name: 'Mega Stack', price: 5.00 }
+    {
+      id: '02',
+      status: 'recibido',
+      client: {
+        name: 'Carlos Mendoza',
+        phone: '7777-8888',
+        rating: 4.2
+      },
+      address: 'Centro Comercial Galerías, Local 234',
+      coordinates: { lat: 13.6929, lng: -89.2182 },
+      products: [
+        {
+          name: 'Producto 2',
+          quantity: 1,
+          size: 'grande',
+          flavors: ['chocolate', 'vainilla'],
+          complements: ['crema'],
+          extras: ['extra dulce'],
+          price: 8.50
+        }
       ],
-      sabor: [
-        { id: 'opcion1', name: 'Clásico', price: 0 },
-        { id: 'opcion2', name: 'Chocolate Chip', price: 0.50 },
-        { id: 'opcion3', name: 'Blueberry', price: 0.50 },
-        { id: 'opcion4', name: 'Banana', price: 0.80 },
-        { id: 'opcion5', name: 'Avena', price: 0.60 },
-        { id: 'opcion6', name: 'Buttermilk', price: 0.70 },
-        { id: 'opcion7', name: 'Red Velvet', price: 1.20 },
-        { id: 'opcion8', name: 'Lemon Ricotta', price: 1.50 },
-        { id: 'opcion9', name: 'Cinnamon', price: 0.40 },
-        { id: 'opcion10', name: 'Protein', price: 0.80 }
-      ],
-      complemento: [
-        { id: 'opcion1', name: 'Mantequilla', price: 0.50 },
-        { id: 'opcion2', name: 'Jarabe Maple', price: 1.00 },
-        { id: 'opcion3', name: 'Miel', price: 0.80 },
-        { id: 'opcion4', name: 'Whipped Cream', price: 0.30 },
-        { id: 'opcion5', name: 'Frutas del Bosque', price: 1.40 },
-        { id: 'opcion6', name: 'Compota', price: 1.60 },
-        { id: 'opcion7', name: 'Nutella', price: 1.50 },
-        { id: 'opcion8', name: 'Peanut Butter', price: 1.20 },
-        { id: 'opcion9', name: 'Bacon', price: 1.90 },
-        { id: 'opcion10', name: 'Huevo Frito', price: 1.20 }
-      ],
-      etcetera: [
-        { id: 'opcion1', name: 'Extra Esponjoso', price: 0.20 },
-        { id: 'opcion2', name: 'Sin Gluten', price: 0.80 },
-        { id: 'opcion3', name: 'Vegano', price: 0.50 },
-        { id: 'opcion4', name: 'Integral', price: 0.30 },
-        { id: 'opcion5', name: 'High Protein', price: 1.00 },
-        { id: 'opcion6', name: 'Low Carb', price: 0.90 },
-        { id: 'opcion7', name: 'Caliente', price: 0.20 },
-        { id: 'opcion8', name: 'Mini Pancakes', price: 0.50 },
-        { id: 'opcion9', name: 'Forma Especial', price: 0.80 },
-        { id: 'opcion10', name: 'Desayuno Completo', price: 2.40 }
-      ]
+      subtotal: 8.50,
+      discount: 1.00,
+      total: 7.50,
+      estimatedTime: '30-35 min',
+      orderTime: '15:00',
+      paymentMethod: 'efectivo'
     },
-    panes: {
-      tamano: [
-        { id: 'opcion1', name: 'Rebanada', price: 0 },
-        { id: 'opcion2', name: 'Tostada Doble', price: 1.20 },
-        { id: 'opcion3', name: 'Sandwich', price: 2.50 },
-        { id: 'opcion4', name: 'Baguette', price: 3.80 },
-        { id: 'opcion5', name: 'Pan Completo', price: 5.00 }
+    {
+      id: '03',
+      status: 'en camino',
+      client: {
+        name: 'Ana Rodríguez',
+        phone: '5555-6666',
+        rating: 4.8
+      },
+      address: 'Zona Rosa, Edificio Torre Sur, Apt 502',
+      coordinates: { lat: 13.7156, lng: -89.2456 },
+      products: [
+        {
+          name: 'Producto 4',
+          quantity: 3,
+          size: 'mediano',
+          flavors: ['fresa'],
+          complements: ['frutas', 'miel'],
+          extras: [],
+          price: 6.25
+        }
       ],
-      sabor: [
-        { id: 'opcion1', name: 'Blanco', price: 0 },
-        { id: 'opcion2', name: 'Integral', price: 0.50 },
-        { id: 'opcion3', name: 'Centeno', price: 0.50 },
-        { id: 'opcion4', name: 'Multigrano', price: 0.80 },
-        { id: 'opcion5', name: 'Avena', price: 0.60 },
-        { id: 'opcion6', name: 'Brioche', price: 0.70 },
-        { id: 'opcion7', name: 'Focaccia', price: 1.20 },
-        { id: 'opcion8', name: 'Sourdough', price: 1.50 },
-        { id: 'opcion9', name: 'Pita', price: 0.40 },
-        { id: 'opcion10', name: 'Ciabatta', price: 0.80 }
-      ],
-      complemento: [
-        { id: 'opcion1', name: 'Mantequilla', price: 0.50 },
-        { id: 'opcion2', name: 'Mermelada', price: 1.00 },
-        { id: 'opcion3', name: 'Miel', price: 0.80 },
-        { id: 'opcion4', name: 'Queso Crema', price: 0.30 },
-        { id: 'opcion5', name: 'Aguacate', price: 1.40 },
-        { id: 'opcion6', name: 'Jamón', price: 1.60 },
-        { id: 'opcion7', name: 'Queso', price: 1.50 },
-        { id: 'opcion8', name: 'Tomate', price: 0.20 },
-        { id: 'opcion9', name: 'Lechuga', price: 0.30 },
-        { id: 'opcion10', name: 'Hummus', price: 1.20 }
-      ],
-      etcetera: [
-        { id: 'opcion1', name: 'Tostado', price: 0.20 },
-        { id: 'opcion2', name: 'Sin Gluten', price: 0.80 },
-        { id: 'opcion3', name: 'Vegano', price: 0.50 },
-        { id: 'opcion4', name: 'Artesanal', price: 0.80 },
-        { id: 'opcion5', name: 'Recién Horneado', price: 0.50 },
-        { id: 'opcion6', name: 'Bajo en Sodio', price: 0.30 },
-        { id: 'opcion7', name: 'Caliente', price: 0.20 },
-        { id: 'opcion8', name: 'Para Llevar', price: 0.10 },
-        { id: 'opcion9', name: 'Cortado Especial', price: 0.40 },
-        { id: 'opcion10', name: 'Con Semillas', price: 0.60 }
-      ]
+      subtotal: 18.75,
+      discount: 0.50,
+      total: 18.25,
+      estimatedTime: '10-15 min',
+      orderTime: '14:15',
+      paymentMethod: 'contra entrega'
+    }
+  ];
+
+  const handleOrderClick = (orderId) => {
+    setExpandedOrder(expandedOrder === orderId ? null : orderId);
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'en preparacion': return '#f59e0b';
+      case 'recibido': return '#10b981';
+      case 'en camino': return '#3b82f6';
+      case 'entregado': return '#6b7280';
+      default: return '#6b7280';
     }
   };
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'en preparacion': return <Package size={16} />;
+      case 'recibido': return <Clock size={16} />;
+      case 'en camino': return <MapPin size={16} />;
+      default: return <Package size={16} />;
+    }
   };
 
-  const handleOptionChange = (category, optionId, isMultiple = false) => {
-    setSelectedOptions(prev => ({
-      ...prev,
-      [activeTab]: {
-        ...prev[activeTab],
-        [category]: isMultiple 
-          ? prev[activeTab][category].includes(optionId)
-            ? prev[activeTab][category].filter(id => id !== optionId)
-            : [...prev[activeTab][category], optionId]
-          : optionId
-      }
-    }));
-  };
-
-  const calculatePrice = () => {
-    const basePrice = menuItems[activeTab].basePrice;
-    const current = selectedOptions[activeTab];
-    
-    if (!optionsData[activeTab]) return basePrice;
-    
-    let totalPrice = basePrice;
-    
-    // Tamaño (radio button)
-    if (current.tamano && optionsData[activeTab].tamano) {
-      const tamanoOption = optionsData[activeTab].tamano.find(opt => opt.id === current.tamano);
-      if (tamanoOption) totalPrice += tamanoOption.price;
-    }
-    
-    // Sabor (multiple)
-    if (optionsData[activeTab].sabor) {
-      current.sabor.forEach(saborId => {
-        const saborOption = optionsData[activeTab].sabor.find(opt => opt.id === saborId);
-        if (saborOption) totalPrice += saborOption.price;
-      });
-    }
-    
-    // Complemento (multiple)
-    if (optionsData[activeTab].complemento) {
-      current.complemento.forEach(complementoId => {
-        const complementoOption = optionsData[activeTab].complemento.find(opt => opt.id === complementoId);
-        if (complementoOption) totalPrice += complementoOption.price;
-      });
-    }
-    
-    // Etcetera (multiple)
-    if (optionsData[activeTab].etcetera) {
-      current.etcetera.forEach(etcId => {
-        const etcOption = optionsData[activeTab].etcetera.find(opt => opt.id === etcId);
-        if (etcOption) totalPrice += etcOption.price;
-      });
-    }
-    
-    return totalPrice;
-  };
-
-  const getSelectedOptionName = (category, optionId) => {
-    if (!optionsData[activeTab] || !optionsData[activeTab][category]) return '';
-    const option = optionsData[activeTab][category].find(opt => opt.id === optionId);
-    return option ? option.name : '';
-  };
-
-  const getCurrentSelections = () => {
-    const current = selectedOptions[activeTab];
-    const selections = [];
-    
-    if (current.tamano) {
-      selections.push(`tamaño: ${getSelectedOptionName('tamano', current.tamano)}`);
-    }
-    
-    if (current.sabor.length > 0) {
-      const sabores = current.sabor.map(id => getSelectedOptionName('sabor', id));
-      selections.push(`sabor: ${sabores.join(', ')}`);
-    }
-    
-    if (current.complemento.length > 0) {
-      const complementos = current.complemento.map(id => getSelectedOptionName('complemento', id));
-      selections.push(`complemento: ${complementos.join(', ')}`);
-    }
-    
-    if (current.etcetera.length > 0) {
-      const etcs = current.etcetera.map(id => getSelectedOptionName('etcetera', id));
-      selections.push(`etcetera: ${etcs.join(', ')}`);
-    }
-    
-    return selections;
-  };
-
-  const unitPrice = calculatePrice();
-  const subtotal = unitPrice * quantity;
+  const MiniMap = ({ coordinates, address }) => (
+    <div className="mini-map">
+      <div className="map-placeholder">
+        <MapPin className="map-icon" />
+        <div className="coordinates">
+          {coordinates.lat.toFixed(4)}, {coordinates.lng.toFixed(4)}
+        </div>
+      </div>
+      <div className="map-overlay">
+        <button className="copy-link-btn">
+          <Copy size={12} />
+          copiar link
+        </button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="order-container">
-      <div className="main-content">
-        {/* Header con pestañas */}
-        <div className="header-tabs">
-          {Object.entries(menuItems).map(([key, item]) => {
-            const IconComponent = item.icon;
-            return (
-              <button
-                key={key}
-                className={`tab-button ${activeTab === key ? 'active' : ''}`}
-                onClick={() => handleTabChange(key)}
-              >
-                <IconComponent size={28} />
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Sección de opciones */}
-        <div className="options-section">
-          {/* Tamaño */}
-          <div className="option-group">
-            <h3>Tamaño</h3>
-            <div className="options-grid">
-              {optionsData[activeTab]?.tamano?.map(option => (
-                <label key={option.id} className="option-item">
-                  <input
-                    type="radio"
-                    name="tamano"
-                    value={option.id}
-                    checked={selectedOptions[activeTab].tamano === option.id}
-                    onChange={() => handleOptionChange('tamano', option.id)}
-                  />
-                  <span className="option-label">{option.name}</span>
-                </label>
-              )) || []}
-            </div>
+    <div className="delivery-container">
+      <div className="delivery-header">
+        <h1>Gestión de Delivery</h1>
+        <div className="delivery-stats">
+          <div className="stat-card">
+            <span className="stat-number">4</span>
+            <span className="stat-label">Órdenes activas</span>
           </div>
-
-          {/* Sabor */}
-          <div className="option-group">
-            <h3>Sabor</h3>
-            <div className="options-grid">
-              {optionsData[activeTab]?.sabor?.map(option => (
-                <label key={option.id} className="option-item">
-                  <input
-                    type="checkbox"
-                    checked={selectedOptions[activeTab].sabor.includes(option.id)}
-                    onChange={() => handleOptionChange('sabor', option.id, true)}
-                  />
-                  <span className="option-label">{option.name}</span>
-                </label>
-              )) || []}
-            </div>
-          </div>
-
-          {/* Complemento */}
-          <div className="option-group">
-            <h3>Complemento</h3>
-            <div className="options-grid">
-              {optionsData[activeTab]?.complemento?.map(option => (
-                <label key={option.id} className="option-item">
-                  <input
-                    type="checkbox"
-                    checked={selectedOptions[activeTab].complemento.includes(option.id)}
-                    onChange={() => handleOptionChange('complemento', option.id, true)}
-                  />
-                  <span className="option-label">{option.name}</span>
-                </label>
-              )) || []}
-            </div>
-          </div>
-
-          {/* Etcetera */}
-          <div className="option-group">
-            <h3>Etcetera</h3>
-            <div className="options-grid">
-              {optionsData[activeTab]?.etcetera?.map(option => (
-                <label key={option.id} className="option-item">
-                  <input
-                    type="checkbox"
-                    checked={selectedOptions[activeTab].etcetera.includes(option.id)}
-                    onChange={() => handleOptionChange('etcetera', option.id, true)}
-                  />
-                  <span className="option-label">{option.name}</span>
-                </label>
-              )) || []}
-            </div>
-          </div>
-        </div>
-
-        {/* Cantidad y botones */}
-        <div className="bottom-section">
-          <div className="quantity-section">
-            <label>cantidad:</label>
-            <div className="quantity-controls">
-              <button 
-                className="quantity-btn"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                -
-              </button>
-              <span className="quantity-display">{quantity}</span>
-              <button 
-                className="quantity-btn"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                +
-              </button>
-            </div>
-          </div>
-          
-          <div className="action-buttons">
-            <button className="add-btn">Agregar {quantity}</button>
-            <button className="pay-btn">pago</button>
+          <div className="stat-card">
+            <span className="stat-number">25 min</span>
+            <span className="stat-label">Tiempo promedio</span>
           </div>
         </div>
       </div>
 
-      {/* Resumen lateral */}
-      <div className="summary-section">
-        <h3>resumen</h3>
-        <div className="summary-content">
-          <div className="product-summary">
-            <div className="product-name">
-              {menuItems[activeTab].name} 
-              <span className="product-quantity">{quantity}</span>
-            </div>
-            <div className="product-selections">
-              {getCurrentSelections().map((selection, index) => (
-                <div key={index} className="selection-item">
-                  {selection}
+      <div className="orders-container">
+        {orders.map((order) => (
+          <div key={order.id} className={`order-card ${expandedOrder === order.id ? 'expanded' : ''}`}>
+            <div className="order-header" onClick={() => handleOrderClick(order.id)}>
+              <div className="order-info">
+                <div className="order-number">
+                  <span className="order-label">orden:</span>
+                  <span className="order-id">{order.id}</span>
                 </div>
-              ))}
+                
+                <div className="client-info">
+                  <div className="client-name">
+                    <User size={16} />
+                    {order.client.name}
+                    <div className="client-rating">
+                      <Star size={12} fill="currentColor" />
+                      {order.client.rating}
+                    </div>
+                  </div>
+                  <div className="client-phone">
+                    <Phone size={14} />
+                    {order.client.phone}
+                  </div>
+                </div>
+
+                <div className="order-status">
+                  <span 
+                    className="status-badge" 
+                    style={{ backgroundColor: getStatusColor(order.status) }}
+                  >
+                    {getStatusIcon(order.status)}
+                    {order.status}
+                  </span>
+                </div>
+
+                <div className="order-time">
+                  <Clock size={14} />
+                  <span>{order.orderTime}</span>
+                  <span className="estimated-time">{order.estimatedTime}</span>
+                </div>
+              </div>
+
+              <div className="expand-icon">
+                {expandedOrder === order.id ? <ChevronUp /> : <ChevronDown />}
+              </div>
             </div>
-            <div className="product-price">
-              precio: {unitPrice.toFixed(2)} $
+
+            <div className="order-preview">
+              <div className="address-section">
+                <span className="address-label">dirección:</span>
+                <div className="address-content">
+                  <MiniMap coordinates={order.coordinates} address={order.address} />
+                  <span className="address-text">{order.address}</span>
+                </div>
+              </div>
+            </div>
+
+            {expandedOrder === order.id && (
+              <div className="order-details">
+                <div className="products-section">
+                  <h4>Productos:</h4>
+                  {order.products.map((product, index) => (
+                    <div key={index} className="product-detail">
+                      <div className="product-header">
+                        <span className="product-name">{product.name}</span>
+                        <span className="product-quantity">x{product.quantity}</span>
+                        <span className="product-price">${product.price}</span>
+                      </div>
+                      <div className="product-specs">
+                        <div className="spec-item">
+                          <span className="spec-label">tamaño:</span>
+                          <span className="spec-value">{product.size}</span>
+                        </div>
+                        {product.flavors.length > 0 && (
+                          <div className="spec-item">
+                            <span className="spec-label">sabor:</span>
+                            <span className="spec-value">{product.flavors.join(', ')}</span>
+                          </div>
+                        )}
+                        {product.complements.length > 0 && (
+                          <div className="spec-item">
+                            <span className="spec-label">complemento:</span>
+                            <span className="spec-value">{product.complements.join(', ')}</span>
+                          </div>
+                        )}
+                        {product.extras.length > 0 && (
+                          <div className="spec-item">
+                            <span className="spec-label">extras:</span>
+                            <span className="spec-value">{product.extras.join(', ')}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="order-summary">
+                  <div className="summary-row">
+                    <span>subtotal:</span>
+                    <span>${order.subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="summary-row">
+                    <span>descuento:</span>
+                    <span>-${order.discount.toFixed(2)}</span>
+                  </div>
+                  <div className="summary-row total-row">
+                    <span>Total:</span>
+                    <span>${order.total.toFixed(2)}</span>
+                  </div>
+                  <div className="payment-method">
+                    <span>forma de pago:</span>
+                    <span className="payment-badge">{order.paymentMethod}</span>
+                  </div>
+                </div>
+
+                <div className="order-actions">
+                  <button className="action-btn secondary">Contactar Cliente</button>
+                  <button className="action-btn primary">Actualizar Estado</button>
+                  <button className="action-btn success">Marcar Entregado</button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="summary-panel">
+        <div className="panel-content">
+          <h3>Resumen del día</h3>
+          <div className="daily-stats">
+            <div className="daily-stat">
+              <span className="stat-value">12</span>
+              <span className="stat-text">Órdenes completadas</span>
+            </div>
+            <div className="daily-stat">
+              <span className="stat-value">$245.80</span>
+              <span className="stat-text">Ingresos totales</span>
+            </div>
+            <div className="daily-stat">
+              <span className="stat-value">4.7</span>
+              <span className="stat-text">Rating promedio</span>
             </div>
           </div>
-        </div>
-        
-        <div className="summary-totals">
-          <div className="subtotal">
-            <span>subtotal: {subtotal.toFixed(2)}</span>
-          </div>
-          <div className="discount">
-            <span>descuento: 0.00</span>
-            <button className="edit-btn">(editar)</button>
-          </div>
-          <div className="total">
-            <strong>Total: {subtotal.toFixed(2)}</strong>
-          </div>
+          
+          <button className="order-list-btn">
+            Orden lista
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default Orders;
+export default Delivery;
