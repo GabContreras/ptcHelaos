@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Graficas.css';
+import './Graficas.css'
 import { TrendingUp, Package, Users, DollarSign, AlertCircle, Activity } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -42,7 +42,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_BASE_URL = 'http://localhost:4000/api';
+  const API_BASE_URL = 'http://localhost:3333/api';
 
   // Función para obtener movimientos de caja chica
   const fetchPettyCashData = async () => {
@@ -83,13 +83,22 @@ const Dashboard = () => {
   // Función para obtener clientes
   const fetchCustomers = async () => {
     try {
+      console.log('Intentando obtener clientes...');
       const response = await authenticatedFetch(`${API_BASE_URL}/customers`);
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Clientes obtenidos:', data);
         setCustomers(data);
+      } else {
+        const errorData = await response.json();
+        console.error('Error en response:', errorData);
+        setError(`Error al obtener clientes: ${errorData.message || 'Error desconocido'}`);
       }
     } catch (error) {
       console.error('Error fetching customers:', error);
+      setError(`Error de conexión al obtener clientes: ${error.message}`);
     }
   };
 
@@ -121,19 +130,32 @@ const Dashboard = () => {
 
   // Cargar todos los datos
   useEffect(() => {
+    console.log('useEffect ejecutado - Estado:', { isAuthenticated, isLoading, user });
+    
     if (isAuthenticated && !isLoading) {
       const loadData = async () => {
+        console.log('Iniciando carga de datos...');
         setLoading(true);
-        await Promise.all([
-          fetchPettyCashData(),
-          fetchEmployees(),
-          fetchCustomers(),
-          fetchInventory(),
-          fetchCategories()
-        ]);
+        
+        try {
+          await Promise.all([
+            fetchPettyCashData(),
+            fetchEmployees(),
+            fetchCustomers(),
+            fetchInventory(),
+            fetchCategories()
+          ]);
+          console.log('Todos los datos cargados exitosamente');
+        } catch (error) {
+          console.error('Error al cargar datos:', error);
+          setError('Error al cargar algunos datos del dashboard');
+        }
+        
         setLoading(false);
       };
       loadData();
+    } else {
+      console.log('No se cargan datos - Usuario no autenticado o cargando');
     }
   }, [isAuthenticated, isLoading]);
 
@@ -173,31 +195,43 @@ const Dashboard = () => {
       'Otros': 0
     };
 
+    console.log('Procesando movimientos de caja chica:', pettyCashMovements);
+
     pettyCashMovements.forEach(movement => {
       const reason = movement.reason.toLowerCase();
       let categorized = false;
 
+      console.log(`Analizando razón: "${movement.reason}" -> "${reason}"`);
+
       if (reason.includes('roll') || reason.includes('helado roll')) {
         categoryData['Ice Cream Rolls'] += movement.amount;
         categorized = true;
+        console.log(`Categorizado como Ice Cream Rolls: +${movement.amount}`);
       } else if (reason.includes('premium') || reason.includes('helado premium')) {
         categoryData['Helados Premium'] += movement.amount;
         categorized = true;
+        console.log(`Categorizado como Helados Premium: +${movement.amount}`);
       } else if (reason.includes('postre') || reason.includes('especial')) {
         categoryData['Postres Especiales'] += movement.amount;
         categorized = true;
+        console.log(`Categorizado como Postres Especiales: +${movement.amount}`);
       } else if (reason.includes('bebida') || reason.includes('fria')) {
         categoryData['Bebidas Frías'] += movement.amount;
         categorized = true;
+        console.log(`Categorizado como Bebidas Frías: +${movement.amount}`);
       } else if (reason.includes('complemento') || reason.includes('extra')) {
         categoryData['Complementos'] += movement.amount;
         categorized = true;
+        console.log(`Categorizado como Complementos: +${movement.amount}`);
       }
 
       if (!categorized) {
         categoryData['Otros'] += movement.amount;
+        console.log(`Categorizado como Otros: +${movement.amount}`);
       }
     });
+
+    console.log('Datos de categoría finales:', categoryData);
 
     return Object.entries(categoryData)
       .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
@@ -248,7 +282,17 @@ const Dashboard = () => {
       .filter(movement => new Date(movement.date) >= currentMonth && movement.type === 'expense')
       .reduce((sum, movement) => sum + movement.amount, 0);
 
-    const verifiedCustomers = customers.filter(customer => customer.isVerified).length;
+    // CAMBIO: Contar todos los clientes como "activos" en lugar de solo los verificados
+    // porque según tu modelo, isVerified por defecto es false y no se actualiza
+    const activeCustomers = customers.length; // Todos los clientes registrados
+    const verifiedCustomers = customers.filter(customer => customer.isVerified === true).length;
+
+    console.log('Estadísticas calculadas:', {
+      totalCustomers: customers.length,
+      activeCustomers,
+      verifiedCustomers,
+      totalEmployees: employees.length
+    });
 
     return {
       currentBalance,
@@ -257,7 +301,8 @@ const Dashboard = () => {
       monthlyExpenses,
       totalEmployees: employees.length,
       totalCustomers: customers.length,
-      verifiedCustomers,
+      verifiedCustomers: activeCustomers, // Usar todos los clientes como "activos"
+      activeCustomers, // Nuevo campo para claridad
       totalProducts: inventory.length,
       lowStockProducts: inventory.filter(item => (item.stock || 0) <= 10).length
     };
@@ -503,7 +548,7 @@ const Dashboard = () => {
               <div className="kpi-content">
                 <h3 className="kpi-value">{stats.totalEmployees + stats.totalCustomers}</h3>
                 <p className="kpi-title">Usuarios Totales</p>
-                <span className="kpi-subtitle">{stats.totalEmployees} empleados, {stats.verifiedCustomers} clientes</span>
+                <span className="kpi-subtitle">{stats.totalEmployees} empleados, {stats.activeCustomers} clientes</span>
               </div>
             </div>
           </aside>

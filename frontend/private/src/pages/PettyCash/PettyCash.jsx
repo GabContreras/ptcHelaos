@@ -192,9 +192,16 @@ const Finances = () => {
                     </span>
                   </div>
                   <div className="table-cell">
-                    <Calendar size={14} />
-                    {transaccion.fecha}
-                  </div>
+                      <Calendar size={14} />
+                      {new Date(transaccion.fecha).toLocaleDateString('es-SV', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                    </div>
                   <div className="table-cell razon-cell">
                     <FileText size={14} />
                     <span className="razon-text">{transaccion.razon}</span>
