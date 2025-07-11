@@ -1,4 +1,5 @@
-/* Dashboard.css - Solo Visual */
+/* Dashboard.css - Estilo corregido y unificado */
+
 .dashboard-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
@@ -66,7 +67,6 @@
   color: #718096;
   font-size: 1.1rem;
   margin: 0;
-  margin-left: 4rem;
 }
 
 .header-actions {
@@ -106,6 +106,66 @@
 .action-btn.secondary:hover {
   background: rgba(141, 108, 255, 0.2);
   transform: translateY(-2px);
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* Loading Container */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  color: #8D6CFF;
+  gap: 16px;
+}
+
+.loading-container p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Auth Required */
+.auth-required {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  gap: 16px;
+  color: #8D6CFF;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 48px;
+}
+
+.auth-required h2 {
+  margin: 0;
+  font-size: 1.5rem;
 }
 
 /* Grid Layout */
@@ -300,264 +360,19 @@
 .chart-container {
   height: 300px;
   position: relative;
-}
-
-/* Gráfico de Barras CSS */
-.bar-chart {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  height: 100%;
-  justify-content: space-around;
-}
-
-.bar-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.bar-info {
-  min-width: 150px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.bar-label {
-  font-weight: 500;
-  color: #4a5568;
-  font-size: 0.9rem;
-}
-
-.bar-value {
-  font-weight: 600;
-  color: #8D6CFF;
-  font-size: 0.9rem;
-}
-
-.bar-container {
-  flex: 1;
-  height: 20px;
-  background: rgba(141, 108, 255, 0.1);
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-}
-
-.bar-fill {
-  height: 100%;
-  border-radius: 10px;
-  background: linear-gradient(90deg, var(--bar-color, #8D6CFF), rgba(255, 186, 231, 0.8));
-  animation: barGrow 1s ease-out forwards;
-  transform-origin: left;
-  transform: scaleX(0);
-}
-
-@keyframes barGrow {
-  to {
-    transform: scaleX(1);
-  }
-}
-
-/* Gráfico de Líneas CSS */
-.line-chart {
-  height: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.line-chart-grid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 30px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.grid-line {
-  height: 1px;
-  background: rgba(141, 108, 255, 0.1);
-  width: 100%;
-}
-
-.line-chart-data {
-  flex: 1;
-  position: relative;
-}
-
-.line-svg {
-  width: 100%;
-  height: calc(100% - 30px);
-}
-
-.line-path {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: drawLine 2s ease-out forwards;
-}
-
-@keyframes drawLine {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.area-fill {
-  opacity: 0;
-  animation: fadeInArea 1s ease-out 1s forwards;
-}
-
-@keyframes fadeInArea {
-  to {
-    opacity: 1;
-  }
-}
-
-.data-point {
-  opacity: 0;
-  transform: scale(0);
-  animation: popIn 0.5s ease-out forwards;
-}
-
-@keyframes popIn {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.line-chart-labels {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  margin-top: auto;
-}
-
-.chart-label {
-  font-size: 0.8rem;
-  color: #718096;
-  font-weight: 500;
-}
-
-/* Gráfico Donut CSS */
-.donut-chart {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  position: relative;
-}
-
-.donut-center {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: conic-gradient(
-    #8D6CFF 0deg 108deg,
-    #99DBFF 108deg 180deg,
-    #FFBAE7 180deg 270deg,
-    #B9B8FF 270deg 324deg,
-    #F2E8D5 324deg 360deg
-  );
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
-  animation: rotateDonut 2s ease-out;
 }
 
-.donut-center::before {
-  content: '';
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  background: white;
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.donut-value {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #8D6CFF;
-  z-index: 1;
-  line-height: 1;
-}
-
-.donut-label {
-  font-size: 0.7rem;
-  color: #718096;
-  z-index: 1;
+.no-data {
+  color: #6b7280;
+  font-style: italic;
   text-align: center;
-}
-
-@keyframes rotateDonut {
-  from {
-    transform: rotate(-90deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
-
-.donut-legend {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  opacity: 0;
-  animation: slideInRight 0.5s ease-out forwards;
-}
-
-.legend-item:nth-child(1) { animation-delay: 0.2s; }
-.legend-item:nth-child(2) { animation-delay: 0.4s; }
-.legend-item:nth-child(3) { animation-delay: 0.6s; }
-.legend-item:nth-child(4) { animation-delay: 0.8s; }
-.legend-item:nth-child(5) { animation-delay: 1s; }
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.legend-color {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  flex-shrink: 0;
-}
-
-.legend-text {
-  flex: 1;
-  font-weight: 500;
-  color: #4a5568;
-  font-size: 0.9rem;
-}
-
-.legend-percentage {
-  font-weight: 600;
-  color: #8D6CFF;
-  font-size: 0.9rem;
+  padding: 40px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 2px dashed #d1d5db;
 }
 
 /* Responsive Design */
@@ -589,7 +404,6 @@
   }
   
   .dashboard-subtitle {
-    margin-left: 0;
     text-align: center;
   }
   
@@ -605,21 +419,6 @@
   .chart-header {
     flex-direction: column;
     align-items: flex-start;
-  }
-  
-  .donut-chart {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .bar-item {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: stretch;
-  }
-  
-  .bar-info {
-    min-width: auto;
   }
 }
 
