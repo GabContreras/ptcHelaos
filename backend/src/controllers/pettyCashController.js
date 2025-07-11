@@ -1,27 +1,37 @@
 import PettyCash from '../models/PettyCash.js';
 
-const pettyCashCtrl = {};
+const pettyCashController = {};
 
 // GET - Obtener todos los movimientos de caja chica
-pettyCashCtrl.getAllMovements = async (req, res) => {
+pettyCashController.getAllMovements = async (req, res) => {
     try {
         const movements = await PettyCash.find().sort({ date: -1 });
         
-        // Populate solo los que tienen ObjectId válido
-        for (let movement of movements) {
-            if (movement.employeeId !== 'admin' && typeof movement.employeeId === 'object') {
-                await movement.populate('employeeId', 'name email');
-            }
-        }
+        // Hacer populate manual solo para ObjectIds válidos
+        const populatedMovements = await Promise.all(
+            movements.map(async (movement) => {
+                if (movement.employeeId !== 'admin' && movement.employeeId) {
+                    try {
+                        // Solo intentar populate si es un ObjectId válido
+                        if (movement.employeeId.toString().match(/^[0-9a-fA-F]{24}$/)) {
+                            await movement.populate('employeeId', 'name email');
+                        }
+                    } catch (error) {
+                        console.log('Error en populate:', error);
+                    }
+                }
+                return movement;
+            })
+        );
         
-        res.json(movements);
+        res.json(populatedMovements);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
 // GET - Obtener balance actual de caja chica
-pettyCashCtrl.getCurrentBalance = async (req, res) => {
+pettyCashController.getCurrentBalance = async (req, res) => {
     try {
         const lastMovement = await PettyCash.findOne()
             .sort({ date: -1, createdAt: -1 })
@@ -36,7 +46,7 @@ pettyCashCtrl.getCurrentBalance = async (req, res) => {
 };
 
 // POST - Operación unificada para caja chica (ingresos y egresos)
-pettyCashCtrl.cashOperation = async (req, res) => {
+pettyCashController.cashOperation = async (req, res) => {
     try {
         const { operationType, amount, reason, employeeId } = req.body;
         const { userType, user } = req.user; // Viene del middleware de autenticación
@@ -125,4 +135,4 @@ pettyCashCtrl.cashOperation = async (req, res) => {
     }
 };
 
-export default pettyCashCtrl;
+export default pettyCashController;

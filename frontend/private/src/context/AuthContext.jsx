@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { config } from '../config.jsx';
 
 // Actualizada la URL del servidor para Moon Ice Cream
-const SERVER_URL = "http://localhost:4000/api";
+const SERVER_URL = config.api.API_BASE;
 
 const AuthContext = createContext();
 
@@ -10,10 +11,19 @@ export const AuthProvider = ({ children }) => {
     const [authCokie, setAuthCokie] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Función simple para verificar si existe la cookie authToken
+    const checkAuthTokenCookie = () => {
+        const cookies = document.cookie.split(';');
+        const authCookie = cookies.find(cookie => 
+            cookie.trim().startsWith('authToken=')
+        );
+        return authCookie ? authCookie.split('=')[1].trim() : null;
+    };
+
     // Login adaptado para Moon Ice Cream
     const Login = async (email, password) => {
         try {
-            const response = await fetch(`${SERVER_URL}/login`, {
+            const response = await fetch(`${SERVER_URL}login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -28,9 +38,9 @@ export const AuthProvider = ({ children }) => {
 
             // Permitir solo employees y admin para Moon Ice Cream dashboard
             if (data.userType === "customer") {
-                return { 
-                    success: false, 
-                    message: "Los clientes no tienen acceso al panel administrativo." 
+                return {
+                    success: false,
+                    message: "Los clientes no tienen acceso al panel administrativo."
                 };
             }
 
@@ -45,13 +55,13 @@ export const AuthProvider = ({ children }) => {
             // Guardar en localStorage
             localStorage.setItem("authToken", "authenticated");
             localStorage.setItem("user", JSON.stringify(userData));
-            
+
             // Actualizar estado inmediatamente
             setAuthCokie("authenticated");
             setUser(userData);
 
-            console.log("Login exitoso Moon Ice Cream:", { 
-                userType: data.userType, 
+            console.log("Login exitoso Moon Ice Cream:", {
+                userType: data.userType,
                 userId: data.userId,
                 name: userData.name
             });
@@ -66,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             // Llamar al endpoint de logout del servidor
-            await fetch(`${SERVER_URL}/logout`, {
+            await fetch(`${SERVER_URL}logout`, {
                 method: "POST",
                 credentials: "include",
                 headers: getAuthHeaders()
@@ -116,7 +126,7 @@ export const AuthProvider = ({ children }) => {
 
         try {
             const response = await fetch(url, config);
-            
+
             // Si el token expiró o es inválido, hacer logout automático
             if (response.status === 401 || response.status === 403) {
                 console.log("Token expirado o sin permisos, haciendo logout automático...");
@@ -156,10 +166,33 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         const savedUser = localStorage.getItem("user");
-        
-        console.log("useEffect - Checking stored auth for Moon Ice Cream:", { token, savedUser });
-        
-        if (token && savedUser && savedUser !== "undefined") {
+        const cookieExists = checkAuthTokenCookie(); // NUEVO: verificar cookie
+
+        console.log("useEffect - Checking stored auth for Moon Ice Cream:", { 
+            token, 
+            savedUser, 
+            cookieExists: !!cookieExists 
+        });
+
+        // NUEVO: Si no hay cookie authToken, limpiar todo y redirigir
+        if (!cookieExists) {
+            console.log("Cookie authToken no encontrada, limpiando datos...");
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("user");
+            setAuthCokie(null);
+            setUser(null);
+            
+            // Solo redirigir si no estamos en rutas públicas
+            const currentPath = window.location.pathname;
+            const publicPaths = ['/', '/login', '/register', '/recuperacion', '/recuperacioncodigo', '/cambiarpassword'];
+            
+            if (!publicPaths.includes(currentPath)) {
+                console.log("Redirigiendo al login...");
+                window.location.href = '/login';
+            }
+        }
+        // Si hay cookie Y datos locales, restaurar sesión
+        else if (token && savedUser && savedUser !== "undefined") {
             try {
                 const parsedUser = JSON.parse(savedUser);
                 setUser(parsedUser);
@@ -171,7 +204,7 @@ export const AuthProvider = ({ children }) => {
                 localStorage.removeItem("authToken");
             }
         }
-        
+
         setIsLoading(false);
     }, []);
 

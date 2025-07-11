@@ -1,4 +1,3 @@
-// models/Inventory.js
 import { Schema, model } from "mongoose";
 
 const inventorySchema = new Schema({

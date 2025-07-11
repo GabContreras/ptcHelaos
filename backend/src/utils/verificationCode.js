@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer'
 import { config } from '../config.js'
 
 const sendVerificationEmail = async (emails, verificationCodes, userType = 'customer') => {
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: config.email.email_user,

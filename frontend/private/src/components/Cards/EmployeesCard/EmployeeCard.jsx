@@ -58,7 +58,7 @@ const EmployeeCard = ({ data, onEdit, onDelete, isLoading }) => {
         
         <div className="employee-contact-info">
           <div className="contact-item">
-            <span className="contact-label">contacto:</span>
+            <span className="contact-label">Teléfono:</span>
             <span className="contact-value">{phone}</span>
           </div>
           <div className="contact-item">
@@ -67,11 +67,6 @@ const EmployeeCard = ({ data, onEdit, onDelete, isLoading }) => {
         </div>
         
         <div className="employee-details-grid">
-          <div className="detail-item">
-            <span className="detail-label">puesto:</span>
-            <span className="detail-value">Cocinero</span>
-          </div>
-          
           <div className="detail-item">
             <span className="detail-label">fecha de contratacion:</span>
             <span className="detail-value">{formatDate(hireDate)}</span>
@@ -86,15 +81,8 @@ const EmployeeCard = ({ data, onEdit, onDelete, isLoading }) => {
             <span className="detail-label">contraseña:</span>
             <div className="password-container">
               <span className="detail-value">
-                {showPassword ? 'password123' : '**********'}
+                {showPassword ? "*********" : '**********'}
               </span>
-              <button 
-                className="password-toggle"
-                onClick={togglePasswordVisibility}
-                type="button"
-              >
-                👁️
-              </button>
             </div>
           </div>
         </div>
@@ -108,6 +96,14 @@ const EmployeeCard = ({ data, onEdit, onDelete, isLoading }) => {
           title="Editar empleado"
         >
           ✏️
+        </button>
+        <button 
+          className="delete-btn"
+          onClick={handleDelete}
+          disabled={isLoading}
+          title="Eliminar empleado"
+        >
+          🗑️
         </button>
       </div>
     </div>

@@ -43,7 +43,7 @@ export function useEmployeesManager() {
             setIsLoading(true);
             setError('');
             
-            const response = await authenticatedFetch(`${API_BASE}/employees`, {
+            const response = await authenticatedFetch(`${API_BASE}employees`, {
                 credentials: 'include'
             });
             
@@ -82,7 +82,7 @@ export function useEmployeesManager() {
                 dataToSend.password = password.trim();
             }
 
-            // Validaciones
+            // Validaciones básicas
             if (!dataToSend.name) {
                 setError('El nombre es obligatorio');
                 return;
@@ -105,25 +105,75 @@ export function useEmployeesManager() {
                 return;
             }
 
+            // Validar DUI formato (8 dígitos-1 dígito)
+            const duiRegex = /^\d{8}-\d{1}$/;
+            if (!duiRegex.test(dataToSend.dui)) {
+                setError('El DUI debe tener el formato: 12345678-9');
+                return;
+            }
+
+            // Validar teléfono formato (4 dígitos-4 dígitos)
+            const phoneRegex = /^\d{4}-\d{4}$/;
+            if (!phoneRegex.test(dataToSend.phone)) {
+                setError('El teléfono debe tener el formato: 1234-5678');
+                return;
+            }
+
+            // VALIDACIONES DE FECHA
             if (!hireDate) {
                 setError('La fecha de contratación es obligatoria');
                 return;
             }
 
+            // Validar que la fecha sea válida
+            const selectedDate = new Date(hireDate);
+            if (isNaN(selectedDate.getTime())) {
+                setError('La fecha de contratación no es válida');
+                return;
+            }
+
+            // Validar que la fecha no sea futura
+            const currentDate = new Date();
+            currentDate.setHours(23, 59, 59, 999); // Fin del día actual
+
+            if (selectedDate > currentDate) {
+                setError('La fecha de contratación no puede ser futura');
+                return;
+            }
+
+            // Validar que la fecha no sea muy antigua (no más de 80 años atrás)
+            const minDate = new Date();
+            minDate.setFullYear(currentDate.getFullYear() - 80);
+
+            if (selectedDate < minDate) {
+                setError(`La fecha de contratación no puede ser anterior a ${minDate.getFullYear()}`);
+                return;
+            }
+
+            // Validar que la persona tenga una edad laboral razonable
+            const maxAge = new Date();
+            maxAge.setFullYear(currentDate.getFullYear() - 70); // Máximo 70 años trabajando
+
+            if (selectedDate < maxAge) {
+                setError('La fecha de contratación parece demasiado antigua');
+                return;
+            }
+
+            // VALIDACIONES DE SALARIO
             if (!dataToSend.salary || dataToSend.salary <= 0) {
                 setError('El salario debe ser un número mayor a 0');
                 return;
             }
 
-            if (!dataToSend.dui) {
-                setError('El DUI es obligatorio');
+            if (dataToSend.salary > 50000) {
+                setError('El salario no puede exceder $50,000.00');
                 return;
             }
 
-            // Validar DUI formato (8 dígitos-1 dígito)
-            const duiRegex = /^\d{8}-\d{1}$/;
-            if (!duiRegex.test(dataToSend.dui)) {
-                setError('El DUI debe tener el formato: 12345678-9');
+            // Validar que tenga máximo 2 decimales
+            const salaryStr = dataToSend.salary.toString();
+            if (salaryStr.includes('.') && salaryStr.split('.')[1].length > 2) {
+                setError('El salario solo puede tener máximo 2 decimales');
                 return;
             }
 
@@ -133,7 +183,7 @@ export function useEmployeesManager() {
                 return;
             }
 
-            // Validar contraseña si se proporciona
+            // Validar contraseña solo si se proporciona (para CREATE y UPDATE)
             if (dataToSend.password && dataToSend.password.length < 6) {
                 setError('La contraseña debe tener al menos 6 caracteres');
                 return;
@@ -143,7 +193,7 @@ export function useEmployeesManager() {
             
             if (isEditing) {
                 // Actualizar empleado existente (PUT)                
-                response = await authenticatedFetch(`${API_BASE}/employees/${currentEmployeeId}`, {
+                response = await authenticatedFetch(`${API_BASE}employees/${currentEmployeeId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -152,7 +202,7 @@ export function useEmployeesManager() {
                 });
             } else {
                 // Crear nuevo empleado (POST)
-                response = await authenticatedFetch(`${API_BASE}/employees`, {
+                response = await authenticatedFetch(`${API_BASE}employees`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -224,7 +274,7 @@ export function useEmployeesManager() {
             setIsLoading(true);
             setError('');
                         
-            const response = await authenticatedFetch(`${API_BASE}/employees/${employeeToDelete._id}`, {
+            const response = await authenticatedFetch(`${API_BASE}employees/${employeeToDelete._id}`, {
                 method: 'DELETE',
             });
             
