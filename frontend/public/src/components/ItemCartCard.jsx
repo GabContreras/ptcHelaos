@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function ItemCard({ imagen, titulo, resumen,  tamano, topp1, topp2, compl1, compl2, precio }) {
+function ItemCard({ imagen, titulo, tamano, topp1, topp2, compl1, compl2, precio }) {
   const [expandido, setExpandido] = React.useState(false);
 
   const toggleExpandido = () => {
@@ -25,8 +25,7 @@ function ItemCard({ imagen, titulo, resumen,  tamano, topp1, topp2, compl1, comp
         src={imagen}
         alt={titulo}
         style={{
-          width: '70px',
-          height: '70px',
+          height: '50px',
           objectFit: 'cover',
           borderRadius: '8px',
           marginRight: '16px',
@@ -46,8 +45,6 @@ function ItemCard({ imagen, titulo, resumen,  tamano, topp1, topp2, compl1, comp
             ${precio}
           </p>
         </div>
-
-        <p style={{ margin: 0 }}>{resumen}</p>
 
         <div style={{ fontSize: '14px', lineHeight: '1.4' }}>
           {expandido ? (

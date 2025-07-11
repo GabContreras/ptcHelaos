@@ -1,23 +1,33 @@
 .finishOrder {
-    width: 100%;
+    background-color: #B9B8FF;
+    width: 100vw;
     height: 100vh;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-around;
 }
 
 .finishOrder .resume {
-    width: 25%;
-    background-color: bisque;
-    padding: 20px;
+    width: 28%;
+    padding: 20px 0;
+    background-color: #8D6CFF;
     border-radius: 10px;
     height: 70vh;
+}
+
+.finishOrder .resume .cart {
+    width: 100%;
+    height: 90%;
     overflow-y:scroll;
     scrollbar-width:none;
 }
 
 .finishOrder .orderDetails {
-    width: 70%;
+    background-color: #F2E8D5;
+    padding: 35px 0px;
+    border-radius: 10px;
+    width: 68%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
@@ -30,8 +40,7 @@
 }
 
 .finishOrder .direction {
-    background-color: #ccc;
-    width: 40%;
+    width: 50%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -62,6 +71,7 @@
 }
 
 .finishOrder .total {
-    width: 40%;
-    background-color: #ccc;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
 }

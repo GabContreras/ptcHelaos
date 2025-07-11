@@ -45,7 +45,10 @@ function NavBar() {
 
             {mostrarCart && (
                 <div className="cart-slide">
-                    <Cart />
+                <h1>Tu pedido:</h1>
+                    <div className='items'>
+                        <Cart />
+                    </div>
                     <Button titulo="Finalizar orden" color="#33A9FE" tipoColor="background" onClick={() => navigate('/FinishOrder')}/>
                 </div>
             )}

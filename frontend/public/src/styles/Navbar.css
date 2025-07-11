@@ -12,16 +12,36 @@
 
 .cart-slide {
     position: absolute;
-    background-color: #00000020;
+    backdrop-filter: blur(6px);
+    background-color: #00000033;
     top: 100%;
     right: 0;
     width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     z-index: 100;
     padding: 20px;
     height: 85vh;
-    overflow-y: auto;
 }
 
+.cart-slide .items {
+    width: 100%;
+    height: 80%;
+    margin-bottom: 20px;
+    display: block;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.cart-slide h1 {
+    color: #fff;
+    text-align: center;
+}
 
 .navbar .logo {
     width: 36%;

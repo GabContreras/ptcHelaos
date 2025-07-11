@@ -3,13 +3,17 @@ import NavBar from '../components/NavBar';
 import Cart from "../components/Cart"
 import PaymentMethod from '../components/PaymentMethod';
 import '../styles/FinishOrder.css';
+import Button from '../assets/Button';
 
 function FinishOrder() {
   return (
     <>
     <div className="finishOrder">
             <div className='resume'>
-                <Cart/>
+                <h1>Tu pedido:</h1>
+                <div className='cart'>
+                    <Cart/>
+                </div>
             </div>
             <div className='orderDetails'>
                 <div className="direction">
@@ -37,6 +41,7 @@ function FinishOrder() {
                 <div className="total">
                     <PaymentMethod 
                     subtotal="$ 30.50"
+                    envio="$ 02.00"
                     descuento="$ 02.10"
                     total="$ 27.40"
                     />
