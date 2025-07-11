@@ -20,7 +20,7 @@ const EmployeesPage = () => {
     setError,
     isEditing,
     currentEmployeeId,
-    
+
     // Estados del formulario
     name,
     setName,
@@ -36,7 +36,7 @@ const EmployeesPage = () => {
     setSalary,
     dui,
     setDui,
-    
+
     // Funciones
     fetchEmployees,
     handleSubmit,
@@ -54,7 +54,7 @@ const EmployeesPage = () => {
   const [itemsPerPage, setItemsPerPage] = useState(16);
   const [sortBy, setSortBy] = useState('name-asc');
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   // Cargar empleados al montar el componente
   useEffect(() => {
     fetchEmployees();
@@ -63,8 +63,8 @@ const EmployeesPage = () => {
   // Función para filtrar empleados por búsqueda
   const getFilteredEmployees = () => {
     if (!searchTerm.trim()) return employees;
-    
-    return employees.filter(employee => 
+
+    return employees.filter(employee =>
       employee.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       employee.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       employee.phone?.includes(searchTerm) ||
@@ -75,18 +75,18 @@ const EmployeesPage = () => {
   // Función para ordenar empleados
   const getSortedEmployees = (employeesToSort) => {
     const sorted = [...employeesToSort];
-    
+
     switch (sortBy) {
       case 'name-asc':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           (a.name || '').localeCompare(b.name || '')
         );
       case 'name-desc':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           (b.name || '').localeCompare(a.name || '')
         );
       case 'email-asc':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           (a.email || '').localeCompare(b.email || '')
         );
       case 'salary-asc':
@@ -94,11 +94,11 @@ const EmployeesPage = () => {
       case 'salary-desc':
         return sorted.sort((a, b) => (b.salary || 0) - (a.salary || 0));
       case 'newest':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
         );
       case 'oldest':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
         );
       default:
@@ -139,7 +139,7 @@ const EmployeesPage = () => {
   const handleItemsPerPageChange = (newItemsPerPage) => {
     setItemsPerPage(newItemsPerPage);
   };
-  
+
   // Mostrar notificaciones de error y éxito
   useEffect(() => {
     if (error) toast.error(error);
@@ -148,7 +148,7 @@ const EmployeesPage = () => {
   useEffect(() => {
     if (success) toast.success(success);
   }, [success]);
-  
+
   return (
     <div className="employees-page">
       {/* Mostrar indicador de carga */}
@@ -168,13 +168,13 @@ const EmployeesPage = () => {
           </span>
         </div>
       )}
-      
+
       {/* Lista de empleados */}
       <div className="employees-list">
         {currentEmployees.length > 0 ? (
           currentEmployees.map(employee => (
-            <EmployeeCard 
-              key={employee._id} 
+            <EmployeeCard
+              key={employee._id}
               data={employee}
               onEdit={() => handleEditEmployee(employee)}
               onDelete={() => startDeleteEmployee(employee._id)}
@@ -199,7 +199,7 @@ const EmployeesPage = () => {
             </div>
           )
         )}
-        
+
         {/* Botón de agregar con líneas punteadas */}
         {!isLoading && (
           <div className="add-employee-container" onClick={handleAddNew}>
@@ -210,7 +210,7 @@ const EmployeesPage = () => {
           </div>
         )}
       </div>
-      
+
       {/* Modal de edición/creación usando UniversalModal */}
       <UniversalModal
         isOpen={showModal}
@@ -256,10 +256,18 @@ const EmployeesPage = () => {
                 type="tel"
                 id="phone"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/\D/g, ''); // Solo números
+                  if (value.length <= 4) {
+                    setPhone(value);
+                  } else if (value.length <= 8) {
+                    setPhone(value.slice(0, 4) + '-' + value.slice(4));
+                  }
+                }}
                 placeholder="0000-0000"
                 disabled={isLoading}
                 required
+                maxLength="9"
               />
             </div>
 
@@ -269,7 +277,14 @@ const EmployeesPage = () => {
                 type="text"
                 id="dui"
                 value={dui}
-                onChange={(e) => setDui(e.target.value)}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/\D/g, ''); // Solo números
+                  if (value.length <= 8) {
+                    setDui(value);
+                  } else if (value.length === 9) {
+                    setDui(value.slice(0, 8) + '-' + value.slice(8));
+                  }
+                }}
                 placeholder="12345678-9"
                 disabled={isLoading}
                 required
@@ -286,6 +301,8 @@ const EmployeesPage = () => {
                 onChange={(e) => setHireDate(e.target.value)}
                 disabled={isLoading}
                 required
+                max={new Date().toISOString().split('T')[0]} // No permitir fechas futuras
+                min="1950-01-01" // Fecha mínima razonable
               />
             </div>
 
@@ -295,13 +312,27 @@ const EmployeesPage = () => {
                 type="number"
                 id="salary"
                 value={salary}
-                onChange={(e) => setSalary(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = parseFloat(value);
+
+                  // Solo permitir números positivos con máximo 2 decimales y límite máximo
+                  if (value === '' ||
+                    (/^\d*\.?\d{0,2}$/.test(value) &&
+                      (isNaN(numValue) || numValue <= 50000))) {
+                    setSalary(value);
+                  }
+                }}
                 placeholder="1000.00"
                 disabled={isLoading}
                 required
                 min="0"
+                max="1000"
                 step="0.01"
               />
+              <small style={{ color: '#666', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>
+                Máximo: $1,000.00
+              </small>
             </div>
 
             <div className="form-group full-width">
@@ -320,7 +351,7 @@ const EmployeesPage = () => {
               />
             </div>
           </div>
-          
+
           <div className="form-actions">
             <button
               type="button"
@@ -343,7 +374,7 @@ const EmployeesPage = () => {
           </div>
         </form>
       </UniversalModal>
-      
+
       {/* Modal de confirmación de eliminación usando UniversalModal */}
       <UniversalModal
         isOpen={showDeleteModal}

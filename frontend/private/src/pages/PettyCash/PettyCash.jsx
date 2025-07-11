@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, DollarSign, User, FileText, AlertCircle, CheckCircle, LogIn } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext'; // Ajusta la ruta según tu estructura
-import './Finances.css';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { usePettyCash } from '../../hooks/PettyCashHook/usePettyCash.jsx';
+import './PettyCash.css';
 
 const Finances = () => {
   // Contexto de autenticación con manejo de errores
@@ -46,85 +47,26 @@ const Finances = () => {
     isLoading: authLoading = false
   } = authContext;
 
-  // Estado para los campos del formulario
+  // Estado para los campos del formulario (sin usuario)
   const [formData, setFormData] = useState({
-    usuario: '',
     monto: '',
     razon: '',
     tipoAccion: 'ingreso' // 'ingreso' o 'egreso'
   });
 
-  // Estados para datos del backend
-  const [balanceDisponible, setBalanceDisponible] = useState(0.00);
-  const [historialData, setHistorialData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  // Base URL de tu API - ajusta según tu configuración
-  const API_BASE_URL = 'http://localhost:4000/api/pettyCash'; // Corregida la URL
-
-  // Configuración para incluir cookies en todas las peticiones
-  const fetchWithCredentials = async (url, options = {}) => {
-    return fetch(url, {
-      ...options,
-      credentials: 'include', // Incluir cookies automáticamente
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-      }
-    });
-  };
-
-  // Función para obtener el balance actual
-  const fetchBalance = async () => {
-    try {
-      const response = await fetchWithCredentials(`${API_BASE_URL}/balance`);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al obtener el balance');
-      }
-      const data = await response.json();
-      setBalanceDisponible(data.currentBalance);
-    } catch (error) {
-      console.error('Error fetching balance:', error);
-      setError(error.message || 'Error al obtener el balance');
-    }
-  };
-
-  // Función para obtener el historial de movimientos
-  const fetchHistorial = async () => {
-    try {
-      const response = await fetchWithCredentials(`${API_BASE_URL}/`);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al obtener el historial');
-      }
-      const data = await response.json();
-      
-      // Transformar los datos del backend al formato esperado por el frontend
-      const transformedData = data.map(movement => ({
-        id: movement._id,
-        usuario: movement.employeeId === 'admin' ? 'Admin' : 
-                (movement.employeeId?.name || movement.employeeId || 'Usuario'),
-        monto: movement.amount,
-        fecha: new Date(movement.date).toLocaleString('es-ES', {
-          day: '2-digit',
-          month: '2-digit',
-          year: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        razon: movement.reason,
-        tipo: movement.type === 'income' ? 'ingreso' : 'egreso'
-      }));
-      
-      setHistorialData(transformedData);
-    } catch (error) {
-      console.error('Error fetching historial:', error);
-      setError(error.message || 'Error al obtener el historial');
-    }
-  };
+  // Usa el hook para manejar backend
+  const {
+    balanceDisponible,
+    historialData,
+    loading,
+    error,
+    success,
+    setError,
+    setSuccess,
+    fetchBalance,
+    fetchHistorial,
+    realizarOperacion
+  } = usePettyCash(user);
 
   // Cargar datos al montar el componente (solo si está autenticado)
   useEffect(() => {
@@ -168,31 +110,13 @@ const Finances = () => {
 
   // Función para validar el formulario
   const validateForm = () => {
-    // Si no es admin, no validar el campo usuario ya que se toma automáticamente
-    if (userType !== 'admin') {
-      // Para usuarios no-admin, solo validar monto y razón
-      if (!formData.monto || parseFloat(formData.monto) <= 0) {
-        setError('El monto debe ser mayor a 0');
-        return false;
-      }
-      if (!formData.razon.trim()) {
-        setError('La razón es requerida');
-        return false;
-      }
-    } else {
-      // Para admin, validar todos los campos incluyendo usuario
-      if (!formData.usuario.trim()) {
-        setError('El campo usuario es requerido');
-        return false;
-      }
-      if (!formData.monto || parseFloat(formData.monto) <= 0) {
-        setError('El monto debe ser mayor a 0');
-        return false;
-      }
-      if (!formData.razon.trim()) {
-        setError('La razón es requerida');
-        return false;
-      }
+    if (!formData.monto || parseFloat(formData.monto) <= 0) {
+      setError('El monto debe ser mayor a 0');
+      return false;
+    }
+    if (!formData.razon.trim()) {
+      setError('La razón es requerida');
+      return false;
     }
     
     // Validar que hay suficientes fondos para egresos
@@ -207,56 +131,13 @@ const Finances = () => {
   // Función para realizar la operación
   const handleRealizarOperacion = async () => {
     if (!validateForm()) return;
-    
-    setLoading(true);
-    setError('');
-    setSuccess('');
-
-    try {
-      const requestBody = {
-        operationType: formData.tipoAccion,
-        amount: parseFloat(formData.monto),
-        reason: formData.razon,
-        // Para admin, usar el campo de usuario. Para otros, usar su ID automáticamente
-        ...(user?.userType === 'admin' 
-          ? { employeeId: formData.usuario } 
-          : { employeeId: user?.id }
-        )
-      };
-
-      console.log('Enviando operación:', requestBody);
-
-      const response = await fetchWithCredentials(`${API_BASE_URL}/`, {
-        method: 'POST',
-        body: JSON.stringify(requestBody)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al realizar la operación');
-      }
-
-      // Operación exitosa
-      setSuccess(data.message || 'Operación realizada exitosamente');
-      
-      // Limpiar formulario
+    const ok = await realizarOperacion(formData, user?.userType, user?.id);
+    if (ok) {
       setFormData({
-        usuario: '',
         monto: '',
         razon: '',
         tipoAccion: user?.userType === 'employee' ? 'egreso' : 'ingreso' // Mantener restricción por rol
       });
-
-      // Actualizar datos
-      await fetchBalance();
-      await fetchHistorial();
-
-    } catch (error) {
-      console.error('Error en operación:', error);
-      setError(error.message || 'Error al realizar la operación');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -266,22 +147,6 @@ const Finances = () => {
       <div className="financial-history-container">
         <div className="loading-container">
           <p>Verificando autenticación...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Mostrar mensaje si no está autenticado
-  if (!isAuthenticated) {
-    return (
-      <div className="financial-history-container">
-        <div className="auth-required">
-          <LogIn size={48} />
-          <h2>Acceso Restringido</h2>
-          <p>Debes iniciar sesión para acceder a esta sección.</p>
-          <button onClick={() => window.location.href = '/login'} className="login-button">
-            Ir al Login
-          </button>
         </div>
       </div>
     );
@@ -297,7 +162,7 @@ const Finances = () => {
           {/* Header de la tabla */}
           <div className="table-header">
             <div className="header-cell">Usuario</div>
-            <div className="header-cell">Monto</div>
+            <div className="header-cell">Monto</div>  
             <div className="header-cell">Fecha</div>
             <div className="header-cell">Razón</div>
           </div>
@@ -390,36 +255,6 @@ const Finances = () => {
 
         {/* Formulario de nueva transacción */}
         <div className="transaction-form">
-        {/* Formulario de nueva transacción */}
-        <div className="transaction-form">
-          {user?.userType === 'admin' ? (
-            <div className="form-row">
-              <label className="form-label">Usuario:</label>
-              <input
-                type="text"
-                value={formData.usuario}
-                onChange={(e) => handleInputChange('usuario', e.target.value)}
-                className="form-input"
-                placeholder="Nombre de usuario o ID"
-                disabled={loading}
-              />
-              <small className="form-help">Como admin, puedes especificar cualquier usuario</small>
-            </div>
-          ) : (
-            <div className="form-row">
-              <label className="form-label">Usuario:</label>
-              <input
-                type="text"
-                value={user?.name || user?.email || 'Usuario autenticado'}
-                className="form-input user-readonly"
-                placeholder="Usuario autenticado"
-                disabled={true}
-                readOnly
-              />
-              <small className="form-help">Tu usuario se detecta automáticamente</small>
-            </div>
-          )}
-
           <div className="form-row-split">
             <div className="form-column">
               <label className="form-label">Tipo de acción:</label>
@@ -491,8 +326,6 @@ const Finances = () => {
         </div>
       </div>
     </div>
-    </div>
-
   );
 };
 

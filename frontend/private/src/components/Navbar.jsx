@@ -87,7 +87,7 @@ const Navbar = () => {
             adminOnly: false
         },
         {
-            path: "/orders",
+            path: "/TomaDeOrdenes",
             label: "Toma de órdenes",
             icon: "📝",
             adminOnly: false
@@ -105,14 +105,14 @@ const Navbar = () => {
             adminOnly: false
         },
         {
-            path: "/delivery",
-            label: "Delivery",
+            path: "/orders",
+            label: "Ordenes y ventas",
             icon: "🚚",
             adminOnly: false
         },
         {
             path: "/employees",
-            label: "Empleados",
+            label: "Control de empleados",
             icon: "👨‍💼",
             adminOnly: true // Solo admin
         },

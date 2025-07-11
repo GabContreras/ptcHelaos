@@ -1,5 +1,6 @@
 const employeesController = {};
 import employeesModel from "../models/Employee.js"
+import bcryptjs from "bcryptjs";
 import mongoose from "mongoose";
 
 //SELECT
@@ -48,22 +49,38 @@ employeesController.deleteEmployee = async (req, res) => {
 employeesController.updateEmployee = async (req, res) => {
     try {
         const { name, email, phone, password, hireDate, salary, dui } = req.body;
-        const passwordHash = await bcryptjs.hash(password, 10);
 
-        const updateEmployee = await employeesModel.findByIdAndUpdate(req.params.id,
-            { name, email, phone, password: passwordHash, hireDate, salary, dui },
+        const updateData = { name, email, phone, hireDate, salary, dui };
+
+        // Solo hashear y actualizar contraseña si se proporciona Y no está vacía
+        if (password && password.trim() !== '') {
+            updateData.password = await bcryptjs.hash(password, 10);
+        }
+
+        const updatedEmployee = await employeesModel.findByIdAndUpdate(
+            req.params.id,
+            updateData,
             { new: true }
-        )
-        res.json({ message: "Updated successfully" })
+        );
+
+        if (!updatedEmployee) {
+            return res.status(404).json({ message: "Empleado no encontrado" });
+        }
+
+        res.json({
+            message: "Updated successfully",
+            employee: updatedEmployee
+        });
     } catch (error) {
+        console.error('Error actualizando empleado:', error); // Para debug
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern)[0];
             const message = field === 'email' ? 'El email ya está registrado' : 'El DUI ya está registrado';
-            res.status(400).json({ message })
+            res.status(400).json({ message });
         } else {
-            res.status(500).json({ message: "Error updating employee" })
+            res.status(500).json({ message: "Error updating employee", error: error.message });
         }
     }
-}
+};
 
 export default employeesController;
