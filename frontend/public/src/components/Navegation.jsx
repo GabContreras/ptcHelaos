@@ -12,13 +12,14 @@ import AboutUs from "../pages/AboutUs";
 import FinishOrder from "../pages/FinishOrder";
 import LoginPage from "../pages/LoginPage";
 import RegistroPage from "../pages/RegistroPage";
+import InicioPage from "../pages/incioPage";
 
 function Navegation() {
     const navigate = useNavigate();
 
     return(
     <Routes>
-        <Route path="/" element={<Page404 />} />
+        <Route path="/" element={<InicioPage />} />
         <Route path="/AboutUs" element={<AboutUs />} />
         <Route path="/FinishOrder" element={<FinishOrder/>} />
         <Route path="/LoginPage" element={<LoginPage/>} />
