@@ -12,6 +12,9 @@ import AboutUs from "../pages/AboutUs";
 import FinishOrder from "../pages/FinishOrder";
 import LoginPage from "../pages/LoginPage";
 import RegistroPage from "../pages/register/RegistroPage";
+import InicioPage from "../pages/incioPage";
+import Menu from "../pages/Menu";
+import Contactanos from "../pages/Contactanos"
 import Recuperacion from "../pages/passwordRecovery/Recuperacion";
 import RecuperacionCodigo from "../pages/passwordRecovery/RecuperacionCodigo";
 import CambiarPassword from "../pages/passwordRecovery/CambiarPassword";
@@ -22,11 +25,13 @@ function Navigation() {
 
   return (
     <Routes>
-      <Route path="/" element={<Page404 />} />
+      <Route path="/" element={<InicioPage />} />
       <Route path="/AboutUs" element={<AboutUs />} />
       <Route path="/FinishOrder" element={<FinishOrder />} />
       <Route path="/LoginPage" element={<LoginPage />} />
       <Route path="/RegistroPage" element={<RegistroPage />} />
+        <Route path="/Menu" element={<Menu/>} />
+        <Route path="/Contactanos" element={<Contactanos/>} />
       
       {/* Rutas de recuperación de contraseña y registro sin navbar */}
       <Route path="/passwordRecovery" element={<Recuperacion />} />
