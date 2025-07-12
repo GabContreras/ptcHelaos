@@ -15,10 +15,10 @@ import Dashboard from "../pages/Dashboard/Graficas";
 import Clients from "../pages/Clients/Clients";
 import Employees from "../pages/Employees/Employees";
 import PrivateRoute from "./PrivateRoute";
-import Orders from "../pages/Orders/Orders";
+import TomaDeOrdenes from "../pages/TomaDeOrdenes/TomaDeOrdenes";
 import Storage from "../pages/Storage/Storage";
-import Delivery from "../pages/Delivery/Delivery"
-import Finances from "../pages/Finances/Finances";
+import Orders from "../pages/Orders/Orders"
+import PettyCash from "../pages/PettyCash/PettyCash";
 import Category from "../pages/Categories/Categories";
 import { useAuth } from "../context/AuthContext";
 
@@ -188,9 +188,9 @@ function Navegation() {
         } />
 
         {/* Órdenes - Accesible para todos */}
-        <Route path="/orders" element={
+        <Route path="/TomaDeOrdenes" element={
           <Layout>
-            <Orders />
+            <TomaDeOrdenes />
           </Layout>
         } />
 
@@ -202,9 +202,9 @@ function Navegation() {
         } />
 
         {/* Delivery - Accesible para todos */}
-        <Route path="/delivery" element={
+        <Route path="/orders" element={
           <Layout>
-            <Delivery />
+            <Orders />
           </Layout>
         } />
 
@@ -231,7 +231,7 @@ function Navegation() {
         {/* POS/Finanzas - Solo admin */}
         <Route path="/pettyCash" element={
           <Layout>
-            <Finances />
+            <PettyCash />
           </Layout>
 
         } />
