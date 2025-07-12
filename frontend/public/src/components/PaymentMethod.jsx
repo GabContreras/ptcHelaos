@@ -2,7 +2,7 @@ import React from 'react';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import './PaymentMethod.css';
-import Button from '../assets/Button'; // Adjust the import path as necessary
+import Button from '../assets/Button';
 
 function PaymentMethod({ subtotal, descuento, total, envio }) {
   const [opcion, setOpcion] = React.useState(null);
@@ -28,7 +28,7 @@ function PaymentMethod({ subtotal, descuento, total, envio }) {
       if (result.isConfirmed) {
         navigate('/');
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        navigate('/AboutUs');
+        navigate('/FollowOrder');
       }
     });
   };

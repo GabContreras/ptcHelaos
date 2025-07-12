@@ -1,0 +1,48 @@
+.calificar-servicio {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+}
+
+.calificar-servicio h2 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.instruccion {
+  margin-top: 20px;
+  font-weight: 500;
+  color: #555;
+}
+
+.comentario-box {
+  width: 100%;
+  height: 100px;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  resize: none;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 30px;
+  background-color: #8D6CFF;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #6f51db;
+}
