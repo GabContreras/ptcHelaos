@@ -22,11 +22,6 @@ const customersSchema = new Schema({
     required: true,
     trim: true
   },
-  address: {
-    type: String,
-    required: true,
-    trim: true
-  },
   birthday: {
     type: Date,
     required: true

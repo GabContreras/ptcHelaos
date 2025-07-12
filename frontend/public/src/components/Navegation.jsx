@@ -15,6 +15,7 @@ import RegistroPage from "../pages/RegistroPage";
 import InicioPage from "../pages/incioPage";
 import Menu from "../pages/Menu";
 import Contactanos from "../pages/Contactanos"
+import PasswordRecovery from "../pages/PasswordRecovery";
 
 function Navegation() {
     const navigate = useNavigate();
@@ -28,6 +29,7 @@ function Navegation() {
         <Route path="/RegistroPage" element={<RegistroPage/>} />
         <Route path="/Menu" element={<Menu/>} />
         <Route path="/Contactanos" element={<Contactanos/>} />
+        <Route path="/PasswordRecovery" element={<PasswordRecovery />} />
       </Routes>
   )
 }

@@ -7,14 +7,24 @@ pettyCashController.getAllMovements = async (req, res) => {
     try {
         const movements = await PettyCash.find().sort({ date: -1 });
         
-        // Populate solo los que tienen ObjectId válido
-        for (let movement of movements) {
-            if (movement.employeeId !== 'admin' && typeof movement.employeeId === 'object') {
-                await movement.populate('employeeId', 'name email');
-            }
-        }
+        // Hacer populate manual solo para ObjectIds válidos
+        const populatedMovements = await Promise.all(
+            movements.map(async (movement) => {
+                if (movement.employeeId !== 'admin' && movement.employeeId) {
+                    try {
+                        // Solo intentar populate si es un ObjectId válido
+                        if (movement.employeeId.toString().match(/^[0-9a-fA-F]{24}$/)) {
+                            await movement.populate('employeeId', 'name email');
+                        }
+                    } catch (error) {
+                        console.log('Error en populate:', error);
+                    }
+                }
+                return movement;
+            })
+        );
         
-        res.json(movements);
+        res.json(populatedMovements);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

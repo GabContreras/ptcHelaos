@@ -17,12 +17,11 @@ export function useClientsManager() {
     const [isEditing, setIsEditing] = useState(false);
     const [currentClientId, setCurrentClientId] = useState(null);
 
-    // Estados del formulario
+    // Estados del formulario (sin address)
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
-    const [address, setAddress] = useState('');
     const [birthday, setBirthday] = useState('');
     const [frequentCustomer, setFrequentCustomer] = useState(false);
 
@@ -72,7 +71,6 @@ export function useClientsManager() {
                 name: name.trim(),
                 email: email.trim(),
                 phone: phone.trim(),
-                address: address.trim(),
                 birthday: new Date(birthday),
                 frequentCustomer
             };
@@ -105,13 +103,24 @@ export function useClientsManager() {
                 return;
             }
 
-            if (!dataToSend.address) {
-                setError('La dirección es obligatoria');
+            if (!birthday) {
+                setError('La fecha de nacimiento es obligatoria');
                 return;
             }
 
-            if (!birthday) {
-                setError('La fecha de nacimiento es obligatoria');
+            // Validar que la fecha de nacimiento no sea futura
+            const birthdayDate = new Date(birthday);
+            const currentYear = new Date().getFullYear();
+            const birthdayYear = birthdayDate.getFullYear();
+            
+            if (birthdayYear > currentYear) {
+                setError('La fecha de nacimiento no puede ser mayor al año actual');
+                return;
+            }
+
+            // Validar que la fecha de nacimiento sea válida
+            if (isNaN(birthdayDate.getTime())) {
+                setError('La fecha de nacimiento no es válida');
                 return;
             }
 
@@ -265,7 +274,6 @@ export function useClientsManager() {
         setEmail('');
         setPhone('');
         setPassword('');
-        setAddress('');
         setBirthday('');
         setFrequentCustomer(false);
         setIsEditing(false);
@@ -279,7 +287,6 @@ export function useClientsManager() {
         setEmail(client.email || '');
         setPhone(client.phone || '');
         setPassword(''); // No mostrar contraseña actual por seguridad
-        setAddress(client.address || '');
         setBirthday(
             client.birthday 
                 ? new Date(client.birthday).toISOString().split('T')[0]
@@ -323,7 +330,7 @@ export function useClientsManager() {
         currentClientId,
         setCurrentClientId,
         
-        // Estados del formulario
+        // Estados del formulario (sin address)
         name,
         setName,
         email,
@@ -332,8 +339,6 @@ export function useClientsManager() {
         setPhone,
         password,
         setPassword,
-        address,
-        setAddress,
         birthday,
         setBirthday,
         frequentCustomer,

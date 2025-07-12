@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import '../styles/LoginPage.css';
 import Navbar from "../components/NavBar";
 import heladosLogin from "../imgs/heladosLogin.png"
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -65,7 +68,7 @@ const LoginPage = () => {
                   onClick={() => console.log('Recuperar contraseña')}
                   className="forgot-link"
                 >
-                  ¿Olvidaste tu contraseña? <span className="underline">Recuperar contraseña</span>
+                  ¿Olvidaste tu contraseña? <span className="underline" onClick={() => navigate('/PasswordRecovery')}>Recuperar contraseña</span>
                 </button>
               </div>
 

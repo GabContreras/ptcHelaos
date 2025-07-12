@@ -1,35 +1,63 @@
-.orderDetails {
-    width: 60%;
+.finishOrder {
+    background-color: #B9B8FF;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-around;
 }
 
-.orderDetails h1 {
+.finishOrder .resume {
+    width: 28%;
+    padding: 20px 0;
+    background-color: #8D6CFF;
+    border-radius: 10px;
+    height: 70vh;
+}
+
+.finishOrder .resume .cart {
+    width: 100%;
+    height: 90%;
+    overflow-y:scroll;
+    scrollbar-width:none;
+}
+
+.finishOrder .orderDetails {
+    background-color: #F2E8D5;
+    padding: 35px 0px;
+    border-radius: 10px;
+    width: 68%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.finishOrder h1 {
     width: 100%;
     text-align: center;
     margin-bottom: 20px;
 }
 
-.orderDetails .direction {
+.finishOrder .direction {
     width: 50%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
 }
 
-.orderDetails .direction iframe {
+.finishOrder .direction iframe {
     width: 80%;
     aspect-ratio: 1 / 0.6;
 }
 
- .orderDetails .direction h4 {
+ .finishOrder .direction h4 {
     width: 80%;
     text-align: left;
     margin-bottom: 10px;
 }
 
-.orderDetails .direction textarea {
+.finishOrder .direction textarea {
     width: 80%;
     resize: none;
     padding: 12px;
@@ -42,6 +70,8 @@
     white-space: pre-wrap;
 }
 
-.orderDetails .orderDetails .total {
+.finishOrder .total {
     width: 50%;
+    display: flex;
+    flex-direction: column;
 }

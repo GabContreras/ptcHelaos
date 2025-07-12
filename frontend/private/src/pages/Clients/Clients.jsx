@@ -20,7 +20,7 @@ const ClientsPage = () => {
     setError,
     isEditing,
     currentClientId,
-    
+
     // Estados del formulario
     name,
     setName,
@@ -30,13 +30,11 @@ const ClientsPage = () => {
     setPhone,
     password,
     setPassword,
-    address,
-    setAddress,
     birthday,
     setBirthday,
     frequentCustomer,
     setFrequentCustomer,
-    
+
     // Funciones
     fetchClients,
     handleSubmit,
@@ -54,7 +52,7 @@ const ClientsPage = () => {
   const [itemsPerPage, setItemsPerPage] = useState(16);
   const [sortBy, setSortBy] = useState('name-asc');
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   // Cargar clientes al montar el componente
   useEffect(() => {
     fetchClients();
@@ -63,8 +61,8 @@ const ClientsPage = () => {
   // Función para filtrar clientes por búsqueda
   const getFilteredClients = () => {
     if (!searchTerm.trim()) return clients;
-    
-    return clients.filter(client => 
+
+    return clients.filter(client =>
       client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       client.phone?.includes(searchTerm)
@@ -74,26 +72,26 @@ const ClientsPage = () => {
   // Función para ordenar clientes
   const getSortedClients = (clientsToSort) => {
     const sorted = [...clientsToSort];
-    
+
     switch (sortBy) {
       case 'name-asc':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           (a.name || '').localeCompare(b.name || '')
         );
       case 'name-desc':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           (b.name || '').localeCompare(a.name || '')
         );
       case 'email-asc':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           (a.email || '').localeCompare(b.email || '')
         );
       case 'newest':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
         );
       case 'oldest':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           new Date(a.createdAt || 0) - new Date(b.createdAt || 0)
         );
       default:
@@ -134,7 +132,7 @@ const ClientsPage = () => {
   const handleItemsPerPageChange = (newItemsPerPage) => {
     setItemsPerPage(newItemsPerPage);
   };
-  
+
   // Mostrar notificaciones de error y éxito
   useEffect(() => {
     if (error) toast.error(error);
@@ -143,7 +141,7 @@ const ClientsPage = () => {
   useEffect(() => {
     if (success) toast.success(success);
   }, [success]);
-  
+
   return (
     <div className="clients-page">
       {/* Mostrar indicador de carga */}
@@ -163,13 +161,13 @@ const ClientsPage = () => {
           </span>
         </div>
       )}
-      
+
       {/* Lista de clientes */}
       <div className="clients-list">
         {currentClients.length > 0 ? (
           currentClients.map(client => (
-            <ClientCard 
-              key={client._id} 
+            <ClientCard
+              key={client._id}
               data={client}
               onEdit={() => handleEditClient(client)}
               onDelete={() => startDeleteClient(client._id)}
@@ -194,7 +192,7 @@ const ClientsPage = () => {
             </div>
           )
         )}
-        
+
         {/* Botón de agregar con líneas punteadas */}
         {!isLoading && (
           <div className="add-client-container" onClick={handleAddNew}>
@@ -205,7 +203,7 @@ const ClientsPage = () => {
           </div>
         )}
       </div>
-      
+
       {/* Modal de edición/creación usando UniversalModal */}
       <UniversalModal
         isOpen={showModal}
@@ -251,10 +249,31 @@ const ClientsPage = () => {
                 type="tel"
                 id="phone"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/\D/g, ''); // Solo números
+                  if (value.length <= 4) {
+                    setPhone(value);
+                  } else if (value.length <= 8) {
+                    setPhone(value.slice(0, 4) + '-' + value.slice(4));
+                  }
+                }}
                 placeholder="0000-0000"
                 disabled={isLoading}
                 required
+                maxLength="9"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="birthday">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                id="birthday"
+                value={birthday}
+                onChange={(e) => setBirthday(e.target.value)}
+                disabled={isLoading}
+                required
+                max={new Date().toISOString().split('T')[0]}
               />
             </div>
 
@@ -274,31 +293,6 @@ const ClientsPage = () => {
               />
             </div>
 
-            <div className="form-group full-width">
-              <label htmlFor="address">Dirección</label>
-              <input
-                type="text"
-                id="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Dirección completa"
-                disabled={isLoading}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="birthday">Fecha de Nacimiento</label>
-              <input
-                type="date"
-                id="birthday"
-                value={birthday}
-                onChange={(e) => setBirthday(e.target.value)}
-                disabled={isLoading}
-                required
-              />
-            </div>
-
             <div className="form-group checkbox-group">
               <label className="checkbox-label">
                 <input
@@ -312,7 +306,7 @@ const ClientsPage = () => {
               </label>
             </div>
           </div>
-          
+
           <div className="form-actions">
             <button
               type="button"
@@ -335,7 +329,7 @@ const ClientsPage = () => {
           </div>
         </form>
       </UniversalModal>
-      
+
       {/* Modal de confirmación de eliminación usando UniversalModal */}
       <UniversalModal
         isOpen={showDeleteModal}
