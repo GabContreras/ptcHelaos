@@ -12,6 +12,7 @@ import AboutUs from "../pages/AboutUs";
 import FinishOrder from "../pages/FinishOrder";
 import LoginPage from "../pages/LoginPage";
 import RegistroPage from "../pages/RegistroPage";
+import PasswordRecovery from "../pages/PasswordRecovery";
 
 function Navegation() {
     const navigate = useNavigate();
@@ -23,6 +24,7 @@ function Navegation() {
         <Route path="/FinishOrder" element={<FinishOrder/>} />
         <Route path="/LoginPage" element={<LoginPage/>} />
         <Route path="/RegistroPage" element={<RegistroPage/>} />
+        <Route path="/PasswordRecovery" element={<PasswordRecovery />} />
       </Routes>
   )
 }

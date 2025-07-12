@@ -41,13 +41,15 @@ function NavBar() {
                     <Button titulo="Registrarse" color="#33A9FE" tipoColor="background" onClick={() => navigate('/RegistroPage')} />
                     <Button titulo="Iniciar sesion" color="#33A9FE" tipoColor="border" onClick={() => navigate('/LoginPage')}  />
                 </div>
-                </div>
-                
-            {/* Mostrar carrito lateral si está activado */}
+            </div>
+
             {mostrarCart && (
                 <div className="cart-slide">
-                    <Cart />
-                    <a onClick={() => navigate('/FinishOrder')}/>Finalizar Orden<a/>
+                <h1>Tu pedido:</h1>
+                    <div className='items'>
+                        <Cart />
+                    </div>
+                    <Button titulo="Finalizar orden" color="#33A9FE" tipoColor="background" onClick={() => navigate('/FinishOrder')}/>
                 </div>
             )}
         </div>

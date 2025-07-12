@@ -1,0 +1,94 @@
+.payment-container {
+    height: 100%;
+  font-family: Arial;
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-title {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.payment-methods {
+  height: 50%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.payment-options {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.payment-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px solid #007bff;
+  background-color: white;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.payment-button.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.card-details {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-form {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.card-form-row {
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.card-input-small {
+    width: 43%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.summary {
+    display: flex;
+    justify-content: end;
+    flex-direction: column;
+    height: 50%;
+    padding-right: 40px;
+    text-align: end;
+}
+
+.summary h4 {
+    margin: 5px 0;
+}
+
+.swal2-blur {
+  backdrop-filter: blur(6px);
+  background-color: rgba(0, 0, 0, 0.2);
+}
