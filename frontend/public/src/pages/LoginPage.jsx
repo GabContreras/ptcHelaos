@@ -18,7 +18,6 @@ const LoginPage = () => {
 
   return (
     <>
-      <Navbar />
       <div className="login-container">
         <div className="form-section">
           <div className="form-wrapper">

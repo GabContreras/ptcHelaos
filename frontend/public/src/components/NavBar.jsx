@@ -27,8 +27,8 @@ function NavBar() {
                         onClick={() => navigate('/')}
                         className={location.pathname === '/' ? 'nav-link active' : 'nav-link'}
                     >Inicio</a>
-                    <a>Menu</a>
-                    <a>Contacto</a>
+                    <a onClick={() => navigate('/Menu')} className={location.pathname === '/Menu' ? 'nav-link active' : 'nav-link'} >Menu</a>
+                    <a onClick={() => navigate('/Contactanos')} className={location.pathname === '/Contactanos' ? 'nav-link active' : 'nav-link'} >Contacto</a>
                     <a 
                         onClick={() => navigate('/AboutUs')}
                         className={location.pathname === '/AboutUs' ? 'nav-link active' : 'nav-link'}

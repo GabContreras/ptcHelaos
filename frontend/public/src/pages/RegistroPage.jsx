@@ -35,7 +35,6 @@ const RegistroPage = () => {
 
   return (
 <>
- <Navbar />
     <div className="registro-page">
       <div className="registro-container">
         <div className="form-section">

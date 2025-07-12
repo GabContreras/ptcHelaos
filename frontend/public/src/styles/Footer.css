@@ -1,0 +1,44 @@
+.footer-container {
+  background-color: #8d6cff;
+  padding: 1rem 2rem;
+  text-align: center;
+  color: white;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.footer-link {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #fdd9ff;
+}
+
+.footer-copy {
+  font-size: 0.9rem;
+}
+
+.footer-legal {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.footer-legal span {
+  cursor: pointer;
+  text-decoration: underline;
+}
