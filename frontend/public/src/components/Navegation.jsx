@@ -14,6 +14,7 @@ import LoginPage from "../pages/LoginPage";
 import RegistroPage from "../pages/RegistroPage";
 import InicioPage from "../pages/incioPage";
 import Menu from "../pages/Menu";
+import Contactanos from "../pages/Contactanos"
 
 function Navegation() {
     const navigate = useNavigate();
@@ -26,6 +27,7 @@ function Navegation() {
         <Route path="/LoginPage" element={<LoginPage/>} />
         <Route path="/RegistroPage" element={<RegistroPage/>} />
         <Route path="/Menu" element={<Menu/>} />
+        <Route path="/Contactanos" element={<Contactanos/>} />
       </Routes>
   )
 }
