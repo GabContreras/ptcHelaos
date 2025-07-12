@@ -22,6 +22,7 @@ import VerificarRegistro from "../pages/register/VerificarRegistro";
 import FollowOrder from "../pages/FollowOrder";
 import RateService from "../pages/RateService";
 import UserAccount from "../pages/UserAccount";
+import UserAccount from "../pages/UserAccount";
 
 function Navigation() {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ function Navigation() {
       <Route path="*" element={<Page404 />} />
       <Route path="/FollowOrder" element={<FollowOrder />} />
       <Route path="/RateService" element={<RateService />} />
+        <Route path="/UserAccount" element={<UserAccount />} />
     </Routes>
   );
 }
