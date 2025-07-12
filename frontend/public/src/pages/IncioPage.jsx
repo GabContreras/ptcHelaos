@@ -1,6 +1,7 @@
 import React from 'react';
 import '../styles/InicioPage.css';
 import Navbar from "../components/NavBar";
+import Footer from "../components/Footer";
 import inicio from '../imgs/inicioHelados.png'; 
 import logo from '../imgs/logo.jpg';
 import { useNavigate } from "react-router-dom";
@@ -41,6 +42,7 @@ const InicioPage = () => {
 </div>
 
       </div>
+      <Footer/>
     </>
   );
 };
