@@ -10,7 +10,7 @@ function Footer() {
       <div className="footer-links">
         <button className="footer-link" onClick={() => navigate('/')}>Inicio</button>
         <button className="footer-link" onClick={() => navigate('/menu')}>Menu</button>
-        <button className="footer-link" onClick={() => navigate('/contacto')}>Contacto</button>
+        <button className="footer-link" onClick={() => navigate('/contactanos')}>Contacto</button>
         <button className="footer-link" onClick={() => navigate('/AboutUs')}>Sobre nosotros</button>
       </div>
 
