@@ -17,6 +17,7 @@ import Menu from "../pages/Menu";
 import Contactanos from "../pages/Contactanos"
 import PasswordRecovery from "../pages/PasswordRecovery";
 import FollowOrder from "../pages/FollowOrder";
+import RateService from "../pages/RateService";
 
 function Navegation() {
     const navigate = useNavigate();
@@ -33,6 +34,7 @@ function Navegation() {
         <Route path="/PasswordRecovery" element={<PasswordRecovery />} />
         <Route path="*" element={<Page404 />} />
         <Route path="/FollowOrder" element={<FollowOrder />} />
+        <Route path="/RateService" element={<RateService />} />
       </Routes>
   )
 }
