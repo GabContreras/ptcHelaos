@@ -21,6 +21,7 @@ import CambiarPassword from "../pages/passwordRecovery/CambiarPassword";
 import VerificarRegistro from "../pages/register/VerificarRegistro";
 import FollowOrder from "../pages/FollowOrder";
 import RateService from "../pages/RateService";
+import UserAccount from "../pages/UserAccount";
 
 function Navigation() {
   const navigate = useNavigate();
@@ -32,9 +33,10 @@ function Navigation() {
       <Route path="/FinishOrder" element={<FinishOrder />} />
       <Route path="/LoginPage" element={<LoginPage />} />
       <Route path="/RegistroPage" element={<RegistroPage />} />
-        <Route path="/Menu" element={<Menu/>} />
-        <Route path="/Contactanos" element={<Contactanos/>} />
-      
+      <Route path="/Menu" element={<Menu />} />
+      <Route path="/Contactanos" element={<Contactanos />} />
+      <Route path="/userAccount" element={<UserAccount />} />
+
       {/* Rutas de recuperación de contraseña y registro sin navbar */}
       <Route path="/passwordRecovery" element={<Recuperacion />} />
       <Route path="/recuperacioncodigo" element={<RecuperacionCodigo />} />
@@ -47,8 +49,8 @@ function Navigation() {
 
       {/* Ruta catch-all para páginas no encontradas */}
       <Route path="*" element={<Page404 />} />
-        <Route path="/FollowOrder" element={<FollowOrder />} />
-        <Route path="/RateService" element={<RateService />} />
+      <Route path="/FollowOrder" element={<FollowOrder />} />
+      <Route path="/RateService" element={<RateService />} />
     </Routes>
   );
 }
