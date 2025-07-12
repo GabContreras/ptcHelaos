@@ -30,9 +30,9 @@ export function useLogin() {
             console.log("Login result:", result);
 
             if (result.success) {
-                console.log("Login successful, navigating to dashboard");
+                console.log("Login successful, navigating to home");
                 setTimeout(() => {
-                    navigate("/dashboard", { replace: true });
+                    navigate("/", { replace: true });
                 }, 100);
             } else {
                 setError(result.message || "Error al iniciar sesión");

@@ -95,20 +95,174 @@
 }
 
 .nav-link {
-  position: relative;
-  padding: 10px;
-  cursor: pointer;
-  text-decoration: none;
-  color: #333;
-  transition: all 1s ease;
+    position: relative;
+    padding: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+    transition: all 1s ease;
 }
 
 .nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 5px;
-  width: 100%;
-  background-color: #fff;
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 5px;
+    width: 100%;
+    background-color: #fff;
+}
+
+/* Agregar estos estilos al final de tu archivo Navbar.css */
+
+/* Sección de usuario autenticado */
+.user-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #33A9FE 0%, #5B73FF 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    margin-left: 20px;
+}
+
+.user-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(51, 169, 254, 0.3);
+}
+
+.user-initials {
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+/* Menú desplegable del usuario */
+.user-menu {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    min-width: 220px;
+    z-index: 1000;
+    padding: 8px 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-info {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+    font-size: 14px;
+}
+
+.user-email {
+    color: #666;
+    margin: 0;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.menu-divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin: 4px 0;
+}
+
+.menu-item {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.menu-item:hover {
+    background-color: #f8f9fa;
+}
+
+.menu-item.logout {
+    color: #dc3545;
+}
+
+.menu-item.logout:hover {
+    background-color: #fff5f5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar .logs {
+        width: auto;
+    }
+
+    .user-menu {
+        right: -10px;
+        min-width: 200px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        margin-left: 10px;
+    }
+
+    .user-initials {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-menu {
+        right: -20px;
+        min-width: 180px;
+    }
+
+    .user-avatar {
+        width: 35px;
+        height: 35px;
+        margin-left: 5px;
+    }
+
+    .user-initials {
+        font-size: 12px;
+    }
 }

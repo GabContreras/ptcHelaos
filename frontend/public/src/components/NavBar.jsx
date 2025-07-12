@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import Button from "../assets/Button"
 import Cart from './Cart'
 import imgLogo from "../imgs/logo.jpg"
@@ -9,10 +10,35 @@ import CartIcon from "../imgs/cartIcon.png"
 function NavBar() {
     const navigate = useNavigate()
     const location = useLocation()
+    const { authCokie, user, logout } = useAuth() // Obtener datos del contexto de autenticación
     const [mostrarCart, setMostrarCart] = useState(false)
+    const [showUserMenu, setShowUserMenu] = useState(false)
 
     const toggleCart = () => {
         setMostrarCart(!mostrarCart)
+    }
+
+    const toggleUserMenu = () => {
+        setShowUserMenu(!showUserMenu)
+    }
+
+    const handleLogout = () => {
+        logout()
+        setShowUserMenu(false)
+        navigate('/')
+    }
+
+    // Función para obtener las iniciales del usuario
+    const getUserInitials = () => {
+        if (user?.name) {
+            return user.name
+                .split(' ')
+                .map(word => word.charAt(0))
+                .join('')
+                .toUpperCase()
+                .substring(0, 2)
+        }
+        return 'U'
     }
 
     return (
@@ -34,12 +60,55 @@ function NavBar() {
                         className={location.pathname === '/AboutUs' ? 'nav-link active' : 'nav-link'}
                     >Sobre nosotros</a>
                 </div>
+                
                 <a onClick={toggleCart} className='linkCart'>
                     <img src={CartIcon} alt="Carrito"/>
                 </a>
+
                 <div className="logs">
-                    <Button titulo="Registrarse" color="#33A9FE" tipoColor="background" onClick={() => navigate('/RegistroPage')} />
-                    <Button titulo="Iniciar sesion" color="#33A9FE" tipoColor="border" onClick={() => navigate('/LoginPage')}  />
+                    {authCokie ? (
+                        // Usuario autenticado - Mostrar avatar
+                        <div className="user-section">
+                            <div className="user-avatar" onClick={toggleUserMenu}>
+                                <span className="user-initials">{getUserInitials()}</span>
+                            </div>
+                            
+                            {showUserMenu && (
+                                <div className="user-menu">
+                                    <div className="user-info">
+                                        <p className="user-email">{user?.email}</p>
+                                    </div>
+                                    <div className="menu-divider"></div>
+                                    <button className="menu-item" onClick={() => navigate('/perfil')}>
+                                        Mi Perfil
+                                    </button>
+                                    <button className="menu-item" onClick={() => navigate('/pedidos')}>
+                                        Mis Pedidos
+                                    </button>
+                                    <div className="menu-divider"></div>
+                                    <button className="menu-item logout" onClick={handleLogout}>
+                                        Cerrar Sesión
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        // Usuario no autenticado - Mostrar botones
+                        <>
+                            <Button 
+                                titulo="Registrarse" 
+                                color="#33A9FE" 
+                                tipoColor="background" 
+                                onClick={() => navigate('/RegistroPage')} 
+                            />
+                            <Button 
+                                titulo="Iniciar sesion" 
+                                color="#33A9FE" 
+                                tipoColor="border" 
+                                onClick={() => navigate('/LoginPage')} 
+                            />
+                        </>
+                    )}
                 </div>
             </div>
 
