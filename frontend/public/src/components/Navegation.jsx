@@ -20,6 +20,7 @@ import RecuperacionCodigo from "../pages/passwordRecovery/RecuperacionCodigo";
 import CambiarPassword from "../pages/passwordRecovery/CambiarPassword";
 import VerificarRegistro from "../pages/register/VerificarRegistro";
 import FollowOrder from "../pages/FollowOrder";
+import RateService from "../pages/RateService";
 
 function Navigation() {
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ function Navigation() {
       {/* Ruta catch-all para páginas no encontradas */}
       <Route path="*" element={<Page404 />} />
         <Route path="/FollowOrder" element={<FollowOrder />} />
+        <Route path="/RateService" element={<RateService />} />
     </Routes>
   );
 }
