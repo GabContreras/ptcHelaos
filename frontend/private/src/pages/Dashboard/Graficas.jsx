@@ -73,7 +73,7 @@ const Dashboard = () => {
   // Función para obtener empleados
   const fetchEmployees = async () => {
     try {
-      const response = await authenticatedFetch(`${API_BASE_URL}/employees`);
+      const response = await authenticatedFetch(`${API_BASE_URL}employees`);
       if (response.ok) {
         const data = await response.json();
         setEmployees(data);
@@ -491,14 +491,6 @@ const Dashboard = () => {
               <p className="dashboard-subtitle">Panel de control y estadísticas</p>
             </div>
             <div className="header-actions">
-              <button className="action-btn primary">
-                <span>📊</span>
-                Ver Reportes
-              </button>
-              <button className="action-btn secondary">
-                <span>⚙️</span>
-                Configuración
-              </button>
             </div>
           </div>
         </header>
