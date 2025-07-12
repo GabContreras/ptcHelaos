@@ -46,7 +46,6 @@ function Navigation() {
 
       {/* Ruta catch-all para páginas no encontradas */}
       <Route path="*" element={<Page404 />} />
-        <Route path="*" element={<Page404 />} />
         <Route path="/FollowOrder" element={<FollowOrder />} />
     </Routes>
   );

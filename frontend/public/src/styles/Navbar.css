@@ -1,7 +1,7 @@
 .navbar {
     background-color: #8d6cff;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     padding: 0px 20px;
 }
@@ -44,33 +44,38 @@
 }
 
 .navbar .logo {
-    width: 36%;
+    width: 30%;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .navbar .logo p {
     color: white;
     font-size: 20px;
     margin: 0 0 0 10px;
+    white-space: nowrap;
 }
 
 .navbar .imgLogo {
     width: 50px;
     border-radius: 50%;
+    flex-shrink: 0;
 }
 
 .navbar .links {
     width: 35%;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    gap: 20px;
 }
 
 .navbar .links a {
-    padding: 28px 0px;
+    padding: 28px 8px;
     font-size: 18px;
     color: #fff;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .navbar .linkCart {
@@ -79,6 +84,7 @@
     border-left: #B9B8FF 1px solid;
     border-right: #B9B8FF 1px solid;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .navbar .linkCart img {
@@ -87,11 +93,16 @@
 }
 
 .navbar .logs {
-    width: 23%;
+    width: auto;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .navbar .logs Button {
-    margin-left: 20px;
+    margin-left: 15px;
 }
 
 .nav-link {
@@ -99,8 +110,8 @@
     padding: 10px;
     cursor: pointer;
     text-decoration: none;
-    color: #333;
-    transition: all 1s ease;
+    color: #fff;
+    transition: all 0.3s ease;
 }
 
 .nav-link.active::after {
@@ -112,8 +123,6 @@
     width: 100%;
     background-color: #fff;
 }
-
-/* Agregar estos estilos al final de tu archivo Navbar.css */
 
 /* Sección de usuario autenticado */
 .user-section {
@@ -168,7 +177,6 @@
         opacity: 0;
         transform: translateY(-10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -228,41 +236,297 @@
     background-color: #fff5f5;
 }
 
-/* Responsive adjustments */
+/* RESPONSIVE DESIGN */
+
+/* Tablets grandes */
+@media (max-width: 1024px) {
+    .navbar .logo {
+        width: 28%;
+    }
+    
+    .navbar .links {
+        width: 38%;
+        gap: 15px;
+    }
+    
+    .navbar .links a {
+        font-size: 17px;
+        padding: 25px 6px;
+    }
+}
+
+/* Tablets */
 @media (max-width: 768px) {
-    .navbar .logs {
-        width: auto;
+    .navbar {
+        padding: 0px 15px;
+    }
+
+    .navbar .logo {
+        width: 25%;
+        min-width: 140px;
+    }
+
+    .navbar .logo p {
+        display: none;
+    }
+
+    .navbar .imgLogo {
+        width: 40px;
+    }
+
+    .navbar .links {
+        width: 40%;
+        gap: 10px;
+    }
+
+    .navbar .links a {
+        font-size: 15px;
+        padding: 20px 4px;
+    }
+
+    .navbar .linkCart {
+        margin: 0px 8px;
+        padding: 8px 10px;
+    }
+
+    .navbar .linkCart img {
+        width: 25px;
+        height: 25px;
+    }
+
+    .navbar .logs Button {
+        margin-left: 10px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        margin-left: 15px;
+    }
+
+    .user-initials {
+        font-size: 14px;
     }
 
     .user-menu {
         right: -10px;
         min-width: 200px;
     }
-
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-        margin-left: 10px;
-    }
-
-    .user-initials {
-        font-size: 14px;
-    }
 }
 
-@media (max-width: 480px) {
-    .user-menu {
-        right: -20px;
-        min-width: 180px;
+/* Móviles grandes */
+@media (max-width: 640px) {
+    .navbar {
+        padding: 0px 12px;
+    }
+
+    .navbar .logo {
+        width: 22%;
+        min-width: 120px;
+    }
+
+    .navbar .logo p {
+      display: none;
+    }
+
+    .navbar .imgLogo {
+        width: 35px;
+    }
+
+    .navbar .links {
+        width: 42%;
+        gap: 8px;
+    }
+
+    .navbar .links a {
+        font-size: 13px;
+        padding: 15px 2px;
+    }
+
+    .navbar .linkCart {
+        margin: 0px 6px;
+        padding: 6px 8px;
+    }
+
+    .navbar .logs Button {
+        margin-left: 8px;
+        padding: 6px 10px;
+        font-size: 12px;
     }
 
     .user-avatar {
         width: 35px;
         height: 35px;
-        margin-left: 5px;
+        margin-left: 12px;
     }
 
     .user-initials {
         font-size: 12px;
+    }
+}
+
+/* Móviles medianos */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0px 10px;
+    }
+
+    .navbar .logo {
+        width: 20%;
+        min-width: 100px;
+    }
+
+    .navbar .logo p {
+       display: none
+    }
+
+    .navbar .imgLogo {
+        width: 30px;
+    }
+
+    .navbar .links {
+        width: 45%;
+        gap: 4px;
+    }
+
+    .navbar .links a {
+        font-size: 11px;
+        padding: 12px 1px;
+    }
+
+    .navbar .linkCart {
+        margin: 0px 4px;
+        padding: 4px 6px;
+    }
+
+    .navbar .linkCart img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .navbar .logs Button {
+        margin-left: 6px;
+        padding: 5px 8px;
+        font-size: 10px;
+        min-width: auto;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        margin-left: 10px;
+    }
+
+    .user-initials {
+        font-size: 11px;
+    }
+
+    .user-menu {
+        right: -15px;
+        min-width: 180px;
+    }
+}
+
+/* Móviles pequeños */
+@media (max-width: 400px) {
+    .navbar {
+        padding: 0px 8px;
+    }
+
+    .navbar .logo {
+        width: 18%;
+        min-width: 80px;
+    }
+
+    .navbar .logo p {
+        display: none;
+    }
+
+    .navbar .imgLogo {
+        width: 28px;
+    }
+
+    .navbar .links {
+        width: 50%;
+        gap: 2px;
+    }
+
+    .navbar .links a {
+        font-size: 10px;
+        padding: 10px 1px;
+    }
+
+    .navbar .linkCart {
+        margin: 0px 2px;
+        padding: 3px 4px;
+    }
+
+    .navbar .linkCart img {
+        width: 18px;
+        height: 18px;
+    }
+
+    .navbar .logs Button {
+        margin-left: 4px;
+        padding: 4px 6px;
+        font-size: 9px;
+    }
+
+    .user-avatar {
+        width: 28px;
+        height: 28px;
+        margin-left: 8px;
+    }
+
+    .user-initials {
+        font-size: 10px;
+    }
+
+    .user-menu {
+        right: -20px;
+        min-width: 160px;
+    }
+}
+
+/* Móviles muy pequeños */
+@media (max-width: 350px) {
+    .navbar {
+        padding: 0px 6px;
+    }
+
+    .navbar .logo {
+        width: 15%;
+        min-width: 70px;
+    }
+
+    .navbar .imgLogo {
+        width: 25px;
+    }
+
+    .navbar .links {
+        width: 55%;
+    }
+
+    .navbar .links a {
+        font-size: 9px;
+        padding: 8px 0px;
+    }
+
+    .navbar .logs Button {
+        margin-left: 2px;
+        padding: 3px 4px;
+        font-size: 8px;
+    }
+
+    .user-avatar {
+        width: 25px;
+        height: 25px;
+        margin-left: 6px;
+    }
+
+    .user-initials {
+        font-size: 9px;
     }
 }

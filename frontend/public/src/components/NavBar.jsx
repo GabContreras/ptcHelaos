@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
 import Button from "../assets/Button"
 import Cart from './Cart'
@@ -10,16 +10,20 @@ import CartIcon from "../imgs/cartIcon.png"
 function NavBar() {
     const navigate = useNavigate()
     const location = useLocation()
-    const { authCokie, user, logout } = useAuth() // Obtener datos del contexto de autenticación
+    const { authCokie, user, logout } = useAuth()
     const [mostrarCart, setMostrarCart] = useState(false)
     const [showUserMenu, setShowUserMenu] = useState(false)
+    const userMenuRef = useRef(null)
+    const cartRef = useRef(null)
 
     const toggleCart = () => {
         setMostrarCart(!mostrarCart)
+        if (showUserMenu) setShowUserMenu(false) // Cerrar menu de usuario si está abierto
     }
 
     const toggleUserMenu = () => {
         setShowUserMenu(!showUserMenu)
+        if (mostrarCart) setMostrarCart(false) // Cerrar carrito si está abierto
     }
 
     const handleLogout = () => {
@@ -41,11 +45,28 @@ function NavBar() {
         return 'U'
     }
 
+    // Cerrar menús al hacer clic fuera
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+                setShowUserMenu(false)
+            }
+            if (cartRef.current && !cartRef.current.contains(event.target)) {
+                setMostrarCart(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [])
+
     return (
         <div className='navbar-container'>
             <div className='navbar'>
                 <div className='logo'>
-                    <img src={imgLogo} className='imgLogo'/>
+                    <img src={imgLogo} className='imgLogo' alt="Logo"/>
                     <p>Moon's ice cream rolls</p>
                 </div>
                 <div className='links'>
@@ -61,14 +82,16 @@ function NavBar() {
                     >Sobre nosotros</a>
                 </div>
                 
-                <a onClick={toggleCart} className='linkCart'>
-                    <img src={CartIcon} alt="Carrito"/>
-                </a>
+                <div ref={cartRef}>
+                    <a onClick={toggleCart} className='linkCart'>
+                        <img src={CartIcon} alt="Carrito"/>
+                    </a>
+                </div>
 
                 <div className="logs">
                     {authCokie ? (
                         // Usuario autenticado - Mostrar avatar
-                        <div className="user-section">
+                        <div className="user-section" ref={userMenuRef}>
                             <div className="user-avatar" onClick={toggleUserMenu}>
                                 <span className="user-initials">{getUserInitials()}</span>
                             </div>
@@ -79,11 +102,11 @@ function NavBar() {
                                         <p className="user-email">{user?.email}</p>
                                     </div>
                                     <div className="menu-divider"></div>
-                                    <button className="menu-item" onClick={() => navigate('/perfil')}>
+                                    <button className="menu-item" onClick={() => {
+                                        navigate('/perfil')
+                                        setShowUserMenu(false)
+                                    }}>
                                         Mi Perfil
-                                    </button>
-                                    <button className="menu-item" onClick={() => navigate('/pedidos')}>
-                                        Mis Pedidos
                                     </button>
                                     <div className="menu-divider"></div>
                                     <button className="menu-item logout" onClick={handleLogout}>
@@ -113,8 +136,8 @@ function NavBar() {
             </div>
 
             {mostrarCart && (
-                <div className="cart-slide">
-                <h1>Tu pedido:</h1>
+                <div className="cart-slide" ref={cartRef}>
+                    <h1>Tu pedido:</h1>
                     <div className='items'>
                         <Cart />
                     </div>
