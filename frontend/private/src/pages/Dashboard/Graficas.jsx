@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Graficas.css'
 import { TrendingUp, Package, Users, DollarSign, AlertCircle, Activity } from 'lucide-react';
 import { config } from '../../config';
+import { useEmployeesManager } from '../../hooks/EmployeesHook/useEmployees';
 
 
 import { useAuth } from '../../context/AuthContext';
@@ -71,7 +72,7 @@ const Dashboard = () => {
   };
 
   // Función para obtener empleados
-  const fetchEmployees = async () => {
+  /*const fetchEmployees = async () => {
     try {
       const response = await authenticatedFetch(`${API_BASE_URL}employees`);
       if (response.ok) {
@@ -81,10 +82,10 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching employees:', error);
     }
-  };
+  };*/
 
   // Función para obtener clientes
-  const fetchCustomers = async () => {
+  /*const fetchCustomers = async () => {
     try {
       console.log('Intentando obtener clientes...');
       const response = await authenticatedFetch(`${API_BASE_URL}customers`);
@@ -103,7 +104,7 @@ const Dashboard = () => {
       console.error('Error fetching customers:', error);
       setError(`Error de conexión al obtener clientes: ${error.message}`);
     }
-  };
+  };*/
 
   // Función para obtener inventario
   const fetchInventory = async () => {
@@ -143,8 +144,8 @@ const Dashboard = () => {
         try {
           await Promise.all([
             fetchPettyCashData(),
-            fetchEmployees(),
-            fetchCustomers(),
+            //fetchEmployees(),
+            //fetchCustomers(),
             fetchInventory(),
             fetchCategories()
           ]);
@@ -535,17 +536,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="kpi-card">
-              <div className="kpi-header">
-                <div className="kpi-icon">👥</div>
-                <div className="kpi-trend positive">+15%</div>
-              </div>
-              <div className="kpi-content">
-                <h3 className="kpi-value">{stats.totalEmployees + stats.totalCustomers}</h3>
-                <p className="kpi-title">Usuarios Totales</p>
-                <span className="kpi-subtitle">{stats.totalEmployees} empleados, {stats.activeCustomers} clientes</span>
-              </div>
-            </div>
+            
           </aside>
 
           {/* Panel derecho con gráficos */}
