@@ -70,7 +70,7 @@ React JS es básicamente una biblioteca creada por Facebook que se está utiliza
 Este es un entorno de ejecución para JavaScript que puede permitirle ejecutar JavaScript del lado servidor y no en un navegador. Un interesante concepto a tener en cuenta en Node.js es el concepto de módulo, recursos que pueden ser más o menos simples o complejos en funcionalidad y que contiene un código JavaScript que podemos reutilizar en toda nuestra aplicación. Estos módulos tienen su propio contexto y no interfieren entre sí. Esto es una notable ventaja pues podemos crear nuestro proyecto a medida sin complicaciones, sorpresas ni comportamientos inesperados.
 
 
-##Librerias a utilizar
+## Librerias a utilizar
 
 ### Express
 Framework minimalista para Node.js que facilita la creación de servidores y APIs REST.
