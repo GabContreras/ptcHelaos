@@ -1,5 +1,6 @@
 import React from "react";
 import Navbar from "../components/NavBar";
+import Footer from "../components/Footer";
 
 function AboutUs() {
     return (
@@ -18,6 +19,7 @@ function AboutUs() {
                 somos los favoritos de la comunidad!
             </p>
         </div>
+        <Footer />
         </>
     );
 }
