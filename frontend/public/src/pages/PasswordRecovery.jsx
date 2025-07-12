@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import '../styles/PasswordRecovery.css';
 import Button from '../assets/Button';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +21,33 @@ function PasswordRecovery() {
     } else {
       console.log('Contraseña actualizada');
     }
+  };
+
+  const handlePasswordUpdate = () => {
+    if (newPassword !== confirmPassword) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Las contraseñas no coinciden.',
+      });
+      return;
+    }
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Contraseña actualizada',
+      text: 'Tu contraseña ha sido modificada exitosamente.',
+      confirmButtonText: 'Continuar',
+      backdrop: `
+        #00000080
+        left top
+        no-repeat
+      `
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/LoginPage');
+      }
+    });
   };
 
   return (
@@ -86,7 +114,7 @@ function PasswordRecovery() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="recovery-input"
             />
-            <Button titulo="Continuar" color="#8D6CFF" tipoColor="background" onClick={() => navigate('/')} />
+            <Button titulo="Continuar" color="#8D6CFF" tipoColor="background" onClick={handlePasswordUpdate} />
           </>
         )}
       </div>

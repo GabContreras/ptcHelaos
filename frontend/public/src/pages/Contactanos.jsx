@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/Contactanos.css';
 import Navbar from "../components/NavBar";
+import Footer from "../components/Footer";
 import Imagen from "../imgs/contactanoshelado.png"
 
 const ContactPage = () => {
@@ -132,6 +133,7 @@ const ContactPage = () => {
         </div>
       </section>
     </div>
+    <Footer/>
 </>
   );
 };

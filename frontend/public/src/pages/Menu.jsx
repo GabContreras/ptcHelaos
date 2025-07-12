@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, X, ArrowLeft, ArrowRight } from 'lucide-react';
 import '../styles/Menu.css';
 import Navbar from "../components/NavBar";
+import Footer from "../components/Footer";
 import imagen1 from "../imgs/item1menu.png"
 import imagen2 from "../imgs/item2menu.png"
 import imagen3 from "../imgs/item3menu.png"
@@ -413,6 +414,7 @@ const Menu = () => {
         )}
       </div>
       </div>
+      <Footer/>
       </>
       );
 };

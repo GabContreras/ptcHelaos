@@ -8,6 +8,7 @@ import Imagen3 from '../imgs/aboutus3.png';
 import Persona1 from '../imgs/persona1.png';
 import Persona2 from '../imgs/persona2.png';
 import Persona3 from '../imgs/persona3.png';
+import Footer from "../components/Footer";
 
 function AboutUs() {
   return (
@@ -20,12 +21,16 @@ function AboutUs() {
           <div className="about-content">
             <div className="text-section">
               <h2 className="section-title">¿Quiénes somos?</h2>
-              <p className="description">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Magnam rerum placeat perspiciatis minima veritatis 
-                eum, facilis inventore provident aspernatur eveniet culpa. Lorem ipsum dolor sit, amet consectetur adipisicing 
-                elit. Magnam rerum placeat perspiciatis minima veritatis eum, facilis inventore provident aspernatur eveniet culpa, 
-                nihil ullam nulla ipsum sint? Tempora, veritatis? A, facilis?
-              </p>
+              <p>
+                Somos una empresa dedicada a ofrecer la mejor experiencia de helados artesanales. 
+                Nuestro equipo está comprometido con la calidad y la innovación, utilizando solo los 
+                mejores ingredientes para crear sabores únicos y deliciosos.
+            </p>
+            <p>
+                Desde nuestros inicios, hemos trabajado arduamente para brindar un servicio excepcional 
+                y un ambiente acogedor para todos nuestros clientes. ¡Ven a visitarnos y descubre por qué 
+                somos los favoritos de la comunidad!
+            </p>
             </div>
             <div className="about-logo-container">
               <img 
@@ -94,8 +99,9 @@ function AboutUs() {
         </section>
 
       </div>
+      <Footer/>
     </>
   );
-}
+};
 
 export default AboutUs;
