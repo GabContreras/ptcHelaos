@@ -103,7 +103,7 @@ function NavBar() {
                                     </div>
                                     <div className="menu-divider"></div>
                                     <button className="menu-item" onClick={() => {
-                                        navigate('/perfil')
+                                        navigate('/userAccount')
                                         setShowUserMenu(false)
                                     }}>
                                         Mi Perfil

@@ -22,7 +22,7 @@ import VerificarRegistro from "../pages/register/VerificarRegistro";
 import FollowOrder from "../pages/FollowOrder";
 import RateService from "../pages/RateService";
 import UserAccount from "../pages/UserAccount";
-import UserAccount from "../pages/UserAccount";
+
 
 function Navigation() {
   const navigate = useNavigate();

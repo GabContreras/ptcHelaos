@@ -1,38 +1,46 @@
+/* Reset y configuración base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 .login-container {
-  min-height: calc(100vh - 60px); 
+  min-height: 100vh;
   display: flex;
+  width: 100%;
 }
 
 .form-section {
   width: 50%;
-  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .form-wrapper {
   width: 100%;
-  max-width: 28rem;
+  max-width: 400px;
 }
 
 .header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .title {
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: bold;
   color: #1f2937;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .form-fields {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
 .field-group {
@@ -41,7 +49,7 @@
 }
 
 .field-label {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #374151;
   margin-bottom: 0.5rem;
@@ -50,19 +58,20 @@
 .input-field {
   width: 100%;
   box-sizing: border-box;
-  padding: 1rem 1.5rem;
-  padding-right: 1.5rem;
-  border-radius: 9999px;
+  padding: 0.8rem 1.2rem;
+  border-radius: 50px;
   border: none;
   background-color: #FFBAE7;
-  color: rgb(0, 0, 0);
-  font-size: 1rem;
+  color: #000;
+  font-size: 0.95rem;
   transition: all 0.3s ease;
   outline: none;
 }
 
 .input-field:focus {
-  ring: 2px solid #a855f7;
+  background-color: #ff9de0;
+  box-shadow: 0 0 0 3px rgba(255, 186, 231, 0.3);
+  transform: translateY(-1px);
 }
 
 .input-field::placeholder {
@@ -71,10 +80,13 @@
 
 .password-container {
   position: relative;
+  width: 100%;
 }
 
 .password-input {
+  width: 100%;
   padding-right: 3rem;
+  box-sizing: border-box;
 }
 
 .password-toggle {
@@ -84,27 +96,33 @@
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: white;
+  color: #666;
   cursor: pointer;
   transition: color 0.3s ease;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .password-toggle:hover {
-  color: #e5e7eb;
+  color: #333;
 }
 
 .forgot-password {
   text-align: left;
+  margin-top: 0.5rem;
 }
 
 .forgot-link {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   color: #8D6CFF;
   background: transparent;
   border: none;
   cursor: pointer;
   padding: 0;
   transition: color 0.3s ease;
+  text-decoration: none;
 }
 
 .forgot-link:hover {
@@ -117,8 +135,8 @@
 
 .submit-button {
   width: 100%;
-  padding: 1rem 1.5rem;
-  border-radius: 9999px;
+  padding: 0.9rem 1.5rem;
+  border-radius: 50px;
   background-color: #8D6CFF;
   color: white;
   font-weight: 600;
@@ -126,23 +144,31 @@
   cursor: pointer;
   font-size: 1rem;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transform: scale(1);
+  box-shadow: 0 4px 15px rgba(141, 108, 255, 0.3);
+  margin-top: 0.5rem;
 }
 
-.submit-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+.submit-button:hover:not(:disabled) {
+  background-color: #7C3AED;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(141, 108, 255, 0.4);
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .register-section {
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .register-text {
   color: #6b7280;
   margin: 0;
+  font-size: 0.9rem;
 }
 
 .register-link {
@@ -154,6 +180,7 @@
   cursor: pointer;
   padding: 0;
   transition: color 0.3s ease;
+  font-size: 0.9rem;
 }
 
 .register-link:hover {
@@ -162,21 +189,20 @@
 
 .image-section {
   width: 50%;
-  background-color: #B9B8FF;
+  background: linear-gradient(135deg, #B9B8FF 0%, #8D6CFF 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .image-container {
   width: 100%;
-  height: 100%;
-  max-width: 48rem;
-  max-height: 48rem;
-  border-radius: 1.5rem;
+  height: 80%;
+  max-width: 500px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   background-color: white;
   display: flex;
   align-items: center;
@@ -192,70 +218,202 @@
   justify-content: center;
 }
 
-.placeholder-content {
-  text-align: center;
+.image-postre {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.placeholder-icon {
-  font-size: 4rem;
+/* Mensajes de estado */
+.success-message,
+.error-message {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
   margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
 }
 
-.placeholder-title {
-  color: #6b7280;
-  font-size: 1.125rem;
-  margin: 0 0 0.5rem 0;
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
 }
 
-.placeholder-subtitle {
-  color: #9ca3af;
-  font-size: 0.875rem;
-  margin: 0;
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .login-container {
-    flex-direction: column;
-  }
-  
-  .form-section, .image-section {
-    width: 100%;
-  }
-  
+/* RESPONSIVE DESIGN */
+
+/* Tablets grandes */
+@media (max-width: 1024px) {
+  .form-section,
   .image-section {
-    min-height: 300px;
+    padding: 1.2rem;
+  }
+  
+  .form-wrapper {
+    max-width: 350px;
   }
   
   .title {
-    font-size: 1.875rem;
+    font-size: 1.8rem;
+  }
+  
+  .image-container {
+    max-width: 400px;
   }
 }
 
-.password-container {
-  position: relative;
-  width: 100%;
+/* Tablets */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .form-section {
+    width: 100%;
+    min-height: 60vh;
+    padding: 1rem;
+  }
+  
+  .image-section {
+    width: 100%;
+    min-height: 40vh;
+    padding: 1rem;
+  }
+  
+  .form-wrapper {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .title {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .image-container {
+    height: 250px;
+    max-width: 100%;
+  }
 }
 
-.password-input {
-  width: 100%;
-  padding-right: 24px; 
-  padding-left: 24px;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  box-sizing: border-box;
+/* Móviles grandes */
+@media (max-width: 640px) {
+  .form-section {
+    padding: 0.8rem;
+    min-height: 65vh;
+  }
+  
+  .image-section {
+    min-height: 35vh;
+    padding: 0.8rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .form-fields {
+    gap: 1rem;
+  }
+  
+  .input-field {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .submit-button {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.95rem;
+  }
+  
+  .image-container {
+    height: 200px;
+  }
 }
 
-.password-toggle {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Móviles */
+@media (max-width: 480px) {
+  .form-section {
+    padding: 0.5rem;
+    min-height: 70vh;
+  }
+  
+  .image-section {
+    min-height: 30vh;
+    padding: 0.5rem;
+  }
+  
+  .title {
+    font-size: 1.3rem;
+  }
+  
+  .field-label {
+    font-size: 0.85rem;
+  }
+  
+  .input-field {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.85rem;
+  }
+  
+  .submit-button {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .forgot-link,
+  .register-text,
+  .register-link {
+    font-size: 0.8rem;
+  }
+  
+  .image-container {
+    height: 150px;
+    border-radius: 15px;
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 360px) {
+  .header {
+    margin-bottom: 1rem;
+  }
+  
+  .title {
+    font-size: 1.2rem;
+  }
+  
+  .form-fields {
+    gap: 0.8rem;
+  }
+  
+  .input-field {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .submit-button {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .image-container {
+    height: 120px;
+  }
+}
+
+/* Estados de loading */
+.input-field:disabled,
+.password-toggle:disabled,
+.forgot-link:disabled,
+.register-link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
