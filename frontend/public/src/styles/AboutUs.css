@@ -1,0 +1,234 @@
+:root {
+  --primary-purple: #8D6CFF;
+  --soft-pink: #FFBAE7;
+  --light-purple: #B9B8FF;
+  --cream: #F2E8D5;
+  --light-blue: #99DBFF;
+  --dark-gray: #2c2c2c;
+  --light-gray: #666;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  color: var(--dark-gray);
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: white;
+}
+
+/* About Section */
+.about-section {
+  margin-bottom: 80px;
+}
+
+.about-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.text-section {
+  flex: 1;
+  min-width: 280px;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--dark-gray);
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.description {
+  font-size: 1rem;
+  color: var(--light-gray);
+  line-height: 1.8;
+  text-align: justify;
+  max-width: 800px;
+}
+
+.about-logo-container {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 4px solid var(--primary-purple);
+  padding: 10px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(141, 108, 255, 0.2);
+}
+
+.about-logo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Process Images */
+.process-images {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.process-image {
+  flex: 1;
+  min-width: 280px;
+  height: 500px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.process-image:hover {
+  transform: translateY(-5px);
+}
+
+.process-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Team Section */
+.team-section {
+  text-align: center;
+}
+
+.team-grid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.team-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 250px;
+}
+
+.team-avatar {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  padding: 8px;
+  margin-bottom: 15px;
+  transition: transform 0.3s ease;
+  background-color: white;
+}
+
+.team-avatar:hover {
+  transform: scale(1.05);
+}
+
+.team-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  object-position: top center;
+}
+
+.team-info {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.team-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--dark-gray);
+  margin-bottom: 5px;
+}
+
+.team-position {
+  font-size: 1rem;
+  color: var(--light-gray);
+  font-style: italic;
+}
+
+.female-1 {
+  background: linear-gradient(135deg, var(--soft-pink), var(--light-purple));
+}
+
+.female-2 {
+  background: linear-gradient(135deg, var(--light-purple), var(--primary-purple));
+}
+
+.male-1 {
+  background: linear-gradient(135deg, var(--light-blue), var(--cream));
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .about-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .about-logo-container {
+    width: 140px;
+    height: 140px;
+  }
+
+  .process-images {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .process-image {
+    min-width: 100%;
+  }
+
+  .team-grid {
+    gap: 30px;
+  }
+
+  .team-avatar {
+    width: 150px;
+    height: 150px;
+  }
+
+  .team-name {
+    font-size: 1.1rem;
+  }
+
+  .team-position {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-container {
+    padding: 20px 15px;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+}
