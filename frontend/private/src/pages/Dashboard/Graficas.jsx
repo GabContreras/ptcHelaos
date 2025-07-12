@@ -1,55 +1,487 @@
-import React from 'react';
-import './Graficas.css';
+import React, { useState, useEffect } from 'react';
+import './Graficas.css'
+import { TrendingUp, Package, Users, DollarSign, AlertCircle, Activity } from 'lucide-react';
+import { config } from '../../config';
+import { useEmployeesManager } from '../../hooks/EmployeesHook/useEmployees';
 
-const Graficas = () => {
-  // Datos para las visualizaciones
-  const ventasData = [
-    { name: 'Ice Cream Rolls', valor: 75, color: '#8D6CFF' },
-    { name: 'Helados Premium', valor: 65, color: '#99DBFF' },
-    { name: 'Postres Especiales', valor: 85, color: '#FFBAE7' },
-    { name: 'Bebidas Frías', valor: 95, color: '#B9B8FF' },
-    { name: 'Complementos', valor: 55, color: '#F2E8D5' },
-  ];
 
-  const ordenesData = [
-    { name: 'Ene', valor: 40 },
-    { name: 'Feb', valor: 80 },
-    { name: 'Mar', valor: 60 },
-    { name: 'Abr', valor: 70 },
-    { name: 'May', valor: 90 },
-    { name: 'Jun', valor: 50 },
-    { name: 'Jul', valor: 85 },
-    { name: 'Ago', valor: 95 },
-    { name: 'Sep', valor: 65 },
-  ];
+import { useAuth } from '../../context/AuthContext';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from 'chart.js';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
 
-  const kpiData = [
-    {
-      title: 'Ventas Totales',
-      value: '$24.5K',
-      subtitle: 'Este mes',
-      icon: '💰',
-      trend: '+12%'
-    },
-    {
-      title: 'Órdenes Completadas',
-      value: '1,847',
-      subtitle: 'Pedidos entregados',
-      icon: '📦',
-      trend: '+8%'
-    },
-    {
-      title: 'Clientes Activos',
-      value: '967',
-      subtitle: 'Usuarios registrados',
-      icon: '👥',
-      trend: '+15%'
+// Registrar componentes de Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
+
+const Dashboard = () => {
+  const { isAuthenticated, user, isLoading, authenticatedFetch } = useAuth();
+  
+  // Estados para datos del dashboard
+  const [pettyCashMovements, setPettyCashMovements] = useState([]);
+  const [currentBalance, setCurrentBalance] = useState(0);
+  const [employees, setEmployees] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [inventory, setInventory] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const API_BASE_URL = config.api.API_BASE;
+
+  // Función para obtener movimientos de caja chica
+  const fetchPettyCashData = async () => {
+    try {
+      const [movementsResponse, balanceResponse] = await Promise.all([
+        authenticatedFetch(`${API_BASE_URL}pettyCash`),
+        authenticatedFetch(`${API_BASE_URL}pettyCash/balance`)
+      ]);
+
+      if (movementsResponse.ok) {
+        const movements = await movementsResponse.json();
+        setPettyCashMovements(movements);
+      }
+
+      if (balanceResponse.ok) {
+        const balanceData = await balanceResponse.json();
+        setCurrentBalance(balanceData.currentBalance || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching petty cash data:', error);
+      setError('Error al cargar datos de caja chica');
     }
-  ];
+  };
+
+  // Función para obtener empleados
+  /*const fetchEmployees = async () => {
+    try {
+      const response = await authenticatedFetch(`${API_BASE_URL}employees`);
+      if (response.ok) {
+        const data = await response.json();
+        setEmployees(data);
+      }
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    }
+  };*/
+
+  // Función para obtener clientes
+  /*const fetchCustomers = async () => {
+    try {
+      console.log('Intentando obtener clientes...');
+      const response = await authenticatedFetch(`${API_BASE_URL}customers`);
+      console.log('Response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Clientes obtenidos:', data);
+        setCustomers(data);
+      } else {
+        const errorData = await response.json();
+        console.error('Error en response:', errorData);
+        setError(`Error al obtener clientes: ${errorData.message || 'Error desconocido'}`);
+      }
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      setError(`Error de conexión al obtener clientes: ${error.message}`);
+    }
+  };*/
+
+  // Función para obtener inventario
+  const fetchInventory = async () => {
+    try {
+      const response = await authenticatedFetch(`${API_BASE_URL}inventory`);
+      if (response.ok) {
+        const data = await response.json();
+        setInventory(data);
+      }
+    } catch (error) {
+      console.error('Error fetching inventory:', error);
+    }
+  };
+
+  // Función para obtener categorías
+  const fetchCategories = async () => {
+    try {
+      const response = await authenticatedFetch(`${API_BASE_URL}category`);
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  // Cargar todos los datos
+  useEffect(() => {
+    console.log('useEffect ejecutado - Estado:', { isAuthenticated, isLoading, user });
+    
+    if (isAuthenticated && !isLoading) {
+      const loadData = async () => {
+        console.log('Iniciando carga de datos...');
+        setLoading(true);
+        
+        try {
+          await Promise.all([
+            fetchPettyCashData(),
+            //fetchEmployees(),
+            //fetchCustomers(),
+            fetchInventory(),
+            fetchCategories()
+          ]);
+          console.log('Todos los datos cargados exitosamente');
+        } catch (error) {
+          console.error('Error al cargar datos:', error);
+          setError('Error al cargar algunos datos del dashboard');
+        }
+        
+        setLoading(false);
+      };
+      loadData();
+    } else {
+      console.log('No se cargan datos - Usuario no autenticado o cargando');
+    }
+  }, [isAuthenticated, isLoading]);
+
+  // Procesar datos para gráficos
+  const processMonthlyData = () => {
+    if (!pettyCashMovements.length) return [];
+
+    const monthlyData = {};
+    
+    pettyCashMovements.forEach(movement => {
+      const date = new Date(movement.date);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = { month: monthKey, income: 0, expenses: 0 };
+      }
+      
+      if (movement.type === 'income') {
+        monthlyData[monthKey].income += movement.amount;
+      } else {
+        monthlyData[monthKey].expenses += movement.amount;
+      }
+    });
+
+    return Object.values(monthlyData).sort((a, b) => a.month.localeCompare(b.month));
+  };
+
+  const processCategoryData = () => {
+    if (!pettyCashMovements.length) return [];
+
+    const categoryData = {
+      'Ice Cream Rolls': 0,
+      'Helados Premium': 0,
+      'Postres Especiales': 0,
+      'Bebidas Frías': 0,
+      'Complementos': 0,
+      'Otros': 0
+    };
+
+    console.log('Procesando movimientos de caja chica:', pettyCashMovements);
+
+    pettyCashMovements.forEach(movement => {
+      const reason = movement.reason.toLowerCase();
+      let categorized = false;
+
+      console.log(`Analizando razón: "${movement.reason}" -> "${reason}"`);
+
+      if (reason.includes('roll') || reason.includes('helado roll')) {
+        categoryData['Ice Cream Rolls'] += movement.amount;
+        categorized = true;
+        console.log(`Categorizado como Ice Cream Rolls: +${movement.amount}`);
+      } else if (reason.includes('premium') || reason.includes('helado premium')) {
+        categoryData['Helados Premium'] += movement.amount;
+        categorized = true;
+        console.log(`Categorizado como Helados Premium: +${movement.amount}`);
+      } else if (reason.includes('postre') || reason.includes('especial')) {
+        categoryData['Postres Especiales'] += movement.amount;
+        categorized = true;
+        console.log(`Categorizado como Postres Especiales: +${movement.amount}`);
+      } else if (reason.includes('bebida') || reason.includes('fria')) {
+        categoryData['Bebidas Frías'] += movement.amount;
+        categorized = true;
+        console.log(`Categorizado como Bebidas Frías: +${movement.amount}`);
+      } else if (reason.includes('complemento') || reason.includes('extra')) {
+        categoryData['Complementos'] += movement.amount;
+        categorized = true;
+        console.log(`Categorizado como Complementos: +${movement.amount}`);
+      }
+
+      if (!categorized) {
+        categoryData['Otros'] += movement.amount;
+        console.log(`Categorizado como Otros: +${movement.amount}`);
+      }
+    });
+
+    console.log('Datos de categoría finales:', categoryData);
+
+    return Object.entries(categoryData)
+      .map(([name, value]) => ({ name, value: Math.round(value * 100) / 100 }))
+      .filter(item => item.value > 0);
+  };
+
+  const processInventoryData = () => {
+    if (!inventory.length || !categories.length) return [];
+
+    const categoryMap = categories.reduce((acc, cat) => {
+      acc[cat._id] = cat.name;
+      return acc;
+    }, {});
+
+    const inventoryByCategory = {};
+    
+    inventory.forEach(item => {
+      const categoryName = categoryMap[item.categoryId] || 'Sin categoría';
+      if (!inventoryByCategory[categoryName]) {
+        inventoryByCategory[categoryName] = { count: 0, totalValue: 0 };
+      }
+      inventoryByCategory[categoryName].count += 1;
+      inventoryByCategory[categoryName].totalValue += (item.price || 0) * (item.stock || 0);
+    });
+
+    return Object.entries(inventoryByCategory).map(([name, data]) => ({
+      name,
+      count: data.count,
+      totalValue: Math.round(data.totalValue * 100) / 100
+    }));
+  };
+
+  // Calcular estadísticas
+  const calculateStats = () => {
+    const currentMonth = new Date();
+    currentMonth.setDate(1);
+    currentMonth.setHours(0, 0, 0, 0);
+
+    const monthlyMovements = pettyCashMovements.filter(movement => 
+      new Date(movement.date) >= currentMonth
+    ).length;
+
+    const monthlyIncome = pettyCashMovements
+      .filter(movement => new Date(movement.date) >= currentMonth && movement.type === 'income')
+      .reduce((sum, movement) => sum + movement.amount, 0);
+
+    const monthlyExpenses = pettyCashMovements
+      .filter(movement => new Date(movement.date) >= currentMonth && movement.type === 'expense')
+      .reduce((sum, movement) => sum + movement.amount, 0);
+
+    // CAMBIO: Contar todos los clientes como "activos" en lugar de solo los verificados
+    // porque según tu modelo, isVerified por defecto es false y no se actualiza
+    const activeCustomers = customers.length; // Todos los clientes registrados
+    const verifiedCustomers = customers.filter(customer => customer.isVerified === true).length;
+
+    console.log('Estadísticas calculadas:', {
+      totalCustomers: customers.length,
+      activeCustomers,
+      verifiedCustomers,
+      totalEmployees: employees.length
+    });
+
+    return {
+      currentBalance,
+      monthlyMovements,
+      monthlyIncome,
+      monthlyExpenses,
+      totalEmployees: employees.length,
+      totalCustomers: customers.length,
+      verifiedCustomers: activeCustomers, // Usar todos los clientes como "activos"
+      activeCustomers, // Nuevo campo para claridad
+      totalProducts: inventory.length,
+      lowStockProducts: inventory.filter(item => (item.stock || 0) <= 10).length
+    };
+  };
+
+  const monthlyData = processMonthlyData();
+  const categoryData = processCategoryData();
+  const inventoryData = processInventoryData();
+  const stats = calculateStats();
+
+  // Configuración para gráfico de líneas (datos mensuales)
+  const lineChartData = {
+    labels: monthlyData.map(item => {
+      const [year, month] = item.month.split('-');
+      return new Date(year, month - 1).toLocaleDateString('es-ES', { month: 'short', year: '2-digit' });
+    }),
+    datasets: [
+      {
+        label: 'Ingresos',
+        data: monthlyData.map(item => item.income),
+        borderColor: '#8D6CFF',
+        backgroundColor: 'rgba(141, 108, 255, 0.1)',
+        tension: 0.4,
+        fill: true,
+      },
+      {
+        label: 'Egresos',
+        data: monthlyData.map(item => item.expenses),
+        borderColor: '#FF6B6B',
+        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+        tension: 0.4,
+        fill: true,
+      }
+    ],
+  };
+
+  const lineChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Tendencia Mensual de Caja Chica',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return '$' + value.toLocaleString();
+          }
+        }
+      },
+    },
+  };
+
+  // Configuración para gráfico de barras (categorías)
+  const barChartData = {
+    labels: categoryData.map(item => item.name),
+    datasets: [
+      {
+        label: 'Monto Total',
+        data: categoryData.map(item => item.value),
+        backgroundColor: [
+          '#8D6CFF',
+          '#99DBFF',
+          '#FFBAE7',
+          '#B9B8FF',
+          '#F2E8D5',
+          '#FFD93D'
+        ],
+        borderColor: [
+          '#7C3AED',
+          '#0EA5E9',
+          '#EC4899',
+          '#8B5CF6',
+          '#F59E0B',
+          '#EAB308'
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const barChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: 'Ventas por Categoría',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return '$' + value.toLocaleString();
+          }
+        }
+      },
+    },
+  };
+
+  // Configuración para gráfico circular (inventario)
+  const doughnutChartData = {
+    labels: inventoryData.map(item => item.name),
+    datasets: [
+      {
+        data: inventoryData.map(item => item.totalValue),
+        backgroundColor: [
+          '#8D6CFF',
+          '#99DBFF',
+          '#FFBAE7',
+          '#B9B8FF',
+          '#F2E8D5',
+          '#FFD93D'
+        ],
+        borderColor: '#ffffff',
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const doughnutChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+      title: {
+        display: true,
+        text: 'Distribución de Productos',
+      },
+    },
+  };
+
+  // Mostrar loading
+  if (isLoading || loading) {
+    return (
+      <div className="dashboard-container">
+        <div className="loading-container">
+          <Activity className="animate-spin" size={32} />
+          <p>Cargando dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar error de autenticación
+  if (!isAuthenticated) {
+    return (
+      <div className="dashboard-container">
+        <div className="auth-required">
+          <AlertCircle size={48} />
+          <h2>Acceso Restringido</h2>
+          <p>Debes iniciar sesión para acceder al dashboard.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-wrapper">
+        {/* Header */}
         <header className="dashboard-header">
           <div className="header-content">
             <div className="welcome-section">
@@ -60,18 +492,18 @@ const Graficas = () => {
               <p className="dashboard-subtitle">Panel de control y estadísticas</p>
             </div>
             <div className="header-actions">
-              <button className="action-btn primary">
-                <span>📊</span>
-                Ver Reportes
-              </button>
-              <button className="action-btn secondary">
-                <span>⚙️</span>
-                Configuración
-              </button>
             </div>
           </div>
         </header>
-        
+
+        {/* Error Message */}
+        {error && (
+          <div className="error-message">
+            <AlertCircle size={16} />
+            {error}
+          </div>
+        )}
+
         <div className="dashboard-grid">
           {/* Panel izquierdo con KPIs */}
           <aside className="kpi-section">
@@ -80,24 +512,36 @@ const Graficas = () => {
               Indicadores Clave
             </h2>
             
-            {kpiData.map((kpi, index) => (
-              <div key={index} className="kpi-card">
-                <div className="kpi-header">
-                  <div className="kpi-icon">{kpi.icon}</div>
-                  <div className="kpi-trend positive">{kpi.trend}</div>
-                </div>
-                <div className="kpi-content">
-                  <h3 className="kpi-value">{kpi.value}</h3>
-                  <p className="kpi-title">{kpi.title}</p>
-                  <span className="kpi-subtitle">{kpi.subtitle}</span>
-                </div>
+            <div className="kpi-card">
+              <div className="kpi-header">
+                <div className="kpi-icon">💰</div>
+                <div className="kpi-trend positive">+12%</div>
               </div>
-            ))}
+              <div className="kpi-content">
+                <h3 className="kpi-value">${stats.currentBalance.toLocaleString()}</h3>
+                <p className="kpi-title">Balance Actual</p>
+                <span className="kpi-subtitle">Caja chica</span>
+              </div>
+            </div>
+
+            <div className="kpi-card">
+              <div className="kpi-header">
+                <div className="kpi-icon">📦</div>
+                <div className="kpi-trend positive">+8%</div>
+              </div>
+              <div className="kpi-content">
+                <h3 className="kpi-value">{stats.monthlyMovements}</h3>
+                <p className="kpi-title">Movimientos</p>
+                <span className="kpi-subtitle">Este mes</span>
+              </div>
+            </div>
+
+            
           </aside>
-          
+
           {/* Panel derecho con gráficos */}
           <main className="charts-section">
-            {/* Gráfico de barras - CSS puro */}
+            {/* Gráfico de barras */}
             <div className="chart-card">
               <div className="chart-header">
                 <h3 className="chart-title">
@@ -111,30 +555,15 @@ const Graficas = () => {
                 </div>
               </div>
               <div className="chart-container">
-                <div className="bar-chart">
-                  {ventasData.map((item, index) => (
-                    <div key={index} className="bar-item">
-                      <div className="bar-info">
-                        <span className="bar-label">{item.name}</span>
-                        <span className="bar-value">{item.valor}%</span>
-                      </div>
-                      <div className="bar-container">
-                        <div 
-                          className="bar-fill"
-                          style={{
-                            width: `${item.valor}%`,
-                            backgroundColor: item.color,
-                            animationDelay: `${index * 0.1}s`
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {categoryData.length > 0 ? (
+                  <Bar data={barChartData} options={barChartOptions} />
+                ) : (
+                  <div className="no-data">No hay datos de categorías disponibles</div>
+                )}
               </div>
             </div>
-            
-            {/* Gráfico de líneas - CSS puro */}
+
+            {/* Gráfico de líneas */}
             <div className="chart-card">
               <div className="chart-header">
                 <h3 className="chart-title">
@@ -148,67 +577,15 @@ const Graficas = () => {
                 </div>
               </div>
               <div className="chart-container">
-                <div className="line-chart">
-                  <div className="line-chart-grid">
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="grid-line"></div>
-                    ))}
-                  </div>
-                  <div className="line-chart-data">
-                    <svg className="line-svg" viewBox="0 0 400 200">
-                      <defs>
-                        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#8D6CFF" />
-                          <stop offset="100%" stopColor="#FFBAE7" />
-                        </linearGradient>
-                        <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="rgba(141, 108, 255, 0.3)" />
-                          <stop offset="100%" stopColor="rgba(141, 108, 255, 0.05)" />
-                        </linearGradient>
-                      </defs>
-                      
-                      {/* Área bajo la línea */}
-                      <path
-                        d="M0,160 L50,120 L100,140 L150,130 L200,110 L250,150 L300,115 L350,105 L400,135 L400,200 L0,200 Z"
-                        fill="url(#areaGradient)"
-                        className="area-fill"
-                      />
-                      
-                      {/* Línea principal */}
-                      <path
-                        d="M0,160 L50,120 L100,140 L150,130 L200,110 L250,150 L300,115 L350,105 L400,135"
-                        stroke="url(#lineGradient)"
-                        strokeWidth="3"
-                        fill="none"
-                        className="line-path"
-                      />
-                      
-                      {/* Puntos de datos */}
-                      {ordenesData.map((point, index) => (
-                        <circle
-                          key={index}
-                          cx={index * 50}
-                          cy={200 - (point.valor * 2)}
-                          r="5"
-                          fill="#FFBAE7"
-                          stroke="#8D6CFF"
-                          strokeWidth="2"
-                          className="data-point"
-                          style={{ animationDelay: `${index * 0.1}s` }}
-                        />
-                      ))}
-                    </svg>
-                  </div>
-                  <div className="line-chart-labels">
-                    {ordenesData.map((point, index) => (
-                      <span key={index} className="chart-label">{point.name}</span>
-                    ))}
-                  </div>
-                </div>
+                {monthlyData.length > 0 ? (
+                  <Line data={lineChartData} options={lineChartOptions} />
+                ) : (
+                  <div className="no-data">No hay datos mensuales disponibles</div>
+                )}
               </div>
             </div>
 
-            {/* Gráfico circular adicional */}
+            {/* Gráfico circular */}
             <div className="chart-card">
               <div className="chart-header">
                 <h3 className="chart-title">
@@ -217,37 +594,11 @@ const Graficas = () => {
                 </h3>
               </div>
               <div className="chart-container">
-                <div className="donut-chart">
-                  <div className="donut-center">
-                    <div className="donut-value">2,847</div>
-                    <div className="donut-label">Total Productos</div>
-                  </div>
-                  <div className="donut-segments">
-                    {ventasData.map((item, index) => (
-                      <div
-                        key={index}
-                        className="donut-segment"
-                        style={{
-                          '--segment-color': item.color,
-                          '--segment-percentage': `${item.valor}%`,
-                          animationDelay: `${index * 0.2}s`
-                        }}
-                      ></div>
-                    ))}
-                  </div>
-                  <div className="donut-legend">
-                    {ventasData.map((item, index) => (
-                      <div key={index} className="legend-item">
-                        <div 
-                          className="legend-color" 
-                          style={{ backgroundColor: item.color }}
-                        ></div>
-                        <span className="legend-text">{item.name}</span>
-                        <span className="legend-percentage">{item.valor}%</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                {inventoryData.length > 0 ? (
+                  <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
+                ) : (
+                  <div className="no-data">No hay datos de inventario disponibles</div>
+                )}
               </div>
             </div>
           </main>
@@ -257,4 +608,4 @@ const Graficas = () => {
   );
 };
 
-export default Graficas;
+export default Dashboard;
