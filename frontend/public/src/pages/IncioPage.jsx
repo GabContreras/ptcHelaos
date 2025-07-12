@@ -3,8 +3,11 @@ import '../styles/InicioPage.css';
 import Navbar from "../components/NavBar";
 import inicio from '../imgs/inicioHelados.png'; 
 import logo from '../imgs/logo.jpg';
+import { useNavigate } from "react-router-dom";
 
 const InicioPage = () => {
+  const navigate = useNavigate()
+  
   return (
     <>
       <Navbar />
@@ -30,7 +33,7 @@ const InicioPage = () => {
 
 <div className="image-wrapper">
   <div className="image-card relative rounded-xl shadow-md overflow-hidden">
-    <button className="menu-button absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+    <button className="menu-button absolute top-4 left-1/2 transform -translate-x-1/2 z-10" onClick={() => navigate('/Menu')} >
       Ver menú
     </button>
     <img src={inicio} alt="Inicio Helados" className="inicio-img" />
