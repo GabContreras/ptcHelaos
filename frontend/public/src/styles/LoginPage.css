@@ -90,19 +90,11 @@
 }
 
 .password-toggle {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
   background: transparent;
   border: none;
   color: #666;
   cursor: pointer;
   transition: color 0.3s ease;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .password-toggle:hover {
@@ -411,7 +403,6 @@
 
 /* Estados de loading */
 .input-field:disabled,
-.password-toggle:disabled,
 .forgot-link:disabled,
 .register-link:disabled {
   opacity: 0.6;
