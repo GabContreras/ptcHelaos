@@ -12,7 +12,7 @@ import AboutUs from "../pages/AboutUs";
 import FinishOrder from "../pages/FinishOrder";
 import LoginPage from "../pages/LoginPage";
 import RegistroPage from "../pages/register/RegistroPage";
-import InicioPage from "../pages/incioPage";
+import InicioPage from "../pages/IncioPage";
 import Menu from "../pages/Menu";
 import Contactanos from "../pages/Contactanos"
 import Recuperacion from "../pages/passwordRecovery/Recuperacion";

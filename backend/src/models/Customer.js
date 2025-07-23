@@ -10,6 +10,7 @@ const customersSchema = new Schema({
     type: String,
     required: true,
     trim: true
+    
   },
   email: {
     type: String,

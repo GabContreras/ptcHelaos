@@ -20,7 +20,8 @@ const employeesSchema = new Schema({
   password: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    
   },
   hireDate: {
     type: Date,
