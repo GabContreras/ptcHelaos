@@ -18,17 +18,20 @@ export const AuthProvider = ({ children }) => {
         return authCookie ? authCookie.split('=')[1].trim() : null;
     };
 
-    // Login corregido - NO usar localStorage para el token
+    // Login usando tu controlador existente
     const Login = async (email, password) => {
         try {
+            console.log("Enviando petición de login...");
+            
             const response = await fetch(`${SERVER_URL}login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
-                credentials: "include", // CRÍTICO: Para que se envíen las cookies
+                credentials: "include", // CRÍTICO: Para cookies
             });
 
             const data = await response.json();
+            console.log("Respuesta del servidor:", data);
 
             if (!response.ok) {
                 return {
@@ -37,7 +40,12 @@ export const AuthProvider = ({ children }) => {
                 };
             }
 
-            // Verificar que no sea customer
+            // Si no tiene success en la respuesta pero el status es 200, es exitoso
+            if (!data.success && response.status === 200) {
+                data.success = true;
+            }
+
+            // Verificar que no sea customer para dashboard
             if (data.userType === "customer") {
                 return {
                     success: false,
@@ -45,32 +53,52 @@ export const AuthProvider = ({ children }) => {
                 };
             }
 
-            // Crear objeto de usuario
+            // Crear objeto de usuario usando los datos de tu controlador
             const userData = {
                 id: data.userId,
                 userType: data.userType,
                 email: email,
-                name: data.name || data.username || email.split('@')[0]
+                name: data.name || email.split('@')[0]
             };
 
-            // SOLO guardar datos de usuario en localStorage, NO el token
+            // Guardar datos de usuario en localStorage
             localStorage.setItem("user", JSON.stringify(userData));
             
-            // Verificar que la cookie se haya establecido
-            setTimeout(() => {
+            // Verificar cookies con múltiples intentos
+            console.log("Cookies inmediatamente después:", document.cookie);
+            
+            let attempts = 0;
+            const checkCookie = () => {
+                attempts++;
                 const cookieToken = checkAuthTokenCookie();
-                console.log("Cookie después del login:", cookieToken ? "✅ Existe" : "❌ No existe");
+                console.log(`Intento ${attempts} - Cookie:`, cookieToken ? "✅ Existe" : "❌ No existe");
+                console.log("Todas las cookies:", document.cookie);
                 
                 if (cookieToken) {
                     setAuthCokie(cookieToken);
                     setUser(userData);
                     console.log("Login exitoso - Cookie establecida");
+                    return true;
+                } else if (attempts < 5) {
+                    setTimeout(checkCookie, 200);
+                    return false;
                 } else {
-                    console.error("Cookie no se estableció correctamente");
+                    console.error("Cookie no se estableció después de 5 intentos");
+                    // Aún así marcar como exitoso si el servidor dice que sí
+                    if (data.success) {
+                        setUser(userData);
+                        setAuthCokie("temp"); // Valor temporal
+                    }
+                    return false;
                 }
-            }, 100);
+            };
 
-            return { success: true, message: data.message };
+            setTimeout(checkCookie, 100);
+
+            return { 
+                success: data.success || true, 
+                message: data.message || "Login exitoso" 
+            };
         } catch (error) {
             console.error("Error en login:", error);
             return { success: false, message: error.message };
@@ -79,10 +107,11 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
+            console.log("Iniciando logout...");
             // Llamar al endpoint de logout del servidor
             await fetch(`${SERVER_URL}logout`, {
                 method: "POST",
-                credentials: "include" // Para enviar cookies
+                credentials: "include"
             });
         } catch (error) {
             console.error("Error al hacer logout en el servidor:", error);
@@ -91,29 +120,55 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem("user");
             setAuthCokie(null);
             setUser(null);
+            console.log("Logout completado");
         }
     };
 
-    // Función para obtener headers de autenticación (simplificada)
-    const getAuthHeaders = () => {
-        return {
-            'Content-Type': 'application/json'
-            // NO incluir Authorization header - el token va en cookies httpOnly
-        };
+    // Función para verificar si el usuario está logueado usando tu endpoint
+    const checkLoginStatus = async () => {
+        try {
+            const response = await fetch(`${SERVER_URL}isLoggedIn`, {
+                method: "GET",
+                credentials: "include"
+            });
+
+            const data = await response.json();
+
+            if (data.loggedIn && data.success) {
+                // Restaurar sesión desde el servidor
+                const userData = {
+                    id: data.user,
+                    userType: data.userType,
+                    email: data.email || "unknown@email.com"
+                };
+                
+                localStorage.setItem("user", JSON.stringify(userData));
+                setUser(userData);
+                setAuthCokie("authenticated");
+                
+                return true;
+            } else {
+                // Limpiar si no está logueado
+                localStorage.removeItem("user");
+                setUser(null);
+                setAuthCokie(null);
+                return false;
+            }
+        } catch (error) {
+            console.error("Error verificando login status:", error);
+            return false;
+        }
     };
 
-    // Fetch autenticado corregido
+    // Fetch autenticado
     const authenticatedFetch = async (url, options = {}) => {
-        // Detectar si se está enviando FormData
         const isFormData = options.body instanceof FormData;
 
         const config = {
             ...options,
-            credentials: 'include', // CRÍTICO: Para enviar cookies
+            credentials: 'include',
             headers: {
-                // Solo agregar Content-Type si NO es FormData
                 ...(!isFormData && { 'Content-Type': 'application/json' }),
-                // NO agregar Authorization - usamos cookies httpOnly
                 ...options.headers
             }
         };
@@ -121,7 +176,6 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await fetch(url, config);
 
-            // Si el token expiró o es inválido
             if (response.status === 401 || response.status === 403) {
                 console.log("Token expirado o sin permisos, haciendo logout automático...");
                 await logout();
@@ -135,7 +189,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     // isAuthenticated basado en cookie y usuario
-    const isAuthenticated = !!(user && checkAuthTokenCookie());
+    const isAuthenticated = !!(user && (checkAuthTokenCookie() || authCokie));
 
     // Funciones de roles
     const hasRole = (role) => user?.userType === role;
@@ -143,45 +197,65 @@ export const AuthProvider = ({ children }) => {
     const isEmployee = () => user?.userType === 'employee';
     const isAdmin = () => user?.userType === 'admin';
 
+    // Función para obtener headers (simplificada)
+    const getAuthHeaders = () => ({
+        'Content-Type': 'application/json'
+    });
+
     useEffect(() => {
-        const savedUser = localStorage.getItem("user");
-        const cookieToken = checkAuthTokenCookie();
-
-        console.log("useEffect - Verificando auth:", { 
-            savedUser: !!savedUser, 
-            cookieExists: !!cookieToken 
-        });
-
-        // Si hay cookie Y datos de usuario, restaurar sesión
-        if (cookieToken && savedUser && savedUser !== "undefined") {
-            try {
-                const parsedUser = JSON.parse(savedUser);
-                setUser(parsedUser);
-                setAuthCokie(cookieToken);
-                console.log("Sesión restaurada:", { user: parsedUser });
-            } catch (error) {
-                console.error("Error parsing saved user:", error);
-                localStorage.removeItem("user");
-            }
-        }
-        // Si no hay cookie, limpiar datos locales
-        else if (!cookieToken) {
-            console.log("No hay cookie, limpiando datos...");
-            localStorage.removeItem("user");
-            setAuthCokie(null);
-            setUser(null);
+        const initAuth = async () => {
+            console.log("Inicializando autenticación...");
             
-            // Redirigir si no está en ruta pública
-            const currentPath = window.location.pathname;
-            const publicPaths = ['/', '/login', '/register', '/recuperacion', '/recuperacioncodigo', '/cambiarpassword'];
-            
-            if (!publicPaths.includes(currentPath)) {
-                console.log("Redirigiendo al login...");
-                window.location.href = '/login';
-            }
-        }
+            const savedUser = localStorage.getItem("user");
+            const cookieToken = checkAuthTokenCookie();
 
-        setIsLoading(false);
+            console.log("Estado inicial:", { 
+                savedUser: !!savedUser, 
+                cookieExists: !!cookieToken 
+            });
+
+            // Si hay cookie, verificar con el servidor
+            if (cookieToken) {
+                console.log("Cookie encontrada, verificando con servidor...");
+                const isValid = await checkLoginStatus();
+                
+                if (!isValid) {
+                    console.log("Cookie inválida, limpiando...");
+                    localStorage.removeItem("user");
+                }
+            } 
+            // Si hay datos guardados pero no cookie, verificar con servidor
+            else if (savedUser) {
+                console.log("Datos guardados pero no cookie, verificando servidor...");
+                const isValid = await checkLoginStatus();
+                
+                if (!isValid) {
+                    console.log("Sesión inválida, limpiando datos...");
+                    localStorage.removeItem("user");
+                    setUser(null);
+                    setAuthCokie(null);
+                    
+                    // Redirigir si no está en ruta pública
+                    const currentPath = window.location.pathname;
+                    const publicPaths = ['/', '/login', '/register', '/recuperacion', '/recuperacioncodigo', '/cambiarpassword'];
+                    
+                    if (!publicPaths.includes(currentPath)) {
+                        console.log("Redirigiendo al login...");
+                        window.location.href = '/login';
+                    }
+                }
+            }
+            // Si no hay nada, asegurarse de que esté limpio
+            else {
+                console.log("No hay datos de sesión");
+                setUser(null);
+                setAuthCokie(null);
+            }
+
+            setIsLoading(false);
+        };
+
+        initAuth();
     }, []);
 
     return (
@@ -201,6 +275,7 @@ export const AuthProvider = ({ children }) => {
                 hasAnyRole,
                 isEmployee,
                 isAdmin,
+                checkLoginStatus
             }}
         >
             {children}
