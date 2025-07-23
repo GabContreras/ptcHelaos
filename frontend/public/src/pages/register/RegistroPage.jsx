@@ -4,7 +4,7 @@ import '../../styles/RegistroPage.css';
 import Navbar from "../../components/NavBar";
 import HeladosRegistro from "../../imgs/heladosRegistro.png";
 import { useRegister } from '../../hooks/RegisterHook/useRegister';
-import UniversalModal from "../../components/Modals/UniversalModal/UniversalModal";
+import UniversalModal from "../../components/modals/UniversalModal/UniversalModal";
 
 const RegistroPage = () => {
   const {
