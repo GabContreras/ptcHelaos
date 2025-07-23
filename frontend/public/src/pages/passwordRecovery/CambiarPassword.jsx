@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { usePasswordRecovery } from '../../hooks/PasswordRecoveryHook/usePasswordRecovery';
-import UniversalModal from '../../components/Modals/UniversalModal/UniversalModal';
+import UniversalModal from '../../components/modals/UniversalModal/UniversalModal';
 import './CambiarPassword.css';
 
 const CambiarPassword = () => {
