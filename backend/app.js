@@ -21,7 +21,6 @@ import orderRoutes from "./src/routes/orderRoutes.js";
 //import orderRoutes from "./src/routes/orderRoutes.js";
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
 
-
 //import employeesRoutes from "./routes/employees.js";
 //import swaggerUi from "swagger-ui-express";
 //import fs from "fs";
