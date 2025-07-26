@@ -54,7 +54,12 @@ register.registerCustomer = async (req, res) => {
         const verificationCode = crypto.randomBytes(2).toString('hex')
 
         const token = jwt.sign({ email, verificationCode }, config.JWT.secret, { expiresIn: '2h' })
-        res.cookie('verificationCode', token, { httpOnly: true, maxAge: 2 * 60 * 60 * 1000 })
+        res.cookie('verificationCode', token, {
+            httpOnly: true,
+            sameSite: "None", // o "Lax" si es mismo dominio
+            secure: true,    // solo si usas HTTPS
+            maxAge: 2 * 60 * 60 * 1000
+        })
 
         await sendVerificationEmail(email, verificationCode)
 

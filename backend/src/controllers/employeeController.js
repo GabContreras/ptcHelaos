@@ -1,15 +1,16 @@
 const employeesController = {};
 // Importaciones necesarias
 import employeesModel from "../models/Employee.js"
+import customersModel from "../models/Customer.js"
+
 import bcryptjs from "bcryptjs";
-import mongoose from "mongoose";
 
 // CONTROLADOR PARA OBTENER TODOS LOS EMPLEADOS
 employeesController.getEmployees = async (req, res) => {
     try {
         // Buscar todos los empleados en la base de datos
         const employees = await employeesModel.find()
-        
+
         // Enviar respuesta exitosa con los empleados encontrados
         res.json(employees)
     } catch (error) {
@@ -23,25 +24,36 @@ employeesController.insertEmployee = async (req, res) => {
     try {
         // Extraer datos del empleado del cuerpo de la petición
         const { name, email, phone, password, hireDate, salary, dui } = req.body;
-        
+        const existingCustomer = await customersModel.findOne({ email })
+        if (existingCustomer) {
+            return res.status(400).json({ message: 'El email ya está registrado' })
+        }
+        // Verificar si el email ya existe en la tabla de empleados
+        const existingEmployee = await employeesModel.findOne({ email })
+        if (existingEmployee) {
+            return res.status(400).json({
+                message: 'El email ya está registrado'
+            })
+        }
+    
         // ENCRIPTAR LA CONTRASEÑA CON BCRYPT
         // El número 10 es el nivel de salt (rounds de hashing)
         const passwordHash = await bcryptjs.hash(password, 10);
 
         // CREAR NUEVA INSTANCIA DEL MODELO DE EMPLEADO
         const newEmployee = new employeesModel({
-            name, 
-            email, 
-            phone, 
+            name,
+            email,
+            phone,
             password: passwordHash, // Guardar contraseña encriptada
-            hireDate, 
-            salary, 
+            hireDate,
+            salary,
             dui
         })
-        
+
         // Guardar el nuevo empleado en la base de datos
         await newEmployee.save()
-        
+
         // Enviar respuesta exitosa de creación
         res.status(201).json({ message: "Empleado guardado correctamente" })
     } catch (error) {
@@ -64,7 +76,7 @@ employeesController.deleteEmployee = async (req, res) => {
     try {
         // Buscar y eliminar el empleado por su ID
         await employeesModel.findByIdAndDelete(req.params.id)
-        
+
         // Enviar respuesta exitosa de eliminación
         res.json({ message: "Deleted successfully" })
     } catch (error) {
@@ -110,7 +122,7 @@ employeesController.updateEmployee = async (req, res) => {
     } catch (error) {
         // LOG PARA DEPURACIÓN (DEBUG)
         console.error('Error actualizando empleado:', error);
-        
+
         // VERIFICAR SI EL ERROR ES POR CAMPO DUPLICADO (EMAIL O DUI)
         if (error.code === 11000) {
             // Obtener el campo que causó el conflicto

@@ -21,7 +21,7 @@ export function useRegister() {
     // Estados para verificación de código
     const [code, setCode] = useState(['', '', '', '']);
     const [userEmail, setUserEmail] = useState('');
-    
+
     // Estados generales
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -36,16 +36,16 @@ export function useRegister() {
     // Manejar cambios en el formulario
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-        
+
         if (name === 'phone') {
             // Formatear teléfono con guión
             let phoneValue = value.replace(/\D/g, ''); // Solo números
             if (phoneValue.length <= 4) {
                 setFormData(prev => ({ ...prev, phone: phoneValue }));
             } else if (phoneValue.length <= 8) {
-                setFormData(prev => ({ 
-                    ...prev, 
-                    phone: phoneValue.slice(0, 4) + '-' + phoneValue.slice(4) 
+                setFormData(prev => ({
+                    ...prev,
+                    phone: phoneValue.slice(0, 4) + '-' + phoneValue.slice(4)
                 }));
             }
         } else {
@@ -61,24 +61,24 @@ export function useRegister() {
     const validateAge = (birthday) => {
         const today = new Date();
         const birthDate = new Date(birthday);
-        
+
         // Verificar que no sea una fecha futura
         if (birthDate > today) {
             return { valid: false, message: 'La fecha de nacimiento no puede ser futura' };
         }
-        
+
         // Calcular edad
         let age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        
+
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
             age--;
         }
-        
+
         if (age < 15) {
             return { valid: false, message: 'Debes tener al menos 15 años para registrarte' };
         }
-        
+
         return { valid: true };
     };
 
@@ -92,26 +92,26 @@ export function useRegister() {
             setError('El email es requerido');
             return false;
         }
-        
+
         // Validar formato de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email)) {
             setError('El formato del correo electrónico no es válido');
             return false;
         }
-        
+
         if (!formData.phone.trim()) {
             setError('El teléfono es requerido');
             return false;
         }
-        
+
         // Validar que el teléfono tenga el formato correcto (0000-0000)
         const phoneRegex = /^\d{4}-\d{4}$/;
         if (!phoneRegex.test(formData.phone)) {
             setError('El teléfono debe tener el formato 0000-0000');
             return false;
         }
-        
+
         if (formData.password.length < 6) {
             setError('La contraseña debe tener al menos 6 caracteres');
             return false;
@@ -124,14 +124,14 @@ export function useRegister() {
             setError('La fecha de nacimiento es requerida');
             return false;
         }
-        
+
         // Validar edad
         const ageValidation = validateAge(formData.birthday);
         if (!ageValidation.valid) {
             setError(ageValidation.message);
             return false;
         }
-        
+
         if (!formData.termsAccepted) {
             setError('Debes aceptar los términos y condiciones');
             return false;
@@ -244,7 +244,7 @@ export function useRegister() {
 
     // Manejo de inputs de código
     const handleCodeChange = (index, value) => {
-        if (!/^\d*$/.test(value)) return;
+        if (!/^[a-zA-Z0-9]*$/.test(value)) return;
         const newCode = [...code];
         newCode[index] = value;
         setCode(newCode);

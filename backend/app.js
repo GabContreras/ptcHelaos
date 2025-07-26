@@ -21,10 +21,9 @@ import orderRoutes from "./src/routes/orderRoutes.js";
 //import orderRoutes from "./src/routes/orderRoutes.js";
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
 
-//import employeesRoutes from "./routes/employees.js";
-//import swaggerUi from "swagger-ui-express";
-//import fs from "fs";
-//import path from "path";
+import swaggerUi from "swagger-ui-express";
+import fs from "fs";
+import path from "path";
 
 // Creo una constante que es igual a la libreria que acabo de importar, y la ejecuto 
 
@@ -46,21 +45,20 @@ app.use(cors({
 }));
 
 //Traemos el archivo json
-/*const swaggerDocument = JSON.parse(
+const swaggerDocument = JSON.parse(
     fs.readFileSync(
         path.resolve("./documentacion.json"),
         "utf-8"
     )
 );
-*/
+
 
 app.get('/api/status', (req, res) => {
     res.status(200).json({ message: 'Servidor en línea ✅' })
 })
 
 //Rutas de la API
-// app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/employees", validateAuthToken(['admin']), employeesRoutes);
 app.use("/api/customers", validateAuthToken(['admin', 'employee']), customersRoutes);
 app.use("/api/category", validateAuthToken(['admin', 'employee']), categoryRoutes);
