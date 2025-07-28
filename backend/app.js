@@ -18,6 +18,7 @@ import pettyCashRoutes from "./src/routes/pettyCashRoutes.js"
 import productRoutes from "./src/routes/productRoutes.js";
 import reviewRoutes from "./src/routes/reviewRoutes.js";
 import orderRoutes from "./src/routes/orderRoutes.js";
+import eventsRoutes from "./src/routes/eventsRoutes.js"
 //import orderRoutes from "./src/routes/orderRoutes.js";
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
 
@@ -72,6 +73,7 @@ app.use("/api/passwordRecovery", passwordRecoveryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/events", eventsRoutes)
 
 //Exporto esta constante para usar express en todos lados
 export default app;

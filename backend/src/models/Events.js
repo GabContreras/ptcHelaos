@@ -1,0 +1,34 @@
+import {Schema, model} from "mongoose";
+
+const categoriesSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  date: {
+    type: Date,
+    required: true,
+    trim: true
+  },
+  address: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  type: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+    trim: true
+  }
+}, {
+  timestamps: true,
+  strict: false
+});
+
+export default model("events", categoriesSchema)
