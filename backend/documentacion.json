@@ -1,0 +1,1978 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "Moon Ice Cream API",
+    "description" : "API para el sistema de gestión de Moon Ice Cream",
+    "contact" : {
+      "email" : "contact@moonicecream.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/ricaldone-8ee/MoonsIceCreamRolls/1.0.0"
+  }, {
+    "url" : "http://localhost:3333",
+    "description" : "Development server"
+  } ],
+  "tags" : [ {
+    "name" : "Customers",
+    "description" : "Operaciones relacionadas con clientes"
+  }, {
+    "name" : "Employees",
+    "description" : "Operaciones relacionadas con empleados"
+  }, {
+    "name" : "Categories",
+    "description" : "Operaciones relacionadas con categorías de productos"
+  }, {
+    "name" : "Products",
+    "description" : "Operaciones relacionadas con productos"
+  }, {
+    "name" : "Inventory",
+    "description" : "Operaciones relacionadas con inventario y lotes"
+  }, {
+    "name" : "Orders",
+    "description" : "Operaciones relacionadas con órdenes"
+  }, {
+    "name" : "Reviews",
+    "description" : "Operaciones relacionadas con reseñas"
+  }, {
+    "name" : "PettyCash",
+    "description" : "Operaciones relacionadas con caja chica"
+  }, {
+    "name" : "Authentication",
+    "description" : "Operaciones de autenticación y autorización"
+  } ],
+  "paths" : {
+    "/api/customers" : {
+      "get" : {
+        "tags" : [ "Customers" ],
+        "summary" : "Obtener todos los clientes",
+        "description" : "Recupera la lista completa de clientes registrados",
+        "operationId" : "get-api-customers",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Customers" ],
+        "summary" : "Crear nuevo cliente",
+        "description" : "Registra un nuevo cliente en el sistema",
+        "operationId" : "post-api-customers",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Customer"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/customers/{id}" : {
+      "put" : {
+        "tags" : [ "Customers" ],
+        "summary" : "Actualizar cliente",
+        "description" : "Actualiza la información de un cliente existente",
+        "operationId" : "put-api-customers-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Customer"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Customers" ],
+        "summary" : "Eliminar cliente",
+        "description" : "Elimina un cliente del sistema",
+        "operationId" : "delete-api-customers-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/employees" : {
+      "get" : {
+        "tags" : [ "Employees" ],
+        "summary" : "Obtener todos los empleados",
+        "description" : "Recupera la lista completa de empleados",
+        "operationId" : "get-api-employees",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Employees" ],
+        "summary" : "Crear nuevo empleado",
+        "description" : "Registra un nuevo empleado en el sistema",
+        "operationId" : "post-api-employees",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Employee"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/employees/{id}" : {
+      "put" : {
+        "tags" : [ "Employees" ],
+        "summary" : "Actualizar empleado",
+        "description" : "Actualiza la información de un empleado existente",
+        "operationId" : "put-api-employees-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Employee"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Employees" ],
+        "summary" : "Eliminar empleado",
+        "description" : "Elimina un empleado del sistema",
+        "operationId" : "delete-api-employees-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/categories" : {
+      "get" : {
+        "tags" : [ "Categories" ],
+        "summary" : "Obtener todas las categorías",
+        "description" : "Recupera la lista completa de categorías de productos",
+        "operationId" : "get-api-categories",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Categories" ],
+        "summary" : "Crear nueva categoría",
+        "description" : "Crea una nueva categoría de productos",
+        "operationId" : "post-api-categories",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Category"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/categories/{id}" : {
+      "put" : {
+        "tags" : [ "Categories" ],
+        "summary" : "Actualizar categoría",
+        "description" : "Actualiza una categoría existente",
+        "operationId" : "put-api-categories-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Category"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Categories" ],
+        "summary" : "Eliminar categoría",
+        "description" : "Elimina una categoría del sistema",
+        "operationId" : "delete-api-categories-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/products" : {
+      "get" : {
+        "tags" : [ "Products" ],
+        "summary" : "Obtener todos los productos",
+        "description" : "Recupera la lista completa de productos",
+        "operationId" : "get-api-products",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Products" ],
+        "summary" : "Crear nuevo producto",
+        "description" : "Crea un nuevo producto en el sistema",
+        "operationId" : "post-api-products",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/products/available" : {
+      "get" : {
+        "tags" : [ "Products" ],
+        "summary" : "Obtener productos disponibles",
+        "description" : "Recupera solo los productos que están disponibles para venta",
+        "operationId" : "get-api-products-available",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/products/category/{categoryId}" : {
+      "get" : {
+        "tags" : [ "Products" ],
+        "summary" : "Obtener productos por categoría",
+        "description" : "Recupera productos filtrados por categoría específica",
+        "operationId" : "get-api-products-category",
+        "parameters" : [ {
+          "name" : "categoryId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/products/{id}" : {
+      "get" : {
+        "tags" : [ "Products" ],
+        "summary" : "Obtener producto por ID",
+        "description" : "Recupera un producto específico por su ID",
+        "operationId" : "get-api-products-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Products" ],
+        "summary" : "Actualizar producto",
+        "description" : "Actualiza un producto existente",
+        "operationId" : "put-api-products-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Products" ],
+        "summary" : "Eliminar producto",
+        "description" : "Elimina un producto del sistema",
+        "operationId" : "delete-api-products-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/inventory" : {
+      "get" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Obtener todos los inventarios",
+        "description" : "Recupera la lista completa de inventarios",
+        "operationId" : "get-api-inventory",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Crear nuevo inventario",
+        "description" : "Crea un nuevo inventario en el sistema",
+        "operationId" : "post-api-inventory",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Inventory"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/inventory/batch" : {
+      "get" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Obtener todos los lotes",
+        "description" : "Recupera la lista completa de lotes existentes",
+        "operationId" : "get-api-inventory-batch",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/inventory/{id}" : {
+      "get" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Obtener inventario por ID",
+        "description" : "Recupera información específica de un inventario",
+        "operationId" : "get-api-inventory-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Actualizar inventario",
+        "description" : "Actualiza información de un inventario específico",
+        "operationId" : "put-api-inventory-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Inventory"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Eliminar inventario",
+        "description" : "Elimina un inventario específico",
+        "operationId" : "delete-api-inventory-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/inventory/{id}/batch" : {
+      "post" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Crear lote en inventario",
+        "description" : "Crea un nuevo lote en un inventario específico",
+        "operationId" : "post-api-inventory-batch",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Batches"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/inventory/batch/{batchId}/operation" : {
+      "put" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Operación en lote específico",
+        "description" : "Realiza operaciones de entrada/salida en un lote específico",
+        "operationId" : "put-api-inventory-batch-operation",
+        "parameters" : [ {
+          "name" : "batchId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/inventory/batch/{batchId}/movements" : {
+      "get" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Obtener movimientos de lote",
+        "description" : "Recupera el historial de movimientos de un lote específico",
+        "operationId" : "get-api-inventory-batch-movements",
+        "parameters" : [ {
+          "name" : "batchId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/inventory/batch/{batchId}" : {
+      "delete" : {
+        "tags" : [ "Inventory" ],
+        "summary" : "Eliminar lote",
+        "description" : "Elimina un lote específico",
+        "operationId" : "delete-api-inventory-batch",
+        "parameters" : [ {
+          "name" : "batchId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/orders" : {
+      "get" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Obtener todas las órdenes",
+        "description" : "Recupera la lista completa de órdenes",
+        "operationId" : "get-api-orders",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Crear nueva orden",
+        "description" : "Crea una nueva orden en el sistema",
+        "operationId" : "post-api-orders",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Order"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/orders/{id}" : {
+      "get" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Obtener orden por ID",
+        "description" : "Recupera información específica de una orden",
+        "operationId" : "get-api-orders-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Actualizar orden completa",
+        "description" : "Actualiza información completa de una orden",
+        "operationId" : "put-api-orders-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Order"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Eliminar orden",
+        "description" : "Elimina una orden del sistema",
+        "operationId" : "delete-api-orders-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/orders/customer/{customerId}" : {
+      "get" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Obtener órdenes por cliente",
+        "description" : "Recupera todas las órdenes de un cliente específico",
+        "operationId" : "get-api-orders-customer",
+        "parameters" : [ {
+          "name" : "customerId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/orders/type/{type}" : {
+      "get" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Obtener órdenes por tipo",
+        "description" : "Recupera órdenes filtradas por tipo (delivery o local)",
+        "operationId" : "get-api-orders-type",
+        "parameters" : [ {
+          "name" : "type",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/orders/{id}/status" : {
+      "put" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Actualizar estado de orden",
+        "description" : "Actualiza solo el estado de una orden específica",
+        "operationId" : "put-api-orders-status",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/orders/{id}/payment" : {
+      "put" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Actualizar estado de pago",
+        "description" : "Actualiza solo el estado de pago de una orden",
+        "operationId" : "put-api-orders-payment",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/orders/{id}/review" : {
+      "put" : {
+        "tags" : [ "Orders" ],
+        "summary" : "Asignar reseña a orden",
+        "description" : "Asigna una reseña a una orden específica",
+        "operationId" : "put-api-orders-review",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/reviews" : {
+      "get" : {
+        "tags" : [ "Reviews" ],
+        "summary" : "Obtener todas las reseñas",
+        "description" : "Recupera la lista completa de reseñas",
+        "operationId" : "get-api-reviews",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Reviews" ],
+        "summary" : "Crear nueva reseña",
+        "description" : "Crea una nueva reseña en el sistema",
+        "operationId" : "post-api-reviews",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Review"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/reviews/{id}" : {
+      "delete" : {
+        "tags" : [ "Reviews" ],
+        "summary" : "Eliminar reseña",
+        "description" : "Elimina una reseña del sistema",
+        "operationId" : "delete-api-reviews-id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/petty-cash" : {
+      "get" : {
+        "tags" : [ "PettyCash" ],
+        "summary" : "Obtener movimientos de caja chica",
+        "description" : "Recupera todos los movimientos de caja chica",
+        "operationId" : "get-api-petty-cash",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "PettyCash" ],
+        "summary" : "Crear operación de caja chica",
+        "description" : "Crea una nueva operación de ingreso/egreso en caja chica",
+        "operationId" : "post-api-petty-cash",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PettyCash"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/petty-cash/balance" : {
+      "get" : {
+        "tags" : [ "PettyCash" ],
+        "summary" : "Obtener balance actual",
+        "description" : "Recupera el balance actual de caja chica",
+        "operationId" : "get-api-petty-cash-balance",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/login" : {
+      "post" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Iniciar sesión",
+        "description" : "Autentica un usuario en el sistema",
+        "operationId" : "post-api-login",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/login/isLoggedIn" : {
+      "get" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Verificar sesión",
+        "description" : "Verifica si el usuario está autenticado",
+        "operationId" : "get-api-login-isLoggedIn",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/logout" : {
+      "post" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Cerrar sesión",
+        "description" : "Cierra la sesión del usuario actual",
+        "operationId" : "post-api-logout",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/register" : {
+      "post" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Registrar cliente",
+        "description" : "Registra un nuevo cliente en el sistema",
+        "operationId" : "post-api-register",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Customer"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/register/verify" : {
+      "post" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Verificar código de registro",
+        "description" : "Verifica el código enviado por email para completar el registro",
+        "operationId" : "post-api-register-verify",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/password-recovery/requestCode" : {
+      "post" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Solicitar código de recuperación",
+        "description" : "Envía un código de recuperación al email del usuario",
+        "operationId" : "post-api-password-recovery-requestCode",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/password-recovery/verifyCode" : {
+      "post" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Verificar código de recuperación",
+        "description" : "Verifica el código de recuperación de contraseña",
+        "operationId" : "post-api-password-recovery-verifyCode",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/password-recovery/getTokenInfo" : {
+      "get" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Obtener información del token",
+        "description" : "Recupera información del token de recuperación",
+        "operationId" : "get-api-password-recovery-getTokenInfo",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/password-recovery/resetPassword" : {
+      "post" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Restablecer contraseña",
+        "description" : "Restablece la contraseña del usuario",
+        "operationId" : "post-api-password-recovery-resetPassword",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    },
+    "schemas" : {
+      "Customer" : {
+        "type" : "object",
+        "x-examples" : {
+          "Example 1" : {
+            "_id" : {
+              "$oid" : "68671d7d46a9ebaa62fc6ff6"
+            },
+            "name" : "Juan Pérez",
+            "phone" : "7123-4567",
+            "email" : "contrerasgab01@gmail.com",
+            "password" : "$2b$10$7RxNJu5zsfxpz5f7b2zJquikPccrTrm4mKw5xeFA6cHJampfHbSaK",
+            "birthday" : {
+              "$date" : "2007-06-15T00:00:00.000Z"
+            },
+            "frequentCustomer" : false,
+            "isVerified" : true
+          }
+        },
+        "required" : [ "name", "phone", "email", "password", "birthday" ],
+        "properties" : {
+          "_id" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "phone" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "birthday" : {
+            "type" : "object",
+            "required" : [ "$date" ],
+            "properties" : {
+              "$date" : {
+                "type" : "string"
+              }
+            }
+          },
+          "frequentCustomer" : {
+            "type" : "boolean"
+          },
+          "isVerified" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }
+      },
+      "Employee" : {
+        "type" : "object",
+        "x-examples" : {
+          "Example 1" : {
+            "_id" : {
+              "$oid" : "68675c7d1b9bfc67bd494213"
+            },
+            "name" : "Juan Carlos Pérez",
+            "email" : "gabriel03contra@gmail.com",
+            "phone" : "7555-1234",
+            "password" : "$2b$10$qft1rq6zeV/QyJ8HmgMo2.5QmjInpHNDQH6n61nim5VsrXZW6ZOFO",
+            "hireDate" : {
+              "$date" : "2024-01-15T00:00:00.000Z"
+            },
+            "salary" : 800,
+            "dui" : "12345678-9"
+          }
+        },
+        "required" : [ "name", "email", "phone", "password", "hireDate", "salary", "dui" ],
+        "properties" : {
+          "_id" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "phone" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "hireDate" : {
+            "type" : "object",
+            "required" : [ "$date" ],
+            "properties" : {
+              "$date" : {
+                "type" : "string"
+              }
+            }
+          },
+          "salary" : {
+            "type" : "number",
+            "minimum" : 365
+          },
+          "dui" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Category" : {
+        "type" : "object",
+        "x-examples" : {
+          "Example 1" : {
+            "_id" : {
+              "$oid" : "6867152746a9ebaa62fc6fe4"
+            },
+            "name" : "Toppings"
+          }
+        },
+        "required" : [ "name" ],
+        "properties" : {
+          "_id" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Product" : {
+        "type" : "object",
+        "x-examples" : {
+          "Example 1" : {
+            "_id" : {
+              "$oid" : "686b4fe1b551efe226876490"
+            },
+            "name" : "Helado de 3 sabores",
+            "categoryId" : {
+              "$oid" : "686b4c0f2d74deabc307520a"
+            },
+            "description" : "Helado enrollado gourmet con tres sabores de tu elección",
+            "images" : [ {
+              "url" : "https://res.cloudinary.com/dl9rckrqf/image/upload/v1751863930/products/gtig1kr9mxieoj5bfqfm.jpg",
+              "_id" : {
+                "$oid" : "686b527cb551efe2268764ca"
+              }
+            }, {
+              "url" : "https://res.cloudinary.com/dl9rckrqf/image/upload/v1751863931/products/w9jvj5svzapcr3ob7mlp.jpg",
+              "_id" : {
+                "$oid" : "686b527cb551efe2268764cb"
+              }
+            } ],
+            "available" : true,
+            "preparationTime" : "5 minutos",
+            "basePrice" : 4,
+            "createdAt" : {
+              "$date" : "2025-07-07T04:41:05.360Z"
+            },
+            "updatedAt" : {
+              "$date" : "2025-07-07T04:52:12.914Z"
+            }
+          }
+        },
+        "required" : [ "name", "categoryId", "description", "images", "available", "basePrice" ],
+        "properties" : {
+          "_id" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "categoryId" : {
+            "type" : "object",
+            "required" : [ "$oid" ],
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "images" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "required" : [ "url" ],
+              "properties" : {
+                "url" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "available" : {
+            "type" : "boolean",
+            "default" : true
+          },
+          "preparationTime" : {
+            "type" : "string"
+          },
+          "basePrice" : {
+            "type" : "number",
+            "minimum" : 0
+          }
+        }
+      },
+      "Order" : {
+        "type" : "object",
+        "x-examples" : {
+          "Example 1" : {
+            "_id" : {
+              "$oid" : "686df73d0d1917795cd7e976"
+            },
+            "customerId" : null,
+            "customerName" : "Ana López",
+            "customerPhone" : "7890-1234",
+            "employeeId" : "admin",
+            "products" : [ {
+              "productId" : {
+                "$oid" : "686b4c0f2d74deabc307520a"
+              },
+              "quantity" : 1,
+              "flavors" : [ {
+                "ingredientId" : {
+                  "$oid" : "686760093d3a4de871b903cb"
+                },
+                "quantity" : 1
+              }, {
+                "ingredientId" : {
+                  "$oid" : "686760093d3a4de871b903cb"
+                },
+                "quantity" : 1
+              }, {
+                "ingredientId" : {
+                  "$oid" : "686760093d3a4de871b903cb"
+                },
+                "quantity" : 1
+              } ],
+              "specialInstructions" : "Que quede así bien rico",
+              "subtotal" : 4,
+              "toppings" : [ ],
+              "additions" : [ ]
+            } ],
+            "totalAmount" : 4,
+            "paymentMethod" : "efectivo",
+            "paymentStatus" : "pagado",
+            "orderStatus" : "pendiente",
+            "orderType" : "local",
+            "createdAt" : {
+              "$date" : "2025-07-09T04:59:41.973Z"
+            },
+            "updatedAt" : {
+              "$date" : "2025-07-09T04:59:41.973Z"
+            }
+          }
+        },
+        "required" : [ "employeeId", "products", "paymentMethod", "paymentStatus", "orderStatus", "orderType" ],
+        "properties" : {
+          "_id" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "customerId" : {
+            "type" : "string",
+            "nullable" : true
+          },
+          "customerName" : {
+            "type" : "string",
+            "nullable" : true
+          },
+          "customerPhone" : {
+            "type" : "string",
+            "nullable" : true
+          },
+          "employeeId" : {
+            "type" : "string"
+          },
+          "products" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "required" : [ "productId" ],
+              "properties" : {
+                "productId" : {
+                  "type" : "object",
+                  "required" : [ "$oid" ],
+                  "properties" : {
+                    "$oid" : {
+                      "type" : "string"
+                    }
+                  }
+                },
+                "quantity" : {
+                  "type" : "number",
+                  "minimum" : 1
+                },
+                "flavors" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "required" : [ "ingredientId", "quantity" ],
+                    "properties" : {
+                      "ingredientId" : {
+                        "type" : "object",
+                        "properties" : {
+                          "$oid" : {
+                            "type" : "string"
+                          }
+                        }
+                      },
+                      "quantity" : {
+                        "type" : "number",
+                        "minimum" : 1
+                      }
+                    }
+                  }
+                },
+                "additions" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "required" : [ "ingredientId", "quantity" ],
+                    "properties" : {
+                      "ingredientId" : {
+                        "type" : "object",
+                        "properties" : {
+                          "$oid" : {
+                            "type" : "string"
+                          }
+                        }
+                      },
+                      "quantity" : {
+                        "type" : "number",
+                        "minimum" : 1
+                      }
+                    }
+                  }
+                },
+                "specialInstructions" : {
+                  "type" : "string"
+                },
+                "subtotal" : {
+                  "type" : "number",
+                  "minimum" : 0,
+                  "description" : "Se calcula automáticamente"
+                }
+              }
+            }
+          },
+          "totalAmount" : {
+            "type" : "number",
+            "minimum" : 0,
+            "description" : "Se calcula automáticamente"
+          },
+          "paymentMethod" : {
+            "type" : "string",
+            "enum" : [ "tarjeta", "efectivo" ]
+          },
+          "paymentStatus" : {
+            "type" : "string",
+            "enum" : [ "cancelado", "reembolsado", "rechazado", "pendiente", "pagado" ]
+          },
+          "orderStatus" : {
+            "type" : "string",
+            "enum" : [ "pendiente", "en preparación", "en camino", "entregado", "cancelado" ]
+          },
+          "orderType" : {
+            "type" : "string",
+            "enum" : [ "local", "delivery" ]
+          }
+        }
+      },
+      "Review" : {
+        "type" : "object",
+        "x-examples" : {
+          "Example 1" : {
+            "_id" : {
+              "$oid" : "686b5e119dc6c8d7884d08b5"
+            },
+            "comment" : "Excelente servicio",
+            "rating" : 5,
+            "createdAt" : {
+              "$date" : "2025-07-07T05:41:37.963Z"
+            },
+            "updatedAt" : {
+              "$date" : "2025-07-07T05:41:37.963Z"
+            }
+          }
+        },
+        "required" : [ "comment", "rating" ],
+        "properties" : {
+          "_id" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "comment" : {
+            "type" : "string"
+          },
+          "rating" : {
+            "type" : "number",
+            "minimum" : 1,
+            "maximum" : 5
+          }
+        }
+      },
+      "PettyCash" : {
+        "type" : "object",
+        "x-examples" : {
+          "Example 1" : {
+            "_id" : {
+              "$oid" : "68689f1c1cd766840e4689f5"
+            },
+            "date" : {
+              "$date" : "2025-07-05T03:42:20.073Z"
+            },
+            "employeeId" : "admin",
+            "amount" : 500,
+            "reason" : "Fondos iniciales para caja chica",
+            "type" : "income",
+            "previousBalance" : 0,
+            "currentBalance" : 1000,
+            "createdAt" : {
+              "$date" : "2025-07-05T03:42:20.088Z"
+            },
+            "updatedAt" : {
+              "$date" : "2025-07-05T03:42:20.088Z"
+            },
+            "__v" : 0
+          }
+        },
+        "required" : [ "date", "employeeId", "amount", "reason", "type" ],
+        "properties" : {
+          "_id" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "date" : {
+            "type" : "object",
+            "required" : [ "$date" ],
+            "properties" : {
+              "$date" : {
+                "type" : "string"
+              }
+            }
+          },
+          "employeeId" : {
+            "type" : "string"
+          },
+          "amount" : {
+            "type" : "number"
+          },
+          "reason" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "income", "expense" ]
+          },
+          "previousBalance" : {
+            "type" : "number",
+            "description" : "Se calcula automáticamente"
+          },
+          "currentBalance" : {
+            "type" : "number",
+            "description" : "Se calcula automáticamente"
+          }
+        }
+      },
+      "Inventory" : {
+        "type" : "array",
+        "x-examples" : {
+          "Example 1" : [ {
+            "_id" : {
+              "$oid" : "686760093d3a4de871b903cb"
+            },
+            "name" : "Leche entera",
+            "categoryId" : {
+              "$oid" : "686754b342c12a05bc091831"
+            },
+            "supplier" : "Lacteos SA",
+            "unitType" : "litros",
+            "batchId" : [ {
+              "$oid" : "686760843d3a4de871b903d9"
+            } ],
+            "currentStock" : 80,
+            "createdAt" : {
+              "$date" : "2025-07-04T05:00:57.653Z"
+            },
+            "updatedAt" : {
+              "$date" : "2025-07-07T01:51:28.077Z"
+            },
+            "__v" : 3,
+            "extraPrice" : 0
+          } ]
+        },
+        "items" : {
+          "type" : "object",
+          "required" : [ "name", "categoryId", "unitType" ],
+          "properties" : {
+            "_id" : {
+              "type" : "object",
+              "properties" : {
+                "$oid" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "name" : {
+              "type" : "string"
+            },
+            "categoryId" : {
+              "type" : "object",
+              "description" : "Categoría a la que pertenece, \"materia prima\", \"topping\", etc.",
+              "properties" : {
+                "$oid" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "supplier" : {
+              "type" : "string",
+              "description" : "Quién lo proporciona o dónde fue comprado"
+            },
+            "unitType" : {
+              "type" : "string",
+              "enum" : [ "kilogramos", "kilos", "unidades", "litros", "libras", "gramos" ]
+            },
+            "batchId" : {
+              "type" : "array",
+              "description" : "Id de los lotes de este inventario en específico",
+              "items" : {
+                "type" : "object",
+                "properties" : {
+                  "$oid" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            },
+            "currentStock" : {
+              "type" : "number",
+              "description" : "Se calcula automáticamente",
+              "minimum" : 0
+            },
+            "extraPrice" : {
+              "type" : "number",
+              "minimum" : 0.25,
+              "description" : "En caso de ser toppings u otros extras"
+            }
+          }
+        }
+      },
+      "Batches" : {
+        "type" : "array",
+        "x-examples" : {
+          "Example 1" : [ {
+            "_id" : {
+              "$oid" : "686760843d3a4de871b903d9"
+            },
+            "quantity" : 80,
+            "expirationDate" : {
+              "$date" : "2024-12-31T00:00:00.000Z"
+            },
+            "purchaseDate" : {
+              "$date" : "2024-07-03T00:00:00.000Z"
+            },
+            "status" : "En uso",
+            "notes" : "Lote de leche fresca",
+            "movements" : [ {
+              "type" : "entrada",
+              "quantity" : 100,
+              "reason" : "Nuevo stock",
+              "employeeId" : {
+                "$oid" : "68675c7d1b9bfc67bd494213"
+              },
+              "_id" : {
+                "$oid" : "686760843d3a4de871b903da"
+              },
+              "date" : {
+                "$date" : "2025-07-04T05:03:00.307Z"
+              }
+            }, {
+              "type" : "salida",
+              "quantity" : 10,
+              "reason" : "Venta mostrador",
+              "employeeId" : {
+                "$oid" : "68675c7d1b9bfc67bd494213"
+              },
+              "_id" : {
+                "$oid" : "6868756a1036eb649471f745"
+              },
+              "date" : {
+                "$date" : "2025-07-05T00:44:26.590Z"
+              }
+            } ],
+            "createdAt" : {
+              "$date" : "2025-07-04T05:03:00.308Z"
+            },
+            "updatedAt" : {
+              "$date" : "2025-07-07T01:51:28.001Z"
+            },
+            "__v" : 5
+          } ]
+        },
+        "items" : {
+          "type" : "object",
+          "required" : [ "quantity", "expirationDate", "purchaseDate", "status" ],
+          "properties" : {
+            "_id" : {
+              "type" : "object",
+              "properties" : {
+                "$oid" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "quantity" : {
+              "type" : "number",
+              "minimum" : 1,
+              "description" : "Cantidad (ya sean kilogramos, kilos, etc)"
+            },
+            "expirationDate" : {
+              "type" : "object",
+              "properties" : {
+                "$date" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "purchaseDate" : {
+              "type" : "object",
+              "properties" : {
+                "$date" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "status" : {
+              "type" : "string",
+              "enum" : [ "En uso", "Agotado", "Vencido", "Dañado" ],
+              "default" : "En uso"
+            },
+            "notes" : {
+              "type" : "string",
+              "description" : "Razón de movimiento, no es obligatorio",
+              "nullable" : true
+            },
+            "movements" : {
+              "type" : "array",
+              "items" : {
+                "type" : "object",
+                "required" : [ "type", "quantity", "reason", "employeeId", "date" ],
+                "properties" : {
+                  "type" : {
+                    "type" : "string",
+                    "enum" : [ "daño", "salida", "entrada" ]
+                  },
+                  "quantity" : {
+                    "type" : "number",
+                    "minimum" : 1
+                  },
+                  "reason" : {
+                    "type" : "string"
+                  },
+                  "employeeId" : {
+                    "type" : "string",
+                    "description" : "La página lo toma automáticamente"
+                  },
+                  "date" : {
+                    "type" : "object",
+                    "description" : "Toma la fecha del sistema",
+                    "required" : [ "$date" ],
+                    "properties" : {
+                      "$date" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                },
+                "toppings" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "required" : [ "ingredientId", "quantity" ],
+                    "properties" : {
+                      "ingredientId" : {
+                        "type" : "object",
+                        "properties" : {
+                          "$oid" : {
+                            "type" : "string"
+                          }
+                        }
+                      },
+                      "quantity" : null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

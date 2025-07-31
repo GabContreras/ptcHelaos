@@ -1,43 +1,34 @@
 import {Schema, model} from "mongoose";
 
-const customersSchema = new Schema({
+const categoriesSchema = new Schema({
   name: {
     type: String,
     required: true,
     trim: true
   },
-  phone: {
-    type: String,
-    required: true,
-    trim: true
-    
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
-  },
-  password: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  birthday: {
+  date: {
     type: Date,
-    required: true
+    required: true,
+    trim: true
   },
-  frequentCustomer: {
+  address: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  type: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  isActive: {
     type: Boolean,
-    default: false
-  },  
-  isVerified: {
-    type: Boolean,
-    default: false
+    default: true,
+    trim: true
   }
 }, {
   timestamps: true,
   strict: false
 });
 
-export default model("customer", customersSchema)
+export default model("events", categoriesSchema)

@@ -44,14 +44,19 @@ passRecov.requestCode = async (req, res) => {
             { expiresIn: '1h' }
         );
 
-        res.cookie("tokenRecoveryCode", token, { maxAge: 20 * 60 * 1000 })
+        res.cookie("tokenRecoveryCode", token, {
+            httpOnly: true,
+            sameSite: "None", // o "Lax" si es mismo dominio
+            secure: true,   // solo si usas HTTPS
+            maxAge: 20 * 60 * 1000
+        })
 
         console.log('Sending recovery code to:', email);
 
         await sendMail(
             email,
             "Código de recuperación de contraseña",
-            `Tu código de verificación es: ${code}`, 
+            `Tu código de verificación es: ${code}`,
             HTMLRecoveryEmail(code)
         )
 
@@ -79,16 +84,22 @@ passRecov.verifyCode = async (req, res) => {
         }
 
         const newToken = jsonwebtoken.sign(
-            {   email: decoded.email, 
+            {
+                email: decoded.email,
                 code: decoded.code,
-                userType: decoded.userType, 
-                verified: true 
+                userType: decoded.userType,
+                verified: true
             },
             config.JWT.secret,
             { expiresIn: '1h' }
         )
 
-        res.cookie('tokenRecoveryCode', newToken, { maxAge: 60 * 60 * 1000})
+        res.cookie('tokenRecoveryCode', newToken, {
+            httpOnly: true,
+            sameSite: "None", // o "Lax" si es mismo dominio
+            secure: true,    // solo si usas HTTPS
+            maxAge: 60 * 60 * 1000
+        })
 
         res.status(200).json({ message: 'Código de recuperación verificado' })
 
@@ -110,7 +121,7 @@ passRecov.getTokenInfo = async (req, res) => {
         const decoded = jsonwebtoken.verify(token, config.JWT.secret)
 
         // Devolver solo la información necesaria (email)
-        res.status(200).json({ 
+        res.status(200).json({
             email: decoded.email,
             userType: decoded.userType,
             verified: decoded.verified

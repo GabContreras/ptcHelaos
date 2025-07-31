@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRegister } from '../../hooks/RegisterHook/useRegister';
 import { useNavigate } from 'react-router-dom';
-import UniversalModal from '../../components/Modals/UniversalModal/UniversalModal';
+import UniversalModal from '../../components/modals/UniversalModal/UniversalModal';
 import './VerificarRegistro.css';
 
 const VerificarRegistro = () => {

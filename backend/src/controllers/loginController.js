@@ -2,7 +2,7 @@ import customersModel from '../models/Customer.js'
 import employeesModel from '../models/Employee.js'
 import bcryptjs from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import {config} from '../config.js'
+import { config } from '../config.js'
 
 const loginController = {}
 
@@ -41,9 +41,9 @@ loginController.login = async (req, res) => {
 
             // Verificar si el cliente está verificado
             if (userType === 'customer' && !userFound.isVerified) {
-                return res.status(403).json({ 
+                return res.status(403).json({
                     message: 'Cuenta no verificada. Revisa tu email para el código de verificación.',
-                    verified: false 
+                    verified: false
                 })
             }
         }
@@ -57,8 +57,12 @@ loginController.login = async (req, res) => {
                     return res.status(500).json({ message: 'Error generando token' })
                 }
 
-                res.cookie('authToken', token)
-                res.status(200).json({ 
+                res.cookie('authToken', token, {
+                    httpOnly: true,
+                    sameSite: "None", // o "Lax" si es mismo dominio
+                    secure: true    // solo si usas HTTPS
+                })
+                res.status(200).json({
                     message: 'Login exitoso',
                     userType: userType,
                     userId: userFound._id
@@ -81,10 +85,10 @@ loginController.isLoggedIn = (req, res) => {
         if (err) {
             return res.status(401).json({ loggedIn: false, message: 'Token inválido o expirado' })
         }
-        res.status(200).json({ 
-            loggedIn: true, 
-            user: decoded.user, 
-            userType: decoded.userType 
+        res.status(200).json({
+            loggedIn: true,
+            user: decoded.user,
+            userType: decoded.userType
         })
     })
 }

@@ -53,8 +53,8 @@ export const AuthProvider = ({ children }) => {
             };
 
             // Guardar en localStorage
-            localStorage.setItem("authToken", "authenticated");
-            localStorage.setItem("user", JSON.stringify(userData));
+            //localStorage.setItem("authToken", "authenticated");
+            //localStorage.setItem("user", JSON.stringify(userData));
 
             // Actualizar estado inmediatamente
             setAuthCokie("authenticated");
