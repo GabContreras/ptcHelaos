@@ -60,6 +60,8 @@ export const AuthProvider = ({ children }) => {
             setAuthCokie("authenticated");
             setUser(userData);
 
+            //orueba
+
             console.log("Login exitoso Moon Ice Cream:", {
                 userType: data.userType,
                 userId: data.userId,

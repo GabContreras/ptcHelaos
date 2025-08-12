@@ -18,6 +18,9 @@ const customersSchema = new Schema({
     unique: true,
     trim: true
   },
+  address:[{
+
+  }],
   password: {
     type: String,
     required: true,
