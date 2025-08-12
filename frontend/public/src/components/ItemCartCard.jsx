@@ -13,11 +13,9 @@ function ItemCard({ imagen, titulo, tamano, topp1, topp2, compl1, compl2, precio
         backgroundColor: '#fff',
         display: 'flex',
         alignItems: 'flex-start',
-        border: '1px solid #ddd',
         borderRadius: '8px',
-        padding: '16px',
         maxWidth: '500px',
-        margin: '8px auto',
+        margin: '12px auto',
         boxShadow: '2px 2px 12px #00000025',
       }}
     >
@@ -25,13 +23,16 @@ function ItemCard({ imagen, titulo, tamano, topp1, topp2, compl1, compl2, precio
         src={imagen}
         alt={titulo}
         style={{
-          height: '50px',
+          height: '90px',
           objectFit: 'cover',
           borderRadius: '8px',
-          marginRight: '16px',
         }}
       />
-      <div style={{ flex: 1 }}>
+      <div 
+      style={{ 
+        flex: 1,
+        padding: '16px',
+        }}>
         <div
           style={{
             display: 'flex',
