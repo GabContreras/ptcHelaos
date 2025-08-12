@@ -10,8 +10,8 @@ const attemptsLimit = 5 // Número máximo de intentos de login permitidos
 
 loginController.login = async (req, res) => {
     const { email, password } = req.body
-    console.log('🚀 Login attempt:', email);
-    
+    console.log('Login attempt:', email);
+
     try {
         let userFound = null
         let userType = null
@@ -86,9 +86,8 @@ loginController.login = async (req, res) => {
                     console.error('Error generando token:', error);
                     return res.status(500).json({ message: 'Error generando token' })
                 }
-                const isProduction = req.get('host')?.includes('vercel.app') || 
-                                   req.get('host')?.includes('herokuapp.com') ||
-                                   req.secure;
+                const isProduction = req.get('host')?.includes('vercel.app') ||
+                    req.secure;
 
                 const cookieOptions = {
                     httpOnly: true,
@@ -98,14 +97,14 @@ loginController.login = async (req, res) => {
                     path: '/' // Disponible en todo el dominio
                 };
 
-                console.log('🍪 Setting cookie with options:', {
+                console.log('Setting cookie with options:', {
                     isProduction,
                     host: req.get('host'),
                     cookieOptions
                 });
 
                 res.cookie('authToken', token, cookieOptions);
-                
+
                 // Respuesta completa con datos del usuario
                 res.status(200).json({
                     message: 'Login exitoso',
@@ -127,7 +126,7 @@ loginController.login = async (req, res) => {
 // NUEVO: Endpoint para verificar autenticación
 loginController.getAuthenticatedUser = async (req, res) => {
     console.log('🔍 Checking auth, cookies:', Object.keys(req.cookies));
-    
+
     const token = req.cookies.authToken
     if (!token) {
         return res.status(401).json({ message: 'No autenticado' })
@@ -138,10 +137,10 @@ loginController.getAuthenticatedUser = async (req, res) => {
         let user = null
 
         if (decoded.userType === 'admin') {
-            user = { 
-                _id: 'admin', 
-                name: 'Administrador', 
-                email: config.emailAdmin.email 
+            user = {
+                _id: 'admin',
+                name: 'Administrador',
+                email: config.emailAdmin.email
             }
         } else if (decoded.userType === 'employee') {
             user = await employeesModel.findById(decoded.user)
@@ -187,9 +186,9 @@ loginController.isLoggedIn = (req, res) => {
 
 // NUEVO: Endpoint de logout
 loginController.logout = (req, res) => {
-    const isProduction = req.get('host')?.includes('vercel.app') || 
-                        req.get('host')?.includes('herokuapp.com') ||
-                        req.secure;
+    const isProduction = req.get('host')?.includes('vercel.app') ||
+        req.get('host')?.includes('herokuapp.com') ||
+        req.secure;
 
     res.clearCookie('authToken', {
         httpOnly: true,
@@ -197,7 +196,7 @@ loginController.logout = (req, res) => {
         secure: isProduction,
         path: '/'
     });
-    
+
     console.log('Cookie cleared');
     res.status(200).json({ message: 'Logout exitoso' });
 }
