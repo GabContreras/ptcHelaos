@@ -1,4 +1,4 @@
-import {Schema, model} from "mongoose";
+import { Schema, model } from "mongoose";
 
 const employeesSchema = new Schema({
   name: {
@@ -7,7 +7,7 @@ const employeesSchema = new Schema({
     trim: true
   },
   email: {
-    type: String, 
+    type: String,
     required: true,
     unique: true,
     trim: true
@@ -21,13 +21,13 @@ const employeesSchema = new Schema({
     type: String,
     required: true,
     trim: true,
-    
+
   },
   hireDate: {
     type: Date,
     required: true
   },
-  salary: { 
+  salary: {
     type: Number,
     required: true
   },
@@ -35,6 +35,14 @@ const employeesSchema = new Schema({
     type: String,
     required: true,
     unique: true
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  lockTime: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true,

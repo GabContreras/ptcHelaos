@@ -1,4 +1,4 @@
-import {Schema, model} from "mongoose";
+import { Schema, model } from "mongoose";
 
 const customersSchema = new Schema({
   name: {
@@ -10,7 +10,7 @@ const customersSchema = new Schema({
     type: String,
     required: true,
     trim: true
-    
+
   },
   email: {
     type: String,
@@ -18,7 +18,7 @@ const customersSchema = new Schema({
     unique: true,
     trim: true
   },
-  address:[{
+  address: [{
 
   }],
   password: {
@@ -33,10 +33,18 @@ const customersSchema = new Schema({
   frequentCustomer: {
     type: Boolean,
     default: false
-  },  
+  },
   isVerified: {
     type: Boolean,
     default: false
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  lockTime: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true,

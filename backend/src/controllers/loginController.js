@@ -6,6 +6,8 @@ import { config } from '../config.js'
 
 const loginController = {}
 
+const attemptsLimit = 5 // Número máximo de intentos de login permitidos
+
 loginController.login = async (req, res) => {
     const { email, password } = req.body
     try {
@@ -34,10 +36,15 @@ loginController.login = async (req, res) => {
 
         // Verificar contraseña (excepto para admin)
         if (userType !== 'admin') {
-            const isMatch = await bcryptjs.compare(password, userFound.password)
-            if (!isMatch) {
-                return res.status(401).json({ message: 'Credenciales inválidas' })
+
+            //return res.json({val: (userFound.lockTime > Date.now()), diferencia: (Date.parse("2025-08-12T14:09:53.176+00:00") - Date.now()) / 60000});
+            if (Date.parse(userFound.lockTime) > Date.now()) {
+                const minutosRestantes = Math.ceil((userFound.lockTime - Date.now()) / 60000);
+                return res.status(403).json({ message: "Cuenta bloqueada, intenta de nuevo en: " + minutosRestantes + " minutos." });
             }
+
+
+            const isMatch = await bcryptjs.compare(password, userFound.password)
 
             // Verificar si el cliente está verificado
             if (userType === 'customer' && !userFound.isVerified) {
@@ -46,6 +53,26 @@ loginController.login = async (req, res) => {
                     verified: false
                 })
             }
+            if (!isMatch) {
+
+                //Si se equivoca de contraseña, suma 1 a los intentos de login
+                userFound.loginAttempts = userFound.loginAttempts + 1; // Incrementa el contador de intentos
+
+                //Si sobrepasa los intentos permitidos, bloquea la cuenta
+                if (userFound.loginAttempts >= attemptsLimit) {
+                    userFound.lockTime = Date.now() + 15 * 60000; // Bloquea la cuenta por un tiempo
+                    userFound.loginAttempts = 0;
+                    await userFound.save();
+                    return res.status(403).json({ message: "Cuenta bloqueada por 15 minutos." });
+
+                }
+                await userFound.save(); // Guarda los cambios en la base de datos
+                return res.status(401).json({ message: "Credenciales inválidas, te quedan: " + (attemptsLimit - userFound.loginAttempts) + " intentos." });
+            }
+            userFound.loginAttempts = 0; // Reinicia los intentos de login si la contraseña es correcta
+            userFound.lockTime = null; // Reinicia el tiempo de bloqueo si la contraseña es correcta
+            await userFound.save(); // Guarda los cambios en la base de datos 
+
         }
 
         jwt.sign(
