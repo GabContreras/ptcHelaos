@@ -127,6 +127,12 @@ const Navbar = () => {
             label: "Caja Chica",
             icon: "💳",
             adminOnly: false 
+        },
+        {
+            path: "/products",
+            label: "Productos",
+            icon: "",
+            adminOnly: false 
         }
     ];
 
