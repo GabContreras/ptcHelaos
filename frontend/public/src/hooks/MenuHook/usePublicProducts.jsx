@@ -39,6 +39,48 @@ export function usePublicProducts() {
         }
     };
 
+    const createOrder = async (product) => {
+        try {
+            const payload = {
+            products: [
+                {
+                productId: product._id,
+                quantity: 1,
+                flavors: [],
+                toppings: [],
+                additions: [],
+                specialInstructions: "",
+                subtotal: product.basePrice
+                }
+            ],
+            totalAmount: product.basePrice,
+            paymentMethod: "efectivo",       // Ajustar si necesitas que sea seleccionable
+            paymentStatus: "pendiente",
+            orderStatus: "pendiente",
+            orderType: "local"
+            };
+
+            const response = await fetch(`${API_BASE}orders`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+            throw new Error(`Error al crear la orden: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log("Orden creada:", result);
+            // Aquí puedes agregar lógica para notificar al usuario o actualizar estado
+        } catch (error) {
+            console.error("Error al crear la orden:", error.message);
+        }
+        };
+
+
     // Filtrar productos por búsqueda
     const filterBySearch = (term) => {
         setSearchTerm(term);
@@ -100,6 +142,7 @@ export function usePublicProducts() {
         
         // Funciones de utilidad
         getProductById,
+        createOrder,
         refreshData,
         
         // Funciones de datos

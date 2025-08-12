@@ -15,6 +15,7 @@ const Menu = () => {
     searchTerm,
     filterBySearch,
     resetFilters,
+    createOrder,
     getProductById
   } = usePublicProducts();
 
@@ -385,7 +386,10 @@ const Menu = () => {
                       
                       <button 
                         className="action-btn"
-                        onClick={selectedItem.isSpecial ? startCustomization : closeModal}
+                        onClick={() => {
+                          createOrder(selectedItem);
+                          closeModal();
+                        }}
                       >
                         {selectedItem.isSpecial ? 'Personalizar producto' : 'Añadir al carrito'}
                       </button>
