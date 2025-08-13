@@ -1,0 +1,86 @@
+.container {
+  flex: 1;
+}
+
+.backgroundImage {
+  flex: 1;
+}
+
+.content {
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 15%;
+  padding-bottom: 8%;
+}
+
+.logoContainer {
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+}
+
+.logo {
+  width: 150px;
+  height: 150px;
+  border-radius: 75px;
+  background-color: white;
+  /*shadow-color: #000;
+  shadow-offset: 0px 8px;
+  shadow-opacity: 0.25;
+  shadow-radius: 10px;*/
+  elevation: 8;
+}
+
+.buttonsContainer {
+  width: 100%;
+  align-items: center;
+}
+
+.primaryButton {
+  background-color: white;
+  /*padding-vertical: 15px;
+  padding-horizontal: 60px;*/
+  border-radius: 25px;
+  margin-bottom: 20px;
+  min-width: 60%;
+  align-items: center;
+  /*shadow-color: #000;
+  shadow-offset: 0px 4px;
+  shadow-opacity: 0.15;
+  shadow-radius: 6px;*/
+  elevation: 4;
+}
+
+.primaryButtonText {
+  font-family: 'Montserrat-Bold';
+  font-size: 16px;
+  color: #8D6CFF;
+}
+
+.questionText {
+  font-family: 'Montserrat-Medium';
+  font-size: 14px;
+  color: white;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.secondaryButton {
+  background-color: transparent;
+  border-width: 2px;
+  border-color: white;
+  /*padding-vertical: 15px;
+  padding-horizontal: 60px;*/
+  border-radius: 25px;
+  min-width: 60%;
+  align-items: center;
+}
+
+.secondaryButtonText {
+  font-family: 'Montserrat-Bold';
+  font-size: 16px;
+  color: white;
+}
