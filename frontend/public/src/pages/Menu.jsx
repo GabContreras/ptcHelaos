@@ -282,7 +282,7 @@ const Menu = () => {
   };
 
   // Función para agregar al carrito
-  const addToCart = () => {
+  /* const addToCart = () => {
     const orderDetails = {
       product: selectedItem,
       customization: customization,
@@ -295,7 +295,7 @@ const Menu = () => {
     // Por ejemplo, llamar a una función de tu hook o contexto de carrito
     alert('Producto agregado al carrito exitosamente!');
     closeModal();
-  };
+  };*/
 
   // Renderizar componente de imagen con carrusel (mantener tu lógica existente)
   const ImageCarousel = ({ product, isModal = false }) => {
