@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, X, ArrowLeft, ArrowRight, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown, X, ArrowLeft, ArrowRight, Search, Filter, ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react';
 import '../styles/Menu.css';
 import Navbar from "../components/NavBar";
 import Footer from "../components/Footer";
 import { usePublicProducts } from '../hooks/MenuHook/usePublicProducts';
 
 const Menu = () => {
-  // Hook para productos públicos
+  // Hook para productos públicos (mantener tu lógica existente)
   const {
     products,
     filteredProducts,
@@ -33,10 +33,22 @@ const Menu = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState({});
 
   // Datos de personalización
-  const sizes = [
-    { id: 1, name: "Un Sabor (Pequeño)", price: 6.99 },
-    { id: 2, name: "Dos Sabores (Mediano)", price: 8.99 },
-    { id: 3, name: "Tres Sabores (Grande)", price: 10.99 }
+  const rollIceSizes = [
+    { id: 1, name: "Un Sabor (Pequeño)", price: 3.00, maxFlavors: 1 },
+    { id: 2, name: "Dos Sabores (Mediano)", price: 3.50, maxFlavors: 2 },
+    { id: 3, name: "Tres Sabores (Grande)", price: 4.00, maxFlavors: 3 }
+  ];
+
+  const crepeSizes = [
+    { id: 1, name: "Un Sabor (Pequeño)", price: 4.00, maxFlavors: 1 },
+    { id: 2, name: "Dos Sabores (Mediano)", price: 4.50, maxFlavors: 2 },
+    { id: 3, name: "Tres Sabores (Grande)", price: 5.00, maxFlavors: 3 }
+  ];
+
+  const coneIceRollSizes = [
+    { id: 1, name: "Un Sabor (Pequeño)", price: 3.50, maxFlavors: 1 },
+    { id: 2, name: "Dos Sabores (Mediano)", price: 4.00, maxFlavors: 2 },
+    { id: 3, name: "Tres Sabores (Grande)", price: 4.50, maxFlavors: 3 }
   ];
 
   const flavors = [
@@ -50,7 +62,7 @@ const Menu = () => {
     "Chocolate", "Almendras", "Jalea de Caramelo", "Jalea de Fresa", "Fresa", "Uva"
   ];
 
-  // Función para obtener imágenes del producto
+  // Función para obtener imágenes del producto (mantener tu lógica existente)
   const getProductImages = (product) => {
     if (!product) return ['/api/placeholder/300/200'];
     
@@ -91,7 +103,7 @@ const Menu = () => {
     return ['/api/placeholder/300/200'];
   };
 
-  // Función para cambiar imagen en el carrusel
+  // Función para cambiar imagen en el carrusel (mantener tu lógica existente)
   const changeImage = (productId, direction) => {
     const product = filteredProducts.find(p => p._id === productId);
     const images = getProductImages(product);
@@ -110,7 +122,7 @@ const Menu = () => {
     }));
   };
 
-  // Funciones del modal
+  // Funciones del modal (actualizar para incluir personalización)
   const openModal = (item) => {
     setSelectedItem(item);
     setIsModalOpen(true);
@@ -129,15 +141,20 @@ const Menu = () => {
 
   const startCustomization = () => {
     setIsCustomizing(true);
-    setCustomizationStep(0);
+    // Si es un producto con sabor fijo, saltar directamente a selección de sabores
+    if (hasFixedFlavor(selectedItem.name)) {
+      setCustomizationStep(1);
+    } else {
+      setCustomizationStep(0);
+    }
   };
 
-  // Función para manejar la búsqueda
+  // Función para manejar la búsqueda (mantener tu lógica existente)
   const handleSearch = (e) => {
     filterBySearch(e.target.value);
   };
 
-  // Función para formatear precio
+  // Función para formatear precio (mantener tu lógica existente)
   const formatPrice = (basePrice) => {
     if (typeof basePrice === 'number') {
       return basePrice.toFixed(2);
@@ -148,7 +165,136 @@ const Menu = () => {
     return 'N/A';
   };
 
-  // Renderizar componente de imagen con carrusel
+  // NUEVAS FUNCIONES PARA EL SISTEMA DE PERSONALIZACIÓN
+
+  // Determinar si un producto necesita personalización
+  const needsCustomization = (productName) => {
+    const customizableProducts = [
+      'Helado de Rollo',
+      'Crepas', 
+      'Cono con Helados de Rollo',
+      'Mini Donitas',
+      'Wafles'
+    ];
+    return customizableProducts.includes(productName);
+  };
+
+  // Obtener opciones de tamaño según el producto
+  const getSizeOptions = (productName) => {
+    switch (productName) {
+      case 'Helado de Rollo':
+        return rollIceSizes;
+      case 'Crepas':
+        return crepeSizes;
+      case 'Cono con Helados de Rollo':
+        return coneIceRollSizes;
+      default:
+        return [];
+    }
+  };
+
+  // Determinar si un producto tiene sabor fijo (Mini Donitas y Wafles)
+  const hasFixedFlavor = (productName) => {
+    return ['Mini Donitas', 'Wafles'].includes(productName);
+  };
+
+  // Funciones de personalización
+  const selectSize = (size) => {
+    setCustomization(prev => ({ ...prev, size, flavors: [] }));
+    setCustomizationStep(1);
+  };
+
+  const toggleFlavor = (flavor) => {
+    setCustomization(prev => {
+      const currentFlavors = prev.flavors;
+      const maxFlavors = hasFixedFlavor(selectedItem.name) ? 1 : prev.size?.maxFlavors || 1;
+      
+      if (currentFlavors.includes(flavor)) {
+        return {
+          ...prev,
+          flavors: currentFlavors.filter(f => f !== flavor)
+        };
+      } else if (currentFlavors.length < maxFlavors) {
+        return {
+          ...prev,
+          flavors: [...currentFlavors, flavor]
+        };
+      }
+      return prev;
+    });
+  };
+
+  const toggleTopping = (topping) => {
+    setCustomization(prev => ({
+      ...prev,
+      toppings: prev.toppings.includes(topping)
+        ? prev.toppings.filter(t => t !== topping)
+        : [...prev.toppings, topping]
+    }));
+  };
+
+  const nextStep = () => {
+    if (customizationStep < 2) {
+      setCustomizationStep(prev => prev + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (customizationStep > 0) {
+      setCustomizationStep(prev => prev - 1);
+    }
+  };
+
+  // Calcular precio total
+  const calculateTotalPrice = () => {
+    let total = 0;
+    
+    if (hasFixedFlavor(selectedItem.name)) {
+      total = selectedItem.basePrice;
+    } else if (customization.size) {
+      total = customization.size.price;
+    } else {
+      total = selectedItem.basePrice;
+    }
+    
+    // Agregar precio de toppings
+    total += customization.toppings.length * 0.25;
+    
+    return total;
+  };
+
+  // Verificar si se puede continuar al siguiente paso
+  const canProceedToNextStep = () => {
+    switch (customizationStep) {
+      case 0:
+        return hasFixedFlavor(selectedItem.name) || customization.size !== null;
+      case 1:
+        const maxFlavors = hasFixedFlavor(selectedItem.name) ? 1 : customization.size?.maxFlavors || 1;
+        return customization.flavors.length === maxFlavors;
+      case 2:
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  // Función para agregar al carrito
+  const addToCart = () => {
+    const orderDetails = {
+      product: selectedItem,
+      customization: customization,
+      totalPrice: calculateTotalPrice(),
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Agregando al carrito:', orderDetails);
+    // Aquí puedes implementar la lógica para agregar al carrito
+    // Por ejemplo, llamar a una función de tu hook o contexto de carrito
+    alert('Producto agregado al carrito exitosamente!');
+    closeModal();
+  };
+
+  // Renderizar componente de imagen con carrusel (mantener tu lógica existente)
   const ImageCarousel = ({ product, isModal = false }) => {
     const images = getProductImages(product);
     const currentIndex = currentImageIndex[product._id] || 0;
@@ -227,13 +373,194 @@ const Menu = () => {
     );
   };
 
-  // Placeholder para renderCustomizationStep (mantén tu lógica existente)
+  // NUEVA FUNCIÓN PARA RENDERIZAR LOS PASOS DE PERSONALIZACIÓN
   const renderCustomizationStep = () => {
-    return (
-      <div className="customization-step">
-        <p>Aquí va tu lógica de personalización existente</p>
-      </div>
-    );
+    if (!selectedItem) return null;
+
+    const isFixedFlavor = hasFixedFlavor(selectedItem.name);
+    const sizeOptions = getSizeOptions(selectedItem.name);
+
+    switch (customizationStep) {
+      case 0:
+        // Paso 1: Seleccionar tamaño (solo para productos que lo requieren)
+        if (isFixedFlavor) {
+          // Para productos con sabor fijo, saltar directamente a selección de sabores
+          return <div className="customization-loading">Cargando...</div>;
+        }
+        
+        return (
+          <div className="customization-step">
+            <div className="step-header">
+              <h3 className="step-title">Elige tu tamaño</h3>
+              <p className="step-description">Selecciona el tamaño que prefieras</p>
+            </div>
+            
+            <div className="size-options-grid">
+              {sizeOptions.map((size) => (
+                <div
+                  key={size.id}
+                  onClick={() => selectSize(size)}
+                  className={`size-option ${customization.size?.id === size.id ? 'selected' : ''}`}
+                >
+                  <div className="size-option-content">
+                    <h4 className="size-name">{size.name}</h4>
+                    <p className="size-price">${size.price.toFixed(2)}</p>
+                    <p className="size-info">
+                      Hasta {size.maxFlavors} {size.maxFlavors === 1 ? 'sabor' : 'sabores'}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {customization.size && (
+              <div className="step-actions">
+                <button onClick={nextStep} className="btn-continue">
+                  Continuar
+                </button>
+              </div>
+            )}
+          </div>
+        );
+
+      case 1:
+        // Paso 2: Seleccionar sabores
+        const maxFlavors = isFixedFlavor ? 1 : customization.size?.maxFlavors || 1;
+        const selectedFlavorsCount = customization.flavors.length;
+        
+        return (
+          <div className="customization-step">
+            <div className="step-header">
+              <h3 className="step-title">Elige tus sabores</h3>
+              <p className="step-description">
+                Selecciona {maxFlavors === 1 ? '1 sabor' : `hasta ${maxFlavors} sabores`}
+              </p>
+              <div className="flavor-counter">
+                {selectedFlavorsCount} de {maxFlavors} sabores seleccionados
+              </div>
+            </div>
+            
+            <div className="flavors-grid">
+              {flavors.map((flavor) => (
+                <button
+                  key={flavor}
+                  onClick={() => toggleFlavor(flavor)}
+                  disabled={!customization.flavors.includes(flavor) && selectedFlavorsCount >= maxFlavors}
+                  className={`flavor-option ${
+                    customization.flavors.includes(flavor) ? 'selected' : ''
+                  } ${!customization.flavors.includes(flavor) && selectedFlavorsCount >= maxFlavors ? 'disabled' : ''}`}
+                >
+                  {flavor}
+                </button>
+              ))}
+            </div>
+            
+            <div className="step-actions">
+              {!isFixedFlavor && (
+                <button onClick={prevStep} className="btn-back">
+                  Atrás
+                </button>
+              )}
+              
+              {canProceedToNextStep() && (
+                <button onClick={nextStep} className="btn-continue">
+                  Continuar
+                </button>
+              )}
+            </div>
+          </div>
+        );
+
+      case 2:
+        // Paso 3: Seleccionar toppings y resumen
+        return (
+          <div className="customization-step">
+            <div className="step-header">
+              <h3 className="step-title">Agrega toppings</h3>
+              <p className="step-description">Cada topping cuesta $0.25 adicional</p>
+            </div>
+            
+            <div className="toppings-grid">
+              {toppings.map((topping) => (
+                <button
+                  key={topping}
+                  onClick={() => toggleTopping(topping)}
+                  className={`topping-option ${customization.toppings.includes(topping) ? 'selected' : ''}`}
+                >
+                  {topping} (+$0.25)
+                </button>
+              ))}
+            </div>
+            
+            {/* Resumen del pedido */}
+            <div className="order-summary">
+              <h4 className="summary-title">Resumen de tu pedido</h4>
+              
+              <div className="summary-details">
+                <div className="summary-row">
+                  <span className="summary-label">Producto:</span>
+                  <span className="summary-value">{selectedItem.name}</span>
+                </div>
+                
+                {customization.size && (
+                  <div className="summary-row">
+                    <span className="summary-label">Tamaño:</span>
+                    <span className="summary-value">{customization.size.name}</span>
+                  </div>
+                )}
+                
+                <div className="summary-row">
+                  <span className="summary-label">Sabores:</span>
+                  <span className="summary-value">{customization.flavors.join(', ')}</span>
+                </div>
+                
+                {customization.toppings.length > 0 && (
+                  <div className="summary-row">
+                    <span className="summary-label">Toppings:</span>
+                    <span className="summary-value">{customization.toppings.join(', ')}</span>
+                  </div>
+                )}
+                
+                <div className="summary-divider"></div>
+                
+                <div className="summary-row">
+                  <span className="summary-label">Precio base:</span>
+                  <span className="summary-value">
+                    ${isFixedFlavor ? formatPrice(selectedItem.basePrice) : formatPrice(customization.size?.price || 0)}
+                  </span>
+                </div>
+                
+                {customization.toppings.length > 0 && (
+                  <div className="summary-row">
+                    <span className="summary-label">Toppings ({customization.toppings.length}):</span>
+                    <span className="summary-value">${(customization.toppings.length * 0.25).toFixed(2)}</span>
+                  </div>
+                )}
+                
+                <div className="summary-divider"></div>
+                
+                <div className="summary-row total-row">
+                  <span className="summary-label">Total:</span>
+                  <span className="summary-value">${calculateTotalPrice().toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="step-actions">
+              <button onClick={prevStep} className="btn-back">
+                Atrás
+              </button>
+              
+              <button onClick={addToCart} className="btn-add-to-cart">
+                Agregar al carrito - ${calculateTotalPrice().toFixed(2)}
+              </button>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
 
   return (
@@ -340,8 +667,8 @@ const Menu = () => {
                     <span className="text-lg font-bold text-purple-600">
                       ${formatPrice(item.basePrice)}
                     </span>
-                    </div>
-                    <div>
+                  </div>
+                  <div>
                     <button 
                       className="view-more-btn" 
                       onClick={() => openModal(item)}
@@ -385,16 +712,16 @@ const Menu = () => {
                       
                       <button 
                         className="action-btn"
-                        onClick={selectedItem.isSpecial ? startCustomization : closeModal}
+                        onClick={needsCustomization(selectedItem.name) ? startCustomization : addToCart}
                       >
-                        {selectedItem.isSpecial ? 'Personalizar producto' : 'Añadir al carrito'}
+                        {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="customization-modal">
                     <div className="customization-header">
-                      <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                      <h1 className="customization-main-title">
                         Personaliza tu {selectedItem.name}
                       </h1>
                     </div>
