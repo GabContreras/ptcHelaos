@@ -10,7 +10,7 @@ const attemptsLimit = 5 // Número máximo de intentos de login permitidos
 
 loginController.login = async (req, res) => {
     const { email, password } = req.body
-    console.log('Login attempt:', email);
+    console.log('🚀 Login attempt:', email);
 
     try {
         let userFound = null
@@ -102,14 +102,12 @@ loginController.login = async (req, res) => {
                 };
 
                 console.log('Setting cookie with options:', {
-                console.log('Setting cookie with options:', {
                     isProduction,
                     host: req.get('host'),
                     cookieOptions
                 });
 
                 res.cookie('authToken', token, cookieOptions);
-
 
                 // Respuesta completa con datos del usuario
                 res.status(200).json({
@@ -143,10 +141,6 @@ loginController.getAuthenticatedUser = async (req, res) => {
         let user = null
 
         if (decoded.userType === 'admin') {
-            user = {
-                _id: 'admin',
-                name: 'Administrador',
-                email: config.emailAdmin.email
             user = {
                 _id: 'admin',
                 name: 'Administrador',
@@ -209,7 +203,6 @@ loginController.logout = (req, res) => {
         secure: isProduction,
         path: '/'
     });
-
 
     console.log('Cookie cleared');
     res.status(200).json({ message: 'Logout exitoso' });
