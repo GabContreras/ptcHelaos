@@ -1,97 +1,31 @@
 import React from "react";
-import { useNavigate } from "react-router";
-import imgExample from "../imgs/imgExample.jpeg";
-import "../styles/Cart.css";
-import ItemCard from "./ItemCartCard";
-import Button from "../assets/Button"
+import { useCart } from "../context/CartContext";
+import ItemCard from "./ItemCartCard"
 
 function Cart() {
-
-  const navigate = useNavigate()
+  const { cart, removeFromCart, clearCart } = useCart();
+  console.log(cart)
 
   return (
-      <div className="cart">
-        <div className="items">
+    <div className="cart">
+      <div className="items">
+        {cart.length === 0 ? (
+          <p>Tu carrito está vacío</p>
+        ) : (
+          cart.map(item => (
             <ItemCard
-            imagen={imgExample}
-            titulo="Ejemplo de orden 1"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample}
-            titulo="Ejemplo de orden 1"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-        </div>
+              key={item._id}
+              item={item}
+              onRemove={() => removeFromCart(item._id)}
+            />
+            
+          ))
+        )}
       </div>
+      {cart.length > 0 && (
+        <button onClick={clearCart}>Vaciar carrito</button>
+      )}
+    </div>
   );
 }
 

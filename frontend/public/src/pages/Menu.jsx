@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronDown, X, ArrowLeft, ArrowRight, Search, Filter, ChevronLeft, ChevronRight, Plus, Minus } from 'lucide-react';
+import React, { createContext ,useState, useEffect } from 'react';
+import { useCart } from '../context/CartContext';
+import { ChevronDown, X, ArrowLeft, ArrowRight, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import '../styles/Menu.css';
 import Navbar from "../components/NavBar";
 import Footer from "../components/Footer";
@@ -17,6 +18,8 @@ const Menu = () => {
     resetFilters,
     getProductById
   } = usePublicProducts();
+
+  const {addToCart} = useCart();
 
   // Estados del modal
   const [selectedItem, setSelectedItem] = useState(null);
@@ -712,7 +715,11 @@ const Menu = () => {
                       
                       <button 
                         className="action-btn"
-                        onClick={needsCustomization(selectedItem.name) ? startCustomization : addToCart}
+                        onClick={() => {
+                          addToCart(selectedItem);
+                          closeModal();
+                          //selectedItem.isSpecial ? startCustomization : closeModal
+                        }}
                       >
                         {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
                       </button>
