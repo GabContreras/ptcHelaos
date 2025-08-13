@@ -166,43 +166,98 @@ export const AuthProvider = ({ children }) => {
         const cookieExists = checkAuthTokenCookie();
 
         console.log("useEffect - Checking stored auth for Moon Ice Cream:", { 
-            token, 
-            savedUser, 
+            hasToken: !!token, 
+            hasSavedUser: !!savedUser, 
             cookieExists: !!cookieExists 
         });
 
-        // Si no hay cookie authToken, limpiar todo y redirigir
+        // LÓGICA MEJORADA: Verificar cookie primero, luego localStorage
         if (!cookieExists) {
-            console.log("Cookie authToken no encontrada, limpiando datos...");
-            localStorage.removeItem("authToken");
-            localStorage.removeItem("user");
-            setAuthCokie(null);
-            setUser(null);
+            console.log("Cookie authToken no encontrada");
             
-            // Solo redirigir si no estamos en rutas públicas
-            const currentPath = window.location.pathname;
-            const publicPaths = ['/', '/login', '/register', '/recuperacion', '/recuperacioncodigo', '/cambiarpassword', '/LoginPage', '/RegistroPage', '/PasswordRecovery'];
-            
-            if (!publicPaths.includes(currentPath)) {
-                console.log("Redirigiendo al login...");
-                window.location.href = '/LoginPage';
-            }
-        }
-        // Si hay cookie Y datos locales, restaurar sesión
-        else if (token && savedUser && savedUser !== "undefined") {
-            try {
-                const parsedUser = JSON.parse(savedUser);
-                setUser(parsedUser);
-                setAuthCokie(token);
-                console.log("Moon Ice Cream auth restored:", { token, user: parsedUser });
-            } catch (error) {
-                console.error("Error parsing saved user:", error);
-                localStorage.removeItem("user");
+            // Si tampoco hay datos locales, limpiar y redirigir
+            if (!token || !savedUser) {
+                console.log("No hay datos locales tampoco, limpiando...");
                 localStorage.removeItem("authToken");
+                localStorage.removeItem("user");
+                setAuthCokie(null);
+                setUser(null);
+                
+                // Solo redirigir si no estamos en rutas públicas
+                const currentPath = window.location.pathname;
+                const publicPaths = ['/', '/login', '/register', '/recuperacion', '/recuperacioncodigo', '/cambiarpassword', '/LoginPage', '/RegistroPage', '/PasswordRecovery'];
+                
+                if (!publicPaths.includes(currentPath)) {
+                    console.log("Redirigiendo al login...");
+                    window.location.href = '/LoginPage';
+                }
+                setIsLoading(false);
+                return;
             }
         }
 
-        setIsLoading(false);
+        //Si hay cookie O datos locales, intentar restaurar sesión
+        if (cookieExists || (token && savedUser && savedUser !== "undefined")) {
+            // Restaurar desde localStorage primero
+            if (token && savedUser && savedUser !== "undefined") {
+                try {
+                    const parsedUser = JSON.parse(savedUser);
+                    setUser(parsedUser);
+                    setAuthCokie(token);
+                    console.log("Moon Ice Cream auth restored from localStorage:", parsedUser);
+                } catch (error) {
+                    console.error("Error parsing saved user:", error);
+                    localStorage.removeItem("user");
+                    localStorage.removeItem("authToken");
+                }
+            }
+
+            // ✅ Verificar con el servidor si hay cookie
+            if (cookieExists) {
+                fetch(`${SERVER_URL}auth/me`, {
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error("No autenticado");
+                    return response.json();
+                })
+                .then(data => {
+                    if (data?.user) {
+                        const userData = {
+                            id: data.user.id,
+                            userType: data.user.userType,
+                            email: data.user.email,
+                            name: data.user.name
+                        };
+                        
+                        setUser(userData);
+                        setAuthCokie("authenticated");
+                        localStorage.setItem("user", JSON.stringify(userData));
+                        localStorage.setItem("authToken", "authenticated");
+                        
+                        console.log("Session verified with server:", userData);
+                    }
+                })
+                .catch(error => {
+                    console.warn("⚠️ Error verifying session with server:", error.message);
+                    // Si falla la verificación del servidor pero hay datos locales, mantenerlos
+                    if (!token || !savedUser) {
+                        localStorage.removeItem("user");
+                        localStorage.removeItem("authToken");
+                        setAuthCokie(null);
+                        setUser(null);
+                    }
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+            } else {
+                setIsLoading(false);
+            }
+        } else {
+            setIsLoading(false);
+        }
     }, []);
 
     return (
