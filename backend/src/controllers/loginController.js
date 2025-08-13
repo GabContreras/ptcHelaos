@@ -190,8 +190,11 @@ loginController.isLoggedIn = (req, res) => {
 
 // NUEVO: Endpoint de logout
 loginController.logout = (req, res) => {
+
     const isProduction = req.get('host')?.includes('vercel.app') ||
         req.get('host')?.includes('herokuapp.com') ||
+        req.get('host')?.includes('onrender.com') ||
+        process.env.NODE_ENV === 'production' ||
         req.secure;
 
     res.clearCookie('authToken', {
