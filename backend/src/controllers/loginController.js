@@ -86,7 +86,11 @@ loginController.login = async (req, res) => {
                     console.error('Error generando token:', error);
                     return res.status(500).json({ message: 'Error generando token' })
                 }
-                const isProduction = req.get('host')?.includes('vercel.app') ||
+                const host = req.get('host') || '';
+                const origin = req.get('origin') || '';
+
+                const isProduction = host.includes('onrender.com') ||
+                    process.env.NODE_ENV === 'production' ||
                     req.secure;
 
                 const cookieOptions = {
@@ -98,12 +102,14 @@ loginController.login = async (req, res) => {
                 };
 
                 console.log('Setting cookie with options:', {
+                console.log('Setting cookie with options:', {
                     isProduction,
                     host: req.get('host'),
                     cookieOptions
                 });
 
                 res.cookie('authToken', token, cookieOptions);
+
 
                 // Respuesta completa con datos del usuario
                 res.status(200).json({
@@ -125,7 +131,7 @@ loginController.login = async (req, res) => {
 
 // NUEVO: Endpoint para verificar autenticación
 loginController.getAuthenticatedUser = async (req, res) => {
-    console.log('🔍 Checking auth, cookies:', Object.keys(req.cookies));
+    console.log('Checking auth, cookies:', Object.keys(req.cookies));
 
     const token = req.cookies.authToken
     if (!token) {
@@ -137,6 +143,10 @@ loginController.getAuthenticatedUser = async (req, res) => {
         let user = null
 
         if (decoded.userType === 'admin') {
+            user = {
+                _id: 'admin',
+                name: 'Administrador',
+                email: config.emailAdmin.email
             user = {
                 _id: 'admin',
                 name: 'Administrador',
@@ -186,8 +196,11 @@ loginController.isLoggedIn = (req, res) => {
 
 // NUEVO: Endpoint de logout
 loginController.logout = (req, res) => {
+
     const isProduction = req.get('host')?.includes('vercel.app') ||
         req.get('host')?.includes('herokuapp.com') ||
+        req.get('host')?.includes('onrender.com') ||
+        process.env.NODE_ENV === 'production' ||
         req.secure;
 
     res.clearCookie('authToken', {
@@ -196,6 +209,7 @@ loginController.logout = (req, res) => {
         secure: isProduction,
         path: '/'
     });
+
 
     console.log('Cookie cleared');
     res.status(200).json({ message: 'Logout exitoso' });
