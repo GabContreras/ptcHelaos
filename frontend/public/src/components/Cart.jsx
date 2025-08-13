@@ -4,6 +4,7 @@ import ItemCard from "./ItemCartCard"
 
 function Cart() {
   const { cart, removeFromCart, clearCart } = useCart();
+  console.log(cart)
 
   return (
     <div className="cart">
@@ -17,6 +18,7 @@ function Cart() {
               item={item}
               onRemove={() => removeFromCart(item._id)}
             />
+            
           ))
         )}
       </div>

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 
-function ItemCard({ imagen, titulo, tamano, topp1, topp2, compl1, compl2, precio }) {
+function ItemCard({ item, onRemove }) {
   const [expandido, setExpandido] = React.useState(false);
 
   const toggleExpandido = () => {
     setExpandido(!expandido);
   };
 
+  // Desestructuramos las propiedades del producto
+  const { images, name, basePrice, description } = item;
+  console.log(images, name)
   return (
     <div
       style={{
@@ -20,19 +23,16 @@ function ItemCard({ imagen, titulo, tamano, topp1, topp2, compl1, compl2, precio
       }}
     >
       <img
-        src={imagen}
-        alt={titulo}
+        src={Array.isArray(images) && images.length > 0 ? images[0].url : ''}
+        alt={name}
         style={{
-          height: '90px',
+          width: '100px',
+          height: '100px',
           objectFit: 'cover',
           borderRadius: '8px',
         }}
       />
-      <div 
-      style={{ 
-        flex: 1,
-        padding: '16px',
-        }}>
+      <div style={{ flex: 1, padding: '16px 16px 0px 16px' }}>
         <div
           style={{
             display: 'flex',
@@ -41,31 +41,43 @@ function ItemCard({ imagen, titulo, tamano, topp1, topp2, compl1, compl2, precio
             marginBottom: '8px',
           }}
         >
-          <h3 style={{ margin: 0, fontSize: '18px' }}>{titulo}</h3>
+          <h3 style={{ margin: 0, fontSize: '18px' }}>{name}</h3>
           <p style={{ margin: 0, fontWeight: 'bold', color: '#28a745' }}>
-            ${precio}
+            ${basePrice}
           </p>
         </div>
 
         <div style={{ fontSize: '14px', lineHeight: '1.4' }}>
-          {expandido ? (
+          {expandido && (
             <div>
-              <p style={{ margin: '4px 0' }}>Tamaño: {tamano}</p>
-              <p style={{ margin: '4px 0' }}>Toppings:</p>
-              <ul style={{ marginTop: 0, paddingLeft: '18px' }}>
-                <li>{topp1}</li>
-                <li>{topp2}</li>
-              </ul>
-              <p style={{ margin: '4px 0' }}>Complementos:</p>
-              <ul style={{ marginTop: 0, paddingLeft: '18px' }}>
-                <li>{compl1}</li>
-                <li>{compl2}</li>
-              </ul>
+              <p style={{ margin: '4px 0' }}>Descripción: {description}</p>
             </div>
-          ) : (
-            <p style={{ margin: 0 }}></p>
           )}
+          
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '8px',
+          }}>
 
+          {/* Botón para eliminar del carrito */}
+          <button
+            onClick={onRemove}
+            style={{
+              marginTop: '8px',
+              padding: '6px 12px',
+              backgroundColor: '#dc3545',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '20px',
+              cursor: 'pointer',
+            }}
+          >
+            Eliminar
+          </button>
+
+          {/* opcion para desplegar mas informacion */}
           <p
             onClick={toggleExpandido}
             style={{
@@ -80,6 +92,7 @@ function ItemCard({ imagen, titulo, tamano, topp1, topp2, compl1, compl2, precio
           >
             {expandido ? 'Ver menos ▲' : 'Ver más ▼'}
           </p>
+          </div>
         </div>
       </div>
     </div>
