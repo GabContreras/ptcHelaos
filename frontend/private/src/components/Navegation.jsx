@@ -20,6 +20,7 @@ import Storage from "../pages/Storage/Storage";
 import Orders from "../pages/Orders/Orders"
 import PettyCash from "../pages/PettyCash/PettyCash";
 import Category from "../pages/Categories/Categories";
+import Products from "../pages/Products/Products"
 import { useAuth } from "../context/AuthContext";
 
 function Navegation() {
@@ -241,6 +242,15 @@ function Navegation() {
           isAdmin() ? (
             <Layout>
               <Category />
+            </Layout>
+          ) : <AccessDenied />
+        } />
+
+        {/* Productos - Solo admin */}
+        <Route path="/products" element={
+          isAdmin() ? (
+            <Layout>
+              <Products />
             </Layout>
           ) : <AccessDenied />
         } />

@@ -51,7 +51,7 @@ export function usePettyCash(user) {
                 usuario: movement.employeeId === 'admin' ? 'Admin' :
                     (movement.employeeId?.email || movement.employeeId?.name || 'Usuario desconocido'),
                 monto: movement.amount,
-                fecha: new Date(movement.date).toLocaleString('es-ES', {
+                fecha: new Date(movement.date).toLocaleString('en-EN', {
                     day: '2-digit',
                     month: '2-digit',
                     year: '2-digit',

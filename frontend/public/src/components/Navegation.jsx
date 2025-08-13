@@ -11,20 +11,50 @@ import Page404 from "../pages/404";
 import AboutUs from "../pages/AboutUs";
 import FinishOrder from "../pages/FinishOrder";
 import LoginPage from "../pages/LoginPage";
-import RegistroPage from "../pages/RegistroPage";
+import RegistroPage from "../pages/register/RegistroPage";
+import InicioPage from "../pages/IncioPage";
+import Menu from "../pages/Menu";
+import Contactanos from "../pages/Contactanos"
+import Recuperacion from "../pages/passwordRecovery/Recuperacion";
+import RecuperacionCodigo from "../pages/passwordRecovery/RecuperacionCodigo";
+import CambiarPassword from "../pages/passwordRecovery/CambiarPassword";
+import VerificarRegistro from "../pages/register/VerificarRegistro";
+import FollowOrder from "../pages/FollowOrder";
+import RateService from "../pages/RateService";
+import UserAccount from "../pages/UserAccount";
 
-function Navegation() {
-    const navigate = useNavigate();
 
-    return(
+function Navigation() {
+  const navigate = useNavigate();
+
+  return (
     <Routes>
-        <Route path="/" element={<Page404 />} />
-        <Route path="/AboutUs" element={<AboutUs />} />
-        <Route path="/FinishOrder" element={<FinishOrder/>} />
-        <Route path="/LoginPage" element={<LoginPage/>} />
-        <Route path="/RegistroPage" element={<RegistroPage/>} />
-      </Routes>
-  )
+      <Route path="/" element={<InicioPage />} />
+      <Route path="/AboutUs" element={<AboutUs />} />
+      <Route path="/FinishOrder" element={<FinishOrder />} />
+      <Route path="/LoginPage" element={<LoginPage />} />
+      <Route path="/RegistroPage" element={<RegistroPage />} />
+      <Route path="/Menu" element={<Menu />} />
+      <Route path="/Contactanos" element={<Contactanos />} />
+      <Route path="/userAccount" element={<UserAccount />} />
+
+      {/* Rutas de recuperación de contraseña y registro sin navbar */}
+      <Route path="/passwordRecovery" element={<Recuperacion />} />
+      <Route path="/recuperacioncodigo" element={<RecuperacionCodigo />} />
+      <Route path="/cambiarpassword" element={<CambiarPassword />} />
+      <Route path="/verificar-registro" element={<VerificarRegistro />} />
+
+      {/* Rutas alternativas para compatibilidad */}
+      <Route path="/login" element={<Navigate to="/LoginPage" replace />} />
+      <Route path="/register" element={<Navigate to="/RegistroPage" replace />} />
+
+      {/* Ruta catch-all para páginas no encontradas */}
+      <Route path="*" element={<Page404 />} />
+      <Route path="/FollowOrder" element={<FollowOrder />} />
+      <Route path="/RateService" element={<RateService />} />
+        <Route path="/UserAccount" element={<UserAccount />} />
+    </Routes>
+  );
 }
 
-export default Navegation;
+export default Navigation;

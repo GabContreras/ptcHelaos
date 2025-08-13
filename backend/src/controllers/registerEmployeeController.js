@@ -7,7 +7,7 @@ const register = {}
 
 register.registerEmployee = async (req, res) => {
     const { name, email, phone, password, hireDate, salary, dui } = req.body;
-    
+
     try {
         const existingEmployee = await employeesModel.findOne({ email });
         if (existingEmployee) {
@@ -47,7 +47,11 @@ register.registerEmployee = async (req, res) => {
                 if (error) {
                     return res.status(500).json({ message: 'Error generando el token' });
                 }
-                res.cookie('authToken', token);
+                res.cookie('authToken', token, {
+                    httpOnly: true,
+                    sameSite: "None", // o "Lax" si es mismo dominio
+                    secure: true
+                });
                 res.status(201).json({ message: 'Empleado registrado exitosamente' });
             }
         );

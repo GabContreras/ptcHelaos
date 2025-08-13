@@ -31,7 +31,8 @@ const pettyCashSchema = new Schema({
     },
     currentBalance: {
         type: Number,
-        required: true
+        required: true,
+        
     }
 }, {
     timestamps: true,

@@ -1,5 +1,5 @@
-// Categories.jsx - Página principal de categorías con responsive mejorado
-import React, { useEffect, useState } from 'react';
+// Categories.jsx - Página principal de categorías con paginación responsive
+import React, { useEffect, useState, useMemo } from 'react';
 import { useCategoriesManager } from '../../hooks/CategoriesHook/useCategories';
 import UniversalModal from '../../components/Modals/UniversalModal/UniversalModal';
 import toast, { Toaster } from 'react-hot-toast';
@@ -36,14 +36,19 @@ const CategoriesPage = () => {
     handleRefresh,
   } = useCategoriesManager();
 
-  // Estados locales para filtros
+  // Estados locales para filtros y paginación
   const [searchTerm, setSearchTerm] = useState('');
   const [isMobile, setIsMobile] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   
-  // Detectar si es dispositivo móvil
+  // Detectar si es dispositivo móvil y ajustar items por página
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      // Ajustar items por página según el dispositivo
+      setItemsPerPage(mobile ? 6 : 10);
     };
     
     checkMobile();
@@ -66,7 +71,37 @@ const CategoriesPage = () => {
     );
   };
 
-  const filteredCategories = getFilteredCategories();
+  // Datos paginados usando useMemo para optimización
+  const paginatedData = useMemo(() => {
+    const filteredCategories = getFilteredCategories();
+    const totalItems = filteredCategories.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // Resetear página si está fuera de rango
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+    
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = filteredCategories.slice(startIndex, endIndex);
+    
+    return {
+      items: currentItems,
+      totalItems,
+      totalPages,
+      currentPage,
+      hasNextPage: currentPage < totalPages,
+      hasPrevPage: currentPage > 1,
+      startIndex: startIndex + 1,
+      endIndex: Math.min(endIndex, totalItems)
+    };
+  }, [categories, searchTerm, currentPage, itemsPerPage]);
+
+  // Resetear página cuando cambie el término de búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
   
   // Mostrar notificaciones de error y éxito
   useEffect(() => {
@@ -77,10 +112,115 @@ const CategoriesPage = () => {
     if (success) toast.success(success);
   }, [success]);
 
+  // Funciones de paginación
+  const goToPage = (page) => {
+    if (page >= 1 && page <= paginatedData.totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (paginatedData.hasNextPage) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (paginatedData.hasPrevPage) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Generar números de página para mostrar
+  const getPageNumbers = () => {
+    const { totalPages } = paginatedData;
+    const delta = isMobile ? 1 : 2; // Menos páginas en móvil
+    const range = [];
+    const rangeWithDots = [];
+
+    for (let i = Math.max(2, currentPage - delta); 
+         i <= Math.min(totalPages - 1, currentPage + delta); 
+         i++) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      rangeWithDots.push(1, '...');
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (currentPage + delta < totalPages - 1) {
+      rangeWithDots.push('...', totalPages);
+    } else if (totalPages > 1) {
+      rangeWithDots.push(totalPages);
+    }
+
+    return rangeWithDots;
+  };
+
+  // Componente de paginación
+  const PaginationComponent = () => {
+    if (paginatedData.totalPages <= 1) return null;
+
+    return (
+      <div className="pagination-container">
+        <div className="pagination-info">
+          <span>
+            {isMobile ? 
+              `${paginatedData.startIndex}-${paginatedData.endIndex} de ${paginatedData.totalItems}` :
+              `Mostrando ${paginatedData.startIndex}-${paginatedData.endIndex} de ${paginatedData.totalItems} categorías`
+            }
+          </span>
+        </div>
+        
+        <div className="pagination-controls">
+          <button 
+            className="pagination-btn pagination-prev"
+            onClick={goToPrevPage}
+            disabled={!paginatedData.hasPrevPage}
+            title="Página anterior"
+          >
+            {isMobile ? '‹' : '‹ Anterior'}
+          </button>
+          
+          <div className="pagination-numbers">
+            {getPageNumbers().map((pageNumber, index) => (
+              pageNumber === '...' ? (
+                <span key={`dots-${index}`} className="pagination-dots">...</span>
+              ) : (
+                <button
+                  key={pageNumber}
+                  className={`pagination-btn pagination-number ${
+                    pageNumber === currentPage ? 'active' : ''
+                  }`}
+                  onClick={() => goToPage(pageNumber)}
+                >
+                  {pageNumber}
+                </button>
+              )
+            ))}
+          </div>
+          
+          <button 
+            className="pagination-btn pagination-next"
+            onClick={goToNextPage}
+            disabled={!paginatedData.hasNextPage}
+            title="Página siguiente"
+          >
+            {isMobile ? '›' : 'Siguiente ›'}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   // Renderizar vista de cards para mobile
   const renderMobileCards = () => (
     <div className="categories-cards-container">
-      {filteredCategories.map(category => (
+      {paginatedData.items.map(category => (
         <div key={category._id} className="category-card">
           <div className="category-card-content">
             <h3 className="category-card-name">{category.name}</h3>
@@ -128,8 +268,8 @@ const CategoriesPage = () => {
                 </div>
               </td>
             </tr>
-          ) : filteredCategories.length > 0 ? (
-            filteredCategories.map(category => (
+          ) : paginatedData.items.length > 0 ? (
+            paginatedData.items.map(category => (
               <tr key={category._id}>
                 <td className="category-name">{category.name}</td>
                 <td className="actions-cell">
@@ -240,7 +380,7 @@ const CategoriesPage = () => {
           <>
             {isMobile ? (
               // Vista móvil con cards
-              filteredCategories.length > 0 ? (
+              paginatedData.items.length > 0 ? (
                 renderMobileCards()
               ) : (
                 renderMobileEmptyState()
@@ -249,20 +389,10 @@ const CategoriesPage = () => {
               // Vista desktop con tabla
               renderDesktopTable()
             )}
+            
+            {/* Componente de paginación */}
+            <PaginationComponent />
           </>
-        )}
-
-        {/* Información de resultados */}
-        {!isLoading && filteredCategories.length > 0 && (
-          <div className="results-info">
-            <span>
-              {isMobile ? 
-                `${filteredCategories.length} categorías` :
-                `Mostrando ${filteredCategories.length} categorías`
-              }
-              {searchTerm && ` (filtradas de ${categories.length} total)`}
-            </span>
-          </div>
         )}
 
         {/* Botón flotante para mobile */}

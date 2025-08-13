@@ -1,17 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { config } from '../config.jsx';
 
-// Actualizada la URL del servidor para Moon Ice Cream
 const SERVER_URL = config.api.API_BASE;
-
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null); // ✅ Corregido
+    const [user, setUser] = useState(null);
     const [authCokie, setAuthCokie] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Función simple para verificar si existe la cookie authToken
+    // Función para verificar si existe la cookie authToken
     const checkAuthTokenCookie = () => {
         const cookies = document.cookie.split(';');
         const authCookie = cookies.find(cookie => 
@@ -20,7 +18,6 @@ export const AuthProvider = ({ children }) => {
         return authCookie ? authCookie.split('=')[1].trim() : null;
     };
 
-    // Login adaptado para Moon Ice Cream
     const Login = async (email, password) => {
         try {
             const response = await fetch(`${SERVER_URL}login`, {
@@ -44,15 +41,15 @@ export const AuthProvider = ({ children }) => {
                 };
             }
 
-            // Crear objeto de usuario con el nombre correcto
+            // Crear objeto de usuario con datos completos del servidor
             const userData = {
                 id: data.userId,
                 userType: data.userType,
-                email: email,
-                name: data.name || data.username || email.split('@')[0] // ✅ Múltiples fallbacks
+                email: data.user?.email || email,
+                name: data.user?.name || email.split('@')[0]
             };
 
-            // Guardar en localStorage
+            // CRÍTICO: Guardar en localStorage SIEMPRE después del login exitoso
             localStorage.setItem("authToken", "authenticated");
             localStorage.setItem("user", JSON.stringify(userData));
 
@@ -60,10 +57,13 @@ export const AuthProvider = ({ children }) => {
             setAuthCokie("authenticated");
             setUser(userData);
 
+            //orueba
+
             console.log("Login exitoso Moon Ice Cream:", {
                 userType: data.userType,
                 userId: data.userId,
-                name: userData.name
+                name: userData.name,
+                cookieWillBeSet: true
             });
 
             return { success: true, message: data.message };
@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }) => {
             await fetch(`${SERVER_URL}logout`, {
                 method: "POST",
                 credentials: "include",
-                headers: getAuthHeaders()
+                headers: { "Content-Type": "application/json" }
             });
         } catch (error) {
             console.error("Error al hacer logout en el servidor:", error);
@@ -103,23 +103,15 @@ export const AuthProvider = ({ children }) => {
         };
     };
 
-    // Utilidad para fetch autenticado - adaptado para Moon Ice Cream
+    // Utilidad para fetch autenticado
     const authenticatedFetch = async (url, options = {}) => {
-        const token = authCokie || localStorage.getItem('authToken') ||
-            document.cookie.split('; ').find(row => row.startsWith('authToken='))?.split('=')[1];
-
-        // Detectar si se está enviando FormData
         const isFormData = options.body instanceof FormData;
 
         const config = {
             ...options,
             credentials: 'include',
             headers: {
-                // Solo agregar Content-Type si NO es FormData
                 ...(!isFormData && { 'Content-Type': 'application/json' }),
-                // Siempre agregar Authorization si hay token
-                ...(token && { 'Authorization': `Bearer ${token}` }),
-                // Mantener headers adicionales
                 ...options.headers
             }
         };
@@ -144,68 +136,109 @@ export const AuthProvider = ({ children }) => {
     const isAuthenticated = !!(user && authCokie);
 
     // Verificar si el usuario tiene un rol específico
-    const hasRole = (role) => {
-        return user?.userType === role;
-    };
-
-    // Verificar si el usuario tiene alguno de los roles permitidos
-    const hasAnyRole = (roles) => {
-        return roles.includes(user?.userType);
-    };
-
-    // Verificar si es empleado (puede acceder al dashboard)
-    const isEmployee = () => {
-        return user?.userType === 'employee';
-    };
-
-    // Verificar si es admin
-    const isAdmin = () => {
-        return user?.userType === 'admin';
-    };
+    const hasRole = (role) => user?.userType === role;
+    const hasAnyRole = (roles) => roles.includes(user?.userType);
+    const isEmployee = () => user?.userType === 'employee';
+    const isAdmin = () => user?.userType === 'admin';
 
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         const savedUser = localStorage.getItem("user");
-        const cookieExists = checkAuthTokenCookie(); // NUEVO: verificar cookie
+        const cookieExists = checkAuthTokenCookie();
 
-        console.log("useEffect - Checking stored auth for Moon Ice Cream:", { 
-            token, 
-            savedUser, 
+        console.log("🔄 useEffect - Checking stored auth for Moon Ice Cream:", { 
+            hasToken: !!token, 
+            hasSavedUser: !!savedUser, 
             cookieExists: !!cookieExists 
         });
 
-        // NUEVO: Si no hay cookie authToken, limpiar todo y redirigir
+        // LÓGICA MEJORADA: Verificar cookie primero, luego localStorage
         if (!cookieExists) {
-            console.log("Cookie authToken no encontrada, limpiando datos...");
-            localStorage.removeItem("authToken");
-            localStorage.removeItem("user");
-            setAuthCokie(null);
-            setUser(null);
+            console.log("Cookie authToken no encontrada");
             
-            // Solo redirigir si no estamos en rutas públicas
-            const currentPath = window.location.pathname;
-            const publicPaths = ['/', '/login', '/register', '/recuperacion', '/recuperacioncodigo', '/cambiarpassword'];
-            
-            if (!publicPaths.includes(currentPath)) {
-                console.log("Redirigiendo al login...");
-                window.location.href = '/login';
-            }
-        }
-        // Si hay cookie Y datos locales, restaurar sesión
-        else if (token && savedUser && savedUser !== "undefined") {
-            try {
-                const parsedUser = JSON.parse(savedUser);
-                setUser(parsedUser);
-                setAuthCokie(token);
-                console.log("Moon Ice Cream auth restored:", { token, user: parsedUser });
-            } catch (error) {
-                console.error("Error parsing saved user:", error);
-                localStorage.removeItem("user");
+            // Si tampoco hay datos locales, limpiar y redirigir
+            if (!token || !savedUser) {
+                console.log("No hay datos locales tampoco, limpiando...");
                 localStorage.removeItem("authToken");
+                localStorage.removeItem("user");
+                setAuthCokie(null);
+                setUser(null);
+                
+                // Solo redirigir si no estamos en rutas públicas
+                const currentPath = window.location.pathname;
+                const publicPaths = ['/', '/login', '/register', '/recuperacion', '/recuperacioncodigo', '/cambiarpassword'];
+                
+                if (!publicPaths.includes(currentPath)) {
+                    console.log("🔄 Redirigiendo al login...");
+                    window.location.href = '/login';
+                }
+                setIsLoading(false);
+                return;
             }
         }
 
-        setIsLoading(false);
+        //Si hay cookie O datos locales, intentar restaurar sesión
+        if (cookieExists || (token && savedUser && savedUser !== "undefined")) {
+            // Restaurar desde localStorage primero
+            if (token && savedUser && savedUser !== "undefined") {
+                try {
+                    const parsedUser = JSON.parse(savedUser);
+                    setUser(parsedUser);
+                    setAuthCokie(token);
+                    console.log("Moon Ice Cream auth restored from localStorage:", parsedUser);
+                } catch (error) {
+                    console.error("Error parsing saved user:", error);
+                    localStorage.removeItem("user");
+                    localStorage.removeItem("authToken");
+                }
+            }
+
+            // ✅ Verificar con el servidor si hay cookie
+            if (cookieExists) {
+                fetch(`${SERVER_URL}auth/me`, {
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error("No autenticado");
+                    return response.json();
+                })
+                .then(data => {
+                    if (data?.user) {
+                        const userData = {
+                            id: data.user.id,
+                            userType: data.user.userType,
+                            email: data.user.email,
+                            name: data.user.name
+                        };
+                        
+                        setUser(userData);
+                        setAuthCokie("authenticated");
+                        localStorage.setItem("user", JSON.stringify(userData));
+                        localStorage.setItem("authToken", "authenticated");
+                        
+                        console.log("Session verified with server:", userData);
+                    }
+                })
+                .catch(error => {
+                    console.warn("⚠️ Error verifying session with server:", error.message);
+                    // Si falla la verificación del servidor pero hay datos locales, mantenerlos
+                    if (!token || !savedUser) {
+                        localStorage.removeItem("user");
+                        localStorage.removeItem("authToken");
+                        setAuthCokie(null);
+                        setUser(null);
+                    }
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+            } else {
+                setIsLoading(false);
+            }
+        } else {
+            setIsLoading(false);
+        }
     }, []);
 
     return (
