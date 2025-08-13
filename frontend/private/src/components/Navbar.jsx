@@ -133,6 +133,12 @@ const Navbar = () => {
             label: "Productos",
             icon: "",
             adminOnly: false 
+        },
+        {
+            path: "/events",
+            label: "Eventos",
+            icon: "",
+            adminOnly: false 
         }
     ];
 
