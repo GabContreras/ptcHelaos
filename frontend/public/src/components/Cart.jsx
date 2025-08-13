@@ -1,102 +1,29 @@
 import React from "react";
-import { useNavigate } from "react-router";
-import imgExample1 from "../imgs/item1menu.png";
-import imgExample2 from "../imgs/item2menu.png";
-import imgExample3 from "../imgs/item3menu.png";
-import imgExample4 from "../imgs/item4menu.png";
-import imgExample5 from "../imgs/item5menu.png";
-import imgExample6 from "../imgs/item6menu.png";
-import "../styles/Cart.css";
-import ItemCard from "./ItemCartCard";
-import Button from "../assets/Button"
+import { useCart } from "../context/CartContext";
+import ItemCard from "./ItemCartCard"
 
 function Cart() {
-
-  const navigate = useNavigate()
+  const { cart, removeFromCart, clearCart } = useCart();
 
   return (
-      <div className="cart">
-        <div className="items">
+    <div className="cart">
+      <div className="items">
+        {cart.length === 0 ? (
+          <p>Tu carrito está vacío</p>
+        ) : (
+          cart.map(item => (
             <ItemCard
-            imagen={imgExample1}
-            titulo="Ejemplo de orden 1"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample2}
-            titulo="Ejemplo de orden 1"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample3}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample4}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample5}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample6}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample1}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-            <ItemCard
-            imagen={imgExample1}
-            titulo="Ejemplo de orden 1"
-            resumen="panqueis con helado de chocolate y crema de avellanas"
-            tamano="Mediano"
-            topp1="chispas de chocolate"
-            topp2="coco rallado"
-            compl1="crema de avellanas"
-            compl2="fresa"
-            precio="2.85"/>
-        </div>
+              key={item._id}
+              item={item}
+              onRemove={() => removeFromCart(item._id)}
+            />
+          ))
+        )}
       </div>
+      {cart.length > 0 && (
+        <button onClick={clearCart}>Vaciar carrito</button>
+      )}
+    </div>
   );
 }
 
