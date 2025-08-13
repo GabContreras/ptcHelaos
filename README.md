@@ -14,7 +14,7 @@
 
 ## Descripción del Proyecto
 
-Actualmente, el negocio toma pedidos en papel, lo que limita el control y la eficiencia. Se busca implementar un sistema digital similar a los kioscos de McDonald’s, permitiendo a los clientes hacer pedidos de forma visual y rápida. 
+Actualmente, el negocio toma pedidos en papel, lo que limita el control y la eficiencia. Se busca implementar un sistema digital similar a los kioscos de McDonald's, permitiendo a los clientes hacer pedidos de forma visual y rápida. 
 
 También desean mostrar sus productos de forma accesible, como lo hace Pedidos Ya, incluyendo helados, waffles, mini pancakes, entre otros.
 
@@ -39,19 +39,105 @@ También se integrarán pagos en línea y mostrará la ubicación del local.
 
 ---
 
+## Convenciones de Código
+
+### Nomenclatura
+Este proyecto utiliza **camelCase** para el nombramiento de variables, funciones y archivos en todo el código. Esta convención garantiza consistencia y legibilidad en todo el proyecto.
+
+**Ejemplos:**
+- Variables: `nombreUsuario`, `precioTotal`, `fechaCreacion`
+- Funciones: `obtenerPedidos()`, `calcularTotal()`, `validarFormulario()`
+- Archivos: `userController.js`, `orderService.js`, `productModel.js`
+
+---
+
+## Instalación y Ejecución
+
+### Requisitos Previos
+- Node.js (versión 14 o superior)
+- npm (Node Package Manager)
+- MongoDB (local o cloud)
+
+### Configuración del Backend
+
+1. **Navegar al directorio del backend:**
+   ```bash
+   cd backend
+   ```
+
+2. **Instalar las dependencias:**
+   ```bash
+   npm i
+   ```
+
+3. **Ejecutar el servidor:**
+   
+   **Opción 1 - Con nodemon (desarrollo):**
+   ```bash
+   npm run dev
+   ```
+   *Esta opción reinicia automáticamente el servidor cuando detecta cambios en el código.*
+   
+   **Opción 2 - Sin nodemon (producción):**
+   ```bash
+   node index.js
+   ```
+
+### Configuración del Frontend Privado (Administración)
+
+1. **Navegar al directorio del frontend privado:**
+   ```bash
+   cd frontend/private
+   ```
+
+2. **Instalar las dependencias:**
+   ```bash
+   npm i
+   ```
+
+3. **Ejecutar la aplicación:**
+   ```bash
+   npm run dev
+   ```
+   *La aplicación de administración estará disponible en el puerto que se muestre en la terminal.*
+
+### Configuración del Frontend Público (Clientes)
+
+1. **Navegar al directorio del frontend público:**
+   ```bash
+   cd frontend/public
+   ```
+
+2. **Instalar las dependencias:**
+   ```bash
+   npm i
+   ```
+
+3. **Ejecutar la aplicación:**
+   ```bash
+   npm run dev
+   ```
+   *La aplicación pública estará disponible en el puerto que se muestre en la terminal.*
+
+### Estructura de Ejecución Completa
+
+Para ejecutar todo el sistema simultáneamente, necesitarás **tres terminales diferentes**:
+
+1. **Terminal 1 (Backend):** `cd backend` → `npm i` → `npm run dev`
+2. **Terminal 2 (Admin):** `cd frontend/private` → `npm i` → `npm run dev`
+3. **Terminal 3 (Público):** `cd frontend/public` → `npm i` → `npm run dev`
+
+---
+
 ## Tecnologías Utilizadas
 
 ### Figma
 
-Figma Design permite crear, compartir y probar diseños para sitios web, aplicaciones móviles y otros productos y experiencias digitales . Es una herramienta popular para diseñadores, gerentes de producto, escritores y desarrolladores, y ayuda a todos los involucrados en el proceso de diseño a contribuir, brindar retroalimentación y tomar mejores decisiones con mayor rapidez.
+Figma Design permite crear, compartir y probar diseños para sitios web, aplicaciones móviles y otros productos y experiencias digitales. Es una herramienta popular para diseñadores, gerentes de producto, escritores y desarrolladores, y ayuda a todos los involucrados en el proceso de diseño a contribuir, brindar retroalimentación y tomar mejores decisiones con mayor rapidez.
 
 ### Visual Studio Code
 
-Visual Studio Code, es un editor de código para programadores gratuito, de código abierto y multiplataforma. Está desarrollado por Microsoft, una compañía con una dilatada experiencia en la creación de IDEs (entornos de desarrollo integrados), que ha conseguido plasmar su larga tradición en el sector para ofrecer una herramienta ligera y práctica que la comunidad ha adoptado en masa.
-
-### Power Bi
-
-Microsoft Power BI es la solución de business intelligence que te permite tomar decisiones informadas rápidamente. Es un servicio analítico basado en la nube que habilita a cualquier usuario de negocio a visualizar y analizar sus datos de forma rápida, eficiente y entendible. Forma parte de la Power Platform de Microsoft, el conjunto de soluciones low-code que te permiten aumentar la productividad de tu negocio sin necesidad de programación. Además, Microsoft Power BI te permite conectar un amplio abanico de fuentes a través de cuadros de mando de fácil uso, informes interactivos y visualizaciones atractivas que dan vida a los datos.
+Visual Studio Code es un editor de código para programadores gratuito, de código abierto y multiplataforma. Está desarrollado por Microsoft, una compañía con una dilatada experiencia en la creación de IDEs (entornos de desarrollo integrados), que ha conseguido plasmar su larga tradición en el sector para ofrecer una herramienta ligera y práctica que la comunidad ha adoptado en masa.
 
 ### Google Docs
 
@@ -73,3 +159,60 @@ React JS es básicamente una biblioteca creada por Facebook que se está utiliza
 
 Este es un entorno de ejecución para JavaScript que puede permitirle ejecutar JavaScript del lado servidor y no en un navegador. Un interesante concepto a tener en cuenta en Node.js es el concepto de módulo, recursos que pueden ser más o menos simples o complejos en funcionalidad y que contiene un código JavaScript que podemos reutilizar en toda nuestra aplicación. Estos módulos tienen su propio contexto y no interfieren entre sí. Esto es una notable ventaja pues podemos crear nuestro proyecto a medida sin complicaciones, sorpresas ni comportamientos inesperados.
 
+---
+
+## Librerías Utilizadas
+
+### Backend
+
+**Express:** Framework minimalista para Node.js que facilita la creación de servidores y APIs REST.
+
+**Mongoose:** ODM (Object Data Modeling) para MongoDB que permite modelar, validar y manejar datos fácilmente en aplicaciones Node.js.
+
+**dotenv:** Carga variables de entorno desde un archivo .env al process.env, útil para manejar configuraciones sensibles.
+
+**nodemailer:** Permite enviar correos electrónicos desde aplicaciones Node.js usando diferentes servicios de correo (SMTP, Gmail, etc).
+
+**crypto:** Módulo nativo de Node.js para realizar operaciones criptográficas como generación de hash, cifrado y tokens seguros.
+
+**jsonwebtoken:** Implementa el estándar JWT (JSON Web Token) para autenticación segura entre cliente y servidor.
+
+**bcryptjs:** Biblioteca para hashear contraseñas con el algoritmo bcrypt, muy usada para seguridad de credenciales.
+
+**cookie-parser:** Middleware para analizar cookies adjuntas a las solicitudes HTTP, útil en autenticación y sesiones.
+
+**multer-storage-cloudinary:** Plugin de almacenamiento para Multer que permite subir archivos directamente a Cloudinary.
+
+**multer:** Middleware para manejar multipart/form-data, principalmente usado para subir archivos en formularios.
+
+**cloudinary:** Servicio de gestión de medios en la nube para almacenar, transformar y optimizar imágenes y videos.
+
+**nodemon:** Herramienta de desarrollo que reinicia automáticamente el servidor Node.js cuando detecta cambios en el código.
+
+**cors:** Middleware que permite habilitar el acceso a recursos desde otros dominios (Cross-Origin Resource Sharing).
+
+**swagger-ui-express:** Middleware para mostrar documentación interactiva de APIs REST con Swagger UI, basado en un archivo OpenAPI.
+
+**fs:** Módulo nativo de Node.js para leer, escribir y manipular archivos en el sistema.
+
+**path:** Módulo nativo de Node.js que permite trabajar con rutas de archivos y directorios de manera multiplataforma.
+
+**Wompi:** Plataforma de pagos que permite realizar y gestionar transacciones en línea. Wompi provee una API para realizar cobros, verificar pagos y manejar suscripciones.
+
+### Frontend
+
+**chart.js:** Biblioteca para crear gráficos interactivos y visualmente atractivos (barras, líneas, tortas, etc.) usando HTML5 Canvas.
+
+**lucide-react:** Conjunto de íconos SVG modernos y personalizables para React, ideales para interfaces limpias y consistentes.
+
+**react:** Biblioteca principal para construir interfaces de usuario declarativas y componentes reutilizables basados en el estado.
+
+**react-chartjs-2:** Envoltorio de Chart.js para React que permite integrar gráficos como componentes React fácilmente.
+
+**react-dom:** Permite conectar la biblioteca React con el DOM del navegador, renderizando los componentes React en la web.
+
+**react-hot-toast:** Biblioteca para mostrar notificaciones tipo "toast" elegantes y animadas en aplicaciones React.
+
+**react-router:** Biblioteca que permite definir rutas dentro de una aplicación React, facilitando la navegación entre componentes.
+
+**react-router-dom:** Extensión de react-router para aplicaciones web, incluye componentes como `<BrowserRouter>`, `<Link>` y `<Route>` que permiten la navegación en el navegador.

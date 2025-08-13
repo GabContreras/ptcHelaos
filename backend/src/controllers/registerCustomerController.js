@@ -1,4 +1,5 @@
 import customersModel from '../models/Customer.js'
+import employeesModel from '../models/Employee.js'
 import bcryptjs from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { config } from '../config.js'
@@ -15,13 +16,26 @@ register.registerCustomer = async (req, res) => {
         if (existingCustomer) {
             return res.status(400).json({ message: 'El email ya está registrado' })
         }
-
+        // Verificar si el email ya existe en la tabla de empleados
+        const existingEmployee = await employeesModel.findOne({ email })
+        if (existingEmployee) {
+            return res.status(400).json({
+                message: 'El email ya está registrado'
+            })
+        }
         const passwordHash = await bcryptjs.hash(password, 10)
 
         // Validar fecha de cumpleaños
         const parsedBirthday = new Date(birthday);
         if (isNaN(parsedBirthday)) {
             return res.status(400).json({ message: 'Formato de fecha inválido. Use YYYY-MM-DD.' });
+        }
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                message: 'El formato del correo electrónico no es válido'
+            })
         }
 
         const newCustomer = new customersModel({
@@ -40,7 +54,12 @@ register.registerCustomer = async (req, res) => {
         const verificationCode = crypto.randomBytes(2).toString('hex')
 
         const token = jwt.sign({ email, verificationCode }, config.JWT.secret, { expiresIn: '2h' })
-        res.cookie('verificationCode', token, { httpOnly: true, maxAge: 2 * 60 * 60 * 1000 })
+        res.cookie('verificationCode', token, {
+            httpOnly: true,
+            sameSite: "None", // o "Lax" si es mismo dominio
+            secure: true,    // solo si usas HTTPS
+            maxAge: 2 * 60 * 60 * 1000
+        })
 
         await sendVerificationEmail(email, verificationCode)
 
@@ -88,5 +107,4 @@ register.verificationCode = async (req, res) => {
         return res.status(500).json({ message: "Error verificando código", error: error.message })
     }
 }
-
 export default register

@@ -1,0 +1,376 @@
+/* Reset y configuración base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.inicio-wrapper {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+/* Sección hero principal */
+.hero-section {
+  background: linear-gradient(135deg, #FFBAE7 0%, #B9B8FF 100%);
+  border-radius: 2rem;
+  margin: 0 auto 3rem auto;
+  width: 100%;
+  max-width: 1200px;
+  padding: 3rem 2rem;
+  box-shadow: 0 20px 40px rgba(141, 108, 255, 0.2);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  z-index: 1;
+}
+
+.hero-section > * {
+  position: relative;
+  z-index: 2;
+}
+
+.logo-img {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 2rem;
+  object-fit: cover;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
+}
+
+.main-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.4;
+}
+
+/* Sección de imagen con botón */
+.image-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+}
+
+.image-card {
+  width: 100%;
+  max-width: 1200px;
+  background: linear-gradient(135deg, #FFBAE7 0%, #B9B8FF 100%);
+  padding: 2.5rem;
+  border-radius: 2rem;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(141, 108, 255, 0.2);
+  overflow: hidden;
+}
+
+.image-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  z-index: 1;
+}
+
+.image-section {
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.menu-button {
+  background: linear-gradient(135deg, #8D6CFF, #B9B8FF);
+  color: white;
+  border: none;
+  padding: 1.2rem 3rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(141, 108, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  position: absolute;
+  top: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.menu-button:hover {
+  transform: translateX(-50%) translateY(-4px);
+  box-shadow: 0 15px 40px rgba(141, 108, 255, 0.6);
+  background: linear-gradient(135deg, #7C3AED, #A855F7);
+}
+
+.menu-button:active {
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.inicio-img {
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  margin: 0 auto;
+  display: block;
+}
+
+.inicio-img:hover {
+  transform: scale(1.02);
+}
+
+/* RESPONSIVE DESIGN */
+
+/* Tablets grandes (1024px y menos) */
+@media (max-width: 1024px) {
+  .inicio-wrapper {
+    padding: 1.5rem 1rem;
+  }
+  
+  .hero-section {
+    padding: 2.5rem 2rem;
+  }
+  
+  .logo-img {
+    width: 240px;
+    height: 240px;
+  }
+  
+  .main-title {
+    font-size: 3rem;
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .image-card {
+    padding: 2rem;
+  }
+  
+  .menu-button {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    top: 2.5rem;
+  }
+}
+
+/* Tablets (768px y menos) */
+@media (max-width: 768px) {
+  .inicio-wrapper {
+    padding: 1rem 0.5rem;
+  }
+  
+  .hero-section {
+    padding: 2rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 1.5rem;
+  }
+  
+  .logo-img {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .main-title {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .image-card {
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+  }
+  
+  .menu-button {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    top: 2rem;
+  }
+}
+
+/* Móviles grandes (640px y menos) */
+@media (max-width: 640px) {
+  .inicio-wrapper {
+    padding: 0.8rem 0.5rem;
+  }
+  
+  .hero-section {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .logo-img {
+    width: 160px;
+    height: 160px;
+    margin-bottom: 1rem;
+  }
+  
+  .main-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+  
+  .image-card {
+    padding: 1.2rem;
+  }
+  
+  .menu-button {
+    padding: 0.8rem 1.8rem;
+    font-size: 0.9rem;
+    top: 1.5rem;
+    letter-spacing: 0.05em;
+  }
+  
+  .inicio-img {
+    border-radius: 1rem;
+  }
+}
+
+/* Móviles medianos (480px y menos) */
+@media (max-width: 480px) {
+  .inicio-wrapper {
+    padding: 0.5rem;
+  }
+  
+  .hero-section {
+    padding: 1.2rem 0.8rem;
+    border-radius: 1rem;
+  }
+  
+  .logo-img {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .main-title {
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
+    padding: 0 0.5rem;
+  }
+  
+  .image-card {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+  
+  .menu-button {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.85rem;
+    top: 1.2rem;
+  }
+}
+
+/* Móviles pequeños (360px y menos) */
+@media (max-width: 360px) {
+  .hero-section {
+    padding: 1rem 0.6rem;
+  }
+  
+  .logo-img {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .main-title {
+    font-size: 1.6rem;
+  }
+  
+  .subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .image-card {
+    padding: 0.8rem;
+  }
+  
+  .menu-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.8rem;
+    top: 1rem;
+  }
+}
+
+/* Animaciones y efectos */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-section {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.image-card {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

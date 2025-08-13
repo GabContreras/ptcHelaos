@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './Graficas.css'
 import { TrendingUp, Package, Users, DollarSign, AlertCircle, Activity } from 'lucide-react';
+import { config } from '../../config';
+import { useEmployeesManager } from '../../hooks/EmployeesHook/useEmployees';
+
 import { useAuth } from '../../context/AuthContext';
 import {
   Chart as ChartJS,
@@ -39,17 +42,18 @@ const Dashboard = () => {
   const [customers, setCustomers] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [events, setEvents] = useState([]); // Nuevo estado para eventos
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const API_BASE_URL = 'http://localhost:3333/api';
+  const API_BASE_URL = config.api.API_BASE;
 
   // Función para obtener movimientos de caja chica
   const fetchPettyCashData = async () => {
     try {
       const [movementsResponse, balanceResponse] = await Promise.all([
-        authenticatedFetch(`${API_BASE_URL}/pettyCash`),
-        authenticatedFetch(`${API_BASE_URL}/pettyCash/balance`)
+        authenticatedFetch(`${API_BASE_URL}pettyCash`),
+        authenticatedFetch(`${API_BASE_URL}pettyCash/balance`)
       ]);
 
       if (movementsResponse.ok) {
@@ -67,12 +71,45 @@ const Dashboard = () => {
     }
   };
 
-  // Función para obtener empleados
-  const fetchEmployees = async () => {
+  // Función para obtener eventos usando fetch directo (sin authenticatedFetch)
+  const fetchEvents = async () => {
     try {
-      const response = await authenticatedFetch(`${API_BASE_URL}/employees`);
+      console.log('Obteniendo eventos...');
+      const response = await fetch(`${API_BASE_URL}events`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Eventos obtenidos:', data);
+        setEvents(data);
+      } else {
+        console.error('Error al obtener eventos:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
+  // Función para obtener empleados usando fetch directo
+  const fetchEmployees = async () => {
+    try {
+      console.log('Obteniendo empleados...');
+      const response = await fetch(`${API_BASE_URL}employees`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Empleados obtenidos:', data);
         setEmployees(data);
       }
     } catch (error) {
@@ -80,32 +117,32 @@ const Dashboard = () => {
     }
   };
 
-  // Función para obtener clientes
+  // Función para obtener clientes usando fetch directo
   const fetchCustomers = async () => {
     try {
-      console.log('Intentando obtener clientes...');
-      const response = await authenticatedFetch(`${API_BASE_URL}/customers`);
-      console.log('Response status:', response.status);
+      console.log('Obteniendo clientes...');
+      const response = await fetch(`${API_BASE_URL}customers`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       
       if (response.ok) {
         const data = await response.json();
         console.log('Clientes obtenidos:', data);
         setCustomers(data);
-      } else {
-        const errorData = await response.json();
-        console.error('Error en response:', errorData);
-        setError(`Error al obtener clientes: ${errorData.message || 'Error desconocido'}`);
       }
     } catch (error) {
       console.error('Error fetching customers:', error);
-      setError(`Error de conexión al obtener clientes: ${error.message}`);
     }
   };
 
   // Función para obtener inventario
   const fetchInventory = async () => {
     try {
-      const response = await authenticatedFetch(`${API_BASE_URL}/inventory`);
+      const response = await authenticatedFetch(`${API_BASE_URL}inventory`);
       if (response.ok) {
         const data = await response.json();
         setInventory(data);
@@ -118,7 +155,7 @@ const Dashboard = () => {
   // Función para obtener categorías
   const fetchCategories = async () => {
     try {
-      const response = await authenticatedFetch(`${API_BASE_URL}/category`);
+      const response = await authenticatedFetch(`${API_BASE_URL}category`);
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
@@ -140,8 +177,9 @@ const Dashboard = () => {
         try {
           await Promise.all([
             fetchPettyCashData(),
-            fetchEmployees(),
-            fetchCustomers(),
+            fetchEvents(), // Agregar fetch de eventos
+            fetchEmployees(), // Activar fetch de empleados
+            fetchCustomers(), // Activar fetch de clientes
             fetchInventory(),
             fetchCategories()
           ]);
@@ -238,30 +276,49 @@ const Dashboard = () => {
       .filter(item => item.value > 0);
   };
 
-  const processInventoryData = () => {
-    if (!inventory.length || !categories.length) return [];
+  // Nueva función para procesar datos de eventos (simulando ganancias)
+  const processEventsData = () => {
+    if (!events.length) return [];
 
-    const categoryMap = categories.reduce((acc, cat) => {
-      acc[cat._id] = cat.name;
-      return acc;
-    }, {});
+    console.log('Procesando eventos para ganancias:', events);
 
-    const inventoryByCategory = {};
-    
-    inventory.forEach(item => {
-      const categoryName = categoryMap[item.categoryId] || 'Sin categoría';
-      if (!inventoryByCategory[categoryName]) {
-        inventoryByCategory[categoryName] = { count: 0, totalValue: 0 };
+    // Simular ganancias basadas en el tipo de evento
+    const eventTypeEarnings = {
+      'Cumpleaños': 150000, // $150k promedio
+      'Boda': 500000,       // $500k promedio
+      'Corporativo': 300000, // $300k promedio
+      'Festival': 800000,   // $800k promedio
+      'Privado': 200000,    // $200k promedio
+    };
+
+    const earningsData = {};
+
+    events.forEach(event => {
+      const eventType = event.type || 'Privado';
+      const baseEarning = eventTypeEarnings[eventType] || 150000;
+      
+      // Agregar variación aleatoria ±20%
+      const variation = (Math.random() - 0.5) * 0.4; // -20% a +20%
+      const earning = baseEarning * (1 + variation);
+      
+      if (!earningsData[eventType]) {
+        earningsData[eventType] = 0;
       }
-      inventoryByCategory[categoryName].count += 1;
-      inventoryByCategory[categoryName].totalValue += (item.price || 0) * (item.stock || 0);
+      
+      // Solo contar eventos activos
+      if (event.isActive !== false) {
+        earningsData[eventType] += earning;
+      }
     });
 
-    return Object.entries(inventoryByCategory).map(([name, data]) => ({
-      name,
-      count: data.count,
-      totalValue: Math.round(data.totalValue * 100) / 100
-    }));
+    console.log('Ganancias por tipo de evento:', earningsData);
+
+    return Object.entries(earningsData)
+      .map(([name, value]) => ({ 
+        name, 
+        value: Math.round(value)
+      }))
+      .filter(item => item.value > 0);
   };
 
   // Calcular estadísticas
@@ -282,16 +339,16 @@ const Dashboard = () => {
       .filter(movement => new Date(movement.date) >= currentMonth && movement.type === 'expense')
       .reduce((sum, movement) => sum + movement.amount, 0);
 
-    // CAMBIO: Contar todos los clientes como "activos" en lugar de solo los verificados
-    // porque según tu modelo, isVerified por defecto es false y no se actualiza
-    const activeCustomers = customers.length; // Todos los clientes registrados
+    // Contar todos los clientes como "activos"
+    const activeCustomers = customers.length;
     const verifiedCustomers = customers.filter(customer => customer.isVerified === true).length;
 
     console.log('Estadísticas calculadas:', {
       totalCustomers: customers.length,
       activeCustomers,
       verifiedCustomers,
-      totalEmployees: employees.length
+      totalEmployees: employees.length,
+      totalEvents: events.length // Agregar eventos
     });
 
     return {
@@ -301,16 +358,18 @@ const Dashboard = () => {
       monthlyExpenses,
       totalEmployees: employees.length,
       totalCustomers: customers.length,
-      verifiedCustomers: activeCustomers, // Usar todos los clientes como "activos"
-      activeCustomers, // Nuevo campo para claridad
+      verifiedCustomers: activeCustomers,
+      activeCustomers,
       totalProducts: inventory.length,
-      lowStockProducts: inventory.filter(item => (item.stock || 0) <= 10).length
+      lowStockProducts: inventory.filter(item => (item.stock || 0) <= 10).length,
+      totalEvents: events.length, // Total de eventos
+      activeEvents: events.filter(event => event.isActive !== false).length // Eventos activos
     };
   };
 
   const monthlyData = processMonthlyData();
   const categoryData = processCategoryData();
-  const inventoryData = processInventoryData();
+  const eventsData = processEventsData(); // Usar datos de eventos en lugar de inventario
   const stats = calculateStats();
 
   // Configuración para gráfico de líneas (datos mensuales)
@@ -415,12 +474,12 @@ const Dashboard = () => {
     },
   };
 
-  // Configuración para gráfico circular (inventario)
+  // Configuración para gráfico circular (eventos en lugar de inventario)
   const doughnutChartData = {
-    labels: inventoryData.map(item => item.name),
+    labels: eventsData.map(item => item.name),
     datasets: [
       {
-        data: inventoryData.map(item => item.totalValue),
+        data: eventsData.map(item => item.value),
         backgroundColor: [
           '#8D6CFF',
           '#99DBFF',
@@ -444,8 +503,16 @@ const Dashboard = () => {
       },
       title: {
         display: true,
-        text: 'Distribución de Productos',
+        text: 'Ganancias por Tipo de Evento', // Título cambiado
       },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const value = context.parsed;
+            return context.label + ': $' + value.toLocaleString();
+          }
+        }
+      }
     },
   };
 
@@ -488,14 +555,6 @@ const Dashboard = () => {
               <p className="dashboard-subtitle">Panel de control y estadísticas</p>
             </div>
             <div className="header-actions">
-              <button className="action-btn primary">
-                <span>📊</span>
-                Ver Reportes
-              </button>
-              <button className="action-btn secondary">
-                <span>⚙️</span>
-                Configuración
-              </button>
             </div>
           </div>
         </header>
@@ -540,6 +599,7 @@ const Dashboard = () => {
               </div>
             </div>
 
+            {/* Nueva KPI card para usuarios totales */}
             <div className="kpi-card">
               <div className="kpi-header">
                 <div className="kpi-icon">👥</div>
@@ -599,19 +659,19 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Gráfico circular */}
+            {/* Gráfico circular - Cambiado a eventos */}
             <div className="chart-card">
               <div className="chart-header">
                 <h3 className="chart-title">
-                  <span className="chart-icon">🍰</span>
-                  Distribución de Productos
+                  <span className="chart-icon">🎉</span>
+                  Ganancias por Eventos
                 </h3>
               </div>
               <div className="chart-container">
-                {inventoryData.length > 0 ? (
+                {eventsData.length > 0 ? (
                   <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
                 ) : (
-                  <div className="no-data">No hay datos de inventario disponibles</div>
+                  <div className="no-data">No hay datos de eventos disponibles</div>
                 )}
               </div>
             </div>

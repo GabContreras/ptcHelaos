@@ -1,6 +1,7 @@
 import React from "react";
 import '../styles/404.css';
-import Navbar from "../components/NavBar"; // Adjust the import path as necessary
+import Navbar from "../components/NavBar";
+import Footer from "../components/Footer";
 
 function Page404() {
   return (
@@ -12,6 +13,8 @@ function Page404() {
             <p>Esta página no existe.</p>
             <p>Por favor, verifica la URL o vuelve a la página de inicio.</p>
         </div>
+
+      <Footer/>
     </>
   );
 }

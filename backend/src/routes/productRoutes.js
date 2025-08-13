@@ -26,7 +26,7 @@ router.route('/')
     // Ruta para crear un nuevo producto
     .post(validateAuthToken(['admin', 'employee']), upload.array('images'), productController.createProduct);
 
-router.route('/:id')
+router.route('/:id')    
     // Ruta para obtener un producto por ID
     .get(productController.getProductById)
     // Ruta para actualizar un producto por ID
