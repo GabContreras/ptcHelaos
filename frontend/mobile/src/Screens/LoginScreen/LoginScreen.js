@@ -18,12 +18,11 @@ const LoginScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={['#E91E63', '#F48FB1', '#FCE4EC']}
+        colors={['#8D6CFF', '#FFBAE7', '#8D6CFF']}
         style={styles.gradient}
       >
         {/* TODO: Agregar imagen de fondo con cupcakes */}
         <View style={styles.content}>
-          <Text style={styles.title}>Login</Text>
           
           <View style={styles.formContainer}>
             <Text style={styles.formTitle}>Inicio de Sesion</Text>
@@ -54,22 +53,28 @@ const LoginScreen = ({ navigation }) => {
                 <Icon 
                   name={showPassword ? 'visibility' : 'visibility-off'} 
                   size={24} 
-                  color="#666" 
+                  color="#B8B8B8" 
                 />
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
-            <Text style={styles.forgotText}>Restablecer contraseña</Text>
+            <Text style={styles.forgotText1}>¿Olvidaste tu contraseña?</Text>
+            <Text style={styles.forgotText2}>Restablecer contraseña</Text>
 
             <TouchableOpacity
-              style={styles.loginButton}
               onPress={() => {
-                // TODO: Agregar lógica de login
-                console.log('Login pressed');
-              }}
+              // TODO: Agregar lógica de login
+              console.log('Login pressed');
+            }}
             >
-              <Text style={styles.loginButtonText}>Iniciar Sesion</Text>
+              <LinearGradient
+              colors={['#B9B8FF', '#8D6CFF']} // colores degradado
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={styles.loginButton}
+            >
+                <Text style={styles.loginButtonText}>Iniciar Sesion</Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         </View>
@@ -170,11 +175,12 @@ const styles = StyleSheet.create({
       paddingTop: 20,
     },
     formTitle: {
+      marginTop: 220,
       fontSize: 24,
       color: 'white',
       textAlign: 'center',
-      marginBottom: 30,
-      fontWeight: '600',
+      marginBottom: 70,
+      fontWeight: '800',
     },
     label: {
       color: 'white',
@@ -191,11 +197,12 @@ const styles = StyleSheet.create({
       paddingVertical: 12,
       borderRadius: 25,
       fontSize: 16,
+      marginHorizontal: 25,
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
       shadowRadius: 4,
-      elevation: 2,
+      elevation: 4,
     },
     passwordInput: {
       backgroundColor: 'white',
@@ -204,39 +211,47 @@ const styles = StyleSheet.create({
       paddingRight: 50,
       borderRadius: 25,
       fontSize: 16,
+      marginHorizontal: 25,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
-      elevation: 2,
+      elevation: 4,
     },
     eyeButton: {
       position: 'absolute',
-      right: 15,
-      top: 12,
+      right: 35,
+      top: 11,
     },
-    forgotText: {
+    forgotText1: {
       color: 'white',
       textAlign: 'center',
       fontSize: 14,
+    },
+    forgotText2: {
+      color: '#8D6CFF',
+      textAlign: 'center',
+      fontSize: 14,
       marginBottom: 5,
+      fontWeight: 600,
     },
     loginButton: {
       backgroundColor: '#8B5FBF',
       paddingVertical: 15,
-      borderRadius: 25,
+      borderRadius: 50,
       alignItems: 'center',
-      marginTop: 20,
+      marginTop: 100,
+      marginHorizontal: 50,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-      elevation: 8,
+      shadowOpacity: 0.2,
+      shadowRadius: 6,
+      elevation: 6,
     },
     loginButtonText: {
       color: 'white',
-      fontSize: 16,
-      fontWeight: '600',
+      fontSize: 20,
+      fontWeight: '900',
     },
     nextButton: {
       backgroundColor: 'white',
