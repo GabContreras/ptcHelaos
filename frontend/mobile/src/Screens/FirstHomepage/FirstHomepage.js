@@ -9,16 +9,23 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import TexturaInicio from "../../../assets/images/TexturaInicio2.png"
 ;
 
 const FirstHomepage = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
+
+    <Image 
+            source={TexturaInicio}
+            style={styles.backgroundImage}
+            resizeMode="cover"
+          />
+
       <LinearGradient
-        colors={['#FFEDF9', '#8D6CFF', '#4429A2']}
+        colors={['#ffffff85', '#6f00ff83', '#22009bc5']}
         style={styles.gradient}
       >
-        {/* TODO: Agregar imagen de fondo de nubes/textura */}
         <View style={styles.content}>
           
           {/* Logo Container */}
@@ -66,6 +73,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
+
+  backgroundImage: {
+    position: 'absolute', // para que quede detrás del contenido
+    width: '100%',
+    height: '100%',
+  },
+
   title: {
     fontSize: 18,
     color: 'white',

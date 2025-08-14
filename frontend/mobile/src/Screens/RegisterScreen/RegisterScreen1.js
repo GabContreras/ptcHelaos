@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Image,
   View,
   Text,
   TextInput,
@@ -9,6 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Texture from "../../../assets/images/Texture.png"
 import { SvgXml } from 'react-native-svg';
 
 const RegisterScreen1 = ({ navigation }) => {
@@ -31,8 +33,15 @@ const RegisterScreen1 = ({ navigation }) => {
   
   return (
     <SafeAreaView style={styles.container}>
+
+    <Image 
+            source={Texture}
+            style={styles.backgroundImage}
+            resizeMode="repeat"
+          />
+
       <LinearGradient
-        colors={['#7B5AEF', '#FFBAE7']}
+        colors={['#2d16ffb4', '#ffa3dfcb']}
         style={styles.gradient}
       >
 
@@ -101,6 +110,15 @@ const styles = StyleSheet.create({
     gradient: {
       flex: 1,
     },
+
+
+    backgroundImage: {
+    position: 'absolute', // para que quede detrás del contenido
+    width: '100%',
+    height: '100%',
+  },
+
+
     content: {
       flex: 1,
       paddingHorizontal: 20,
