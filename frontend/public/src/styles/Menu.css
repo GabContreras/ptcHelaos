@@ -1,4 +1,4 @@
-/* Estilos base */
+/* ==================== ESTILOS BASE ==================== */
 * {
   margin: 0;
   padding: 0;
@@ -9,6 +9,94 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   color: #2c3e50;
+}
+
+/* ==================== CONTENEDORES Y ESPACIADO ==================== */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.bg-gradient-to-br {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.max-w-6xl {
+  max-width: 72rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.flex {
+  display: flex;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.w-20 {
+  width: 5rem;
+}
+
+.h-1 {
+  height: 0.25rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-12 {
+  margin-bottom: 3rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+/* ==================== TIPOGRAFÍA ==================== */
+.text-4xl {
+  font-size: 2.5rem;
+  line-height: 1.2;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-sans {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+.text-gray-800 {
+  color: #1f2937;
+}
+
+.bg-gradient-to-r {
+  background: linear-gradient(90deg, #8B5CF6 0%, #EC4899 100%);
 }
 
 /* ==================== BARRA DE BÚSQUEDA PROFESIONAL ==================== */
@@ -125,6 +213,101 @@ body {
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
+/* ==================== GRID DEL MENÚ ==================== */
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+/* Responsive grid */
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ==================== TARJETAS DEL MENÚ ==================== */
+.menu-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.75rem;
+}
+
+.card-description {
+  color: #6c757d;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.view-more-btn {
+  background: linear-gradient(135deg, #8D6CFF, #B9B8FF);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.view-more-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(141, 108, 255, 0.3);
+}
+
+.show-all-btn {
+  margin-top: 16px;
+  background: #8B5CF6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.show-all-btn:hover {
+  background: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
 /* ==================== CARRUSEL DE IMÁGENES ==================== */
 .image-carousel-container {
   position: relative;
@@ -218,7 +401,6 @@ body {
   background: rgba(255, 255, 255, 0.8);
 }
 
-/* Contador de imágenes */
 .image-counter {
   position: absolute;
   top: 12px;
@@ -232,193 +414,7 @@ body {
   backdrop-filter: blur(4px);
 }
 
-/* ==================== ESTADOS DE CARGA Y MENSAJES ==================== */
-.loading-spinner {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  border: 3px solid #f3f4f6;
-  border-radius: 50%;
-  border-top-color: #8B5CF6;
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.error-message {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 16px 20px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  text-align: center;
-  font-weight: 500;
-}
-
-.no-products-message {
-  text-align: center;
-  padding: 48px 20px;
-  color: #6b7280;
-  font-size: 16px;
-}
-
-.show-all-btn {
-  margin-top: 16px;
-  background: #8B5CF6;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.show-all-btn:hover {
-  background: #7c3aed;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
-/* ==================== ESTILOS ORIGINALES MEJORADOS ==================== */
-/* Contenedor principal */
-.min-h-screen {
-  min-height: 100vh;
-}
-
-.bg-gradient-to-br {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-}
-
-/* Título principal */
-.text-4xl {
-  font-size: 2.5rem;
-  line-height: 1.2;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.text-gray-800 {
-  color: #1f2937;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
-}
-
-.mb-12 {
-  margin-bottom: 3rem;
-}
-
-.text-center {
-  text-align: center;
-}
-
-/* Línea decorativa */
-.w-20 {
-  width: 5rem;
-}
-
-.h-1 {
-  height: 0.25rem;
-}
-
-.bg-gradient-to-r {
-  background: linear-gradient(90deg, #8B5CF6 0%, #EC4899 100%);
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.rounded-full {
-  border-radius: 9999px;
-}
-
-/* Grid del menú */
-.grid {
-  display: grid;
-}
-
-.grid-cols-1 {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.gap-8 {
-  gap: 2rem;
-}
-
-/* Responsive grid */
-@media (min-width: 768px) {
-  .md\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-/* Tarjetas del menú */
-.menu-card {
-  background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.menu-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.card-content {
-  padding: 1.5rem;
-}
-
-.card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 0.75rem;
-}
-
-.card-description {
-  color: #6c757d;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-.view-more-btn {
-  background: linear-gradient(135deg, #8D6CFF, #B9B8FF);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 25px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-}
-
-.view-more-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(141, 108, 255, 0.3);
-}
-
-/* Modal */
+/* ==================== MODALES ==================== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -531,60 +527,355 @@ body {
   box-shadow: 0 8px 20px rgba(255, 186, 231, 0.3);
 }
 
-/* Modal de personalización */
+/* ==================== SISTEMA DE PERSONALIZACIÓN ==================== */
 .customization-modal {
   padding: 2rem;
   background: #E8E6FF;
   border-radius: 20px;
   min-height: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .customization-header {
   text-align: center;
   margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.customization-main-title {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: #374151;
 }
 
 .customization-step {
+  padding: 2rem;
+  animation: fadeIn 0.3s ease-in;
   min-height: 400px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-/* Contenedores y espaciado */
-.max-w-6xl {
-  max-width: 72rem;
+.customization-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
 }
 
-.p-4 {
-  padding: 1rem;
+.step-header {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-.items-center {
-  align-items: center;
+.step-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #374151;
+  margin-bottom: 0.5rem;
 }
 
-.justify-between {
-  justify-content: space-between;
+.step-description {
+  color: #6b7280;
+  font-size: 0.875rem;
 }
 
-.flex {
-  display: flex;
+.flavor-counter {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #8b5cf6;
+  font-weight: 500;
 }
 
-.w-full {
-  width: 100%;
+/* Grid de opciones de tamaño */
+.size-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-.text-lg {
+.size-option {
+  cursor: pointer;
+  padding: 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  background: #ffffff;
+}
+
+.size-option:hover {
+  border-color: #a855f7;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.size-option.selected {
+  border-color: #8b5cf6;
+  background: #f3f4f6;
+}
+
+.size-option-content {
+  text-align: center;
+}
+
+.size-name {
+  font-weight: 600;
   font-size: 1.125rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
 }
 
-.font-sans {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+.size-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #8b5cf6;
+  margin-bottom: 0.25rem;
 }
 
-/* Responsive */
+.size-info {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Grid de sabores */
+.flavors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.flavor-option {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background: #f3f4f6;
+  color: #374151;
+  cursor: pointer;
+}
+
+.flavor-option:hover:not(.disabled) {
+  background: #e0e7ff;
+  color: #6366f1;
+}
+
+.flavor-option.selected {
+  background: #8b5cf6;
+  color: white;
+  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+}
+
+.flavor-option.disabled {
+  background: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Grid de toppings */
+.toppings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.topping-option {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background: #f3f4f6;
+  color: #374151;
+  cursor: pointer;
+}
+
+.topping-option:hover {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.topping-option.selected {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+/* Resumen del pedido */
+.order-summary {
+  background: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.summary-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.summary-details {
+  space-y: 0.75rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.summary-label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.summary-value {
+  color: #6b7280;
+  text-align: right;
+  flex: 1;
+  margin-left: 1rem;
+}
+
+.summary-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 0.75rem 0;
+}
+
+.total-row {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.total-row .summary-label,
+.total-row .summary-value {
+  color: #8b5cf6;
+}
+
+/* Acciones de los pasos */
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.btn-back {
+  background: #d1d5db;
+  color: #374151;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: background 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-back:hover {
+  background: #9ca3af;
+}
+
+.btn-continue {
+  background: #8b5cf6;
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.btn-continue:hover {
+  background: #7c3aed;
+}
+
+.btn-add-to-cart {
+  background: #059669;
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-add-to-cart:hover {
+  background: #047857;
+}
+
+/* ==================== ESTADOS DE CARGA Y MENSAJES ==================== */
+.loading-spinner {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f4f6;
+  border-radius: 50%;
+  border-top-color: #8B5CF6;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.no-products-message {
+  text-align: center;
+  padding: 48px 20px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* ==================== ANIMACIONES ==================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== MEJORAS PARA ACCESIBILIDAD ==================== */
+.flavor-option:focus,
+.topping-option:focus,
+.size-option:focus {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+.btn-back:focus,
+.btn-continue:focus,
+.btn-add-to-cart:focus {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
 @media (max-width: 768px) {
   .modal-body {
     flex-direction: column;
@@ -661,6 +952,48 @@ body {
   .image-dot {
     width: 6px;
     height: 6px;
+  }
+
+  /* Personalización responsive */
+  .size-options-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .flavors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+  }
+  
+  .toppings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.5rem;
+  }
+  
+  .step-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .btn-continue,
+  .btn-add-to-cart,
+  .btn-back {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .customization-step {
+    padding: 1rem;
+  }
+  
+  .summary-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .summary-value {
+    margin-left: 0;
+    text-align: left;
   }
 }
 
