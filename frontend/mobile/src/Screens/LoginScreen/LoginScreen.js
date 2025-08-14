@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Image,
   View,
   Text,
   TextInput,
@@ -9,23 +10,45 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';;
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import LoginIceCream from "../../../assets/images/LoginIceCream.png"
+import { SvgXml } from 'react-native-svg';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const miSvgXml = `
+   <svg width="448" height="361" viewBox="0 0 448 361" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 33.3C6 33.3 -3 10.3 43 1.30005C89 -7.69995 143.5 32.8 181.5 37.8C219.5 42.8 238.5 26.3 293.5 33.3C348.5 40.3 381 92.3 418 96.3C455 100.3 447 96.3 447 96.3V360.8H0L6 33.3Z" fill="white"/>
+</svg>
+  `;
 
   return (
     <SafeAreaView style={styles.container}>
+
+      <Image 
+        source={LoginIceCream}
+        style={styles.backgroundImage}
+        resizeMode="contain"
+      />
+
       <LinearGradient
-        colors={['#8D6CFF', '#FFBAE7', '#8D6CFF']}
+        colors={['#8c6cff73', '#FFBAE7', '#8D6CFF']}
         style={styles.gradient}
       >
         {/* TODO: Agregar imagen de fondo con cupcakes */}
         <View style={styles.content}>
           
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Icon name="arrow-back" size={32} color="#ffffffff" />
+          </TouchableOpacity> 
+
           <View style={styles.formContainer}>
-            <Text style={styles.formTitle}>Inicio de Sesion</Text>
+            <Text style={styles.formTitle}>Inicio de</Text>
+            <Text style={styles.formTitle2}>Sesion</Text>
             
             <View style={styles.inputContainer}>
               <TextInput
@@ -61,6 +84,8 @@ const LoginScreen = ({ navigation }) => {
             <Text style={styles.forgotText1}>¿Olvidaste tu contraseña?</Text>
             <Text style={styles.forgotText2}>Restablecer contraseña</Text>
 
+            <SvgXml xml={miSvgXml} width="120%" height="120%" style={styles.SVGs} />
+
             <TouchableOpacity
               onPress={() => {
               // TODO: Agregar lógica de login
@@ -90,6 +115,24 @@ const styles = StyleSheet.create({
     gradient: {
       flex: 1,
     },
+
+ SVGs: {
+      position: 'absolute',
+      bottom: -370,
+      left: -50,
+    },
+
+
+    backgroundImage: {
+    position: 'absolute', // para que quede detrás del contenido
+    top: -640,
+    left: -100,
+    right: 0,
+    bottom: 0,
+    width: '190%',
+    height: '190%',
+  },
+
     content: {
       flex: 1,
       paddingHorizontal: 20,
@@ -175,12 +218,18 @@ const styles = StyleSheet.create({
       paddingTop: 20,
     },
     formTitle: {
-      marginTop: 220,
-      fontSize: 24,
+      marginTop: 200,
+      fontSize: 32,
+      color: 'white',
+      textAlign: 'center',
+      fontWeight: '900',
+    },
+    formTitle2: {
+      fontSize: 32,
       color: 'white',
       textAlign: 'center',
       marginBottom: 70,
-      fontWeight: '800',
+      fontWeight: '900',
     },
     label: {
       color: 'white',
@@ -193,9 +242,9 @@ const styles = StyleSheet.create({
     },
     input: {
       backgroundColor: 'white',
-      paddingHorizontal: 15,
-      paddingVertical: 12,
-      borderRadius: 25,
+      paddingHorizontal: 20,
+      paddingVertical: 15,
+      borderRadius: 40,
       fontSize: 16,
       marginHorizontal: 25,
       shadowColor: '#000',
@@ -206,10 +255,10 @@ const styles = StyleSheet.create({
     },
     passwordInput: {
       backgroundColor: 'white',
-      paddingHorizontal: 15,
-      paddingVertical: 12,
+      paddingHorizontal: 20,
+      paddingVertical: 15,
       paddingRight: 50,
-      borderRadius: 25,
+      borderRadius: 40,
       fontSize: 16,
       marginHorizontal: 25,
       shadowColor: '#000',
@@ -220,8 +269,8 @@ const styles = StyleSheet.create({
     },
     eyeButton: {
       position: 'absolute',
-      right: 35,
-      top: 11,
+      right: 40,
+      top: 13,
     },
     forgotText1: {
       color: 'white',
@@ -289,10 +338,16 @@ const styles = StyleSheet.create({
     },
     backButton: {
       position: 'absolute',
-      top: 20,
-      left: 20,
+      top: 43,
+      left: 29,
       zIndex: 1,
       padding: 5,
+
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 8,
     },
   });
 

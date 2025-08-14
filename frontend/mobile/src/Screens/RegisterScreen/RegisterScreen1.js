@@ -9,28 +9,42 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SvgXml } from 'react-native-svg';
 
 const RegisterScreen1 = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
 
+  const miSvgXml = `
+    <svg width="402" height="150" viewBox="0 0 402 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M-0.249378 -25H401.751V150C401.751 150 387.251 122 337.751 114.5C288.251 107 278.251 134 216.251 134C154.251 134 166.751 89 99.7506 82.5C32.7506 76 29.7506 107.5 -11.2494 86.5C-52.2494 65.5 -0.249378 -25 -0.249378 -25Z" fill="url(#paint0_linear_468_379)"/>
+    <defs>
+    <linearGradient id="paint0_linear_468_379" x1="204" y1="36" x2="195" y2="165.5" gradientUnits="userSpaceOnUse">
+    <stop stop-color="white"/>
+    <stop offset="1" stop-color="#F8F8F8"/>
+    </linearGradient>
+    </defs>
+    </svg>
+  `;
+  
+  
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={['#9C27B0', '#BA68C8', '#E1BEE7']}
+        colors={['#7B5AEF', '#FFBAE7']}
         style={styles.gradient}
       >
+
+        <SvgXml xml={miSvgXml} width="100%" height="100%" style={styles.SVGs} />
+
         <View style={styles.content}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Icon name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-
-          <Text style={styles.title}>Registro 1</Text>
-          
+            <Icon name="arrow-back" size={32} color="#8D6CFF" />
+          </TouchableOpacity>          
           <View style={styles.formContainer}>
             <Text style={styles.formTitle}>Registro</Text>
             
@@ -90,6 +104,10 @@ const styles = StyleSheet.create({
     content: {
       flex: 1,
       paddingHorizontal: 20,
+    },
+    SVGs: {
+      position: 'absolute',
+      top: -350,
     },
     title: {
       fontSize: 18,
@@ -172,26 +190,29 @@ const styles = StyleSheet.create({
       paddingTop: 20,
     },
     formTitle: {
-      fontSize: 24,
+      fontSize: 35,
       color: 'white',
       textAlign: 'center',
+      marginTop: 170,
       marginBottom: 30,
-      fontWeight: '600',
+      fontWeight: '700',
     },
     label: {
+      fontWeight: "600",
       color: 'white',
       fontSize: 16,
       marginBottom: 8,
-      marginLeft: 5,
+      marginLeft: 15,
     },
     inputContainer: {
       marginBottom: 20,
     },
     input: {
+      marginHorizontal: 15,
       backgroundColor: 'white',
-      paddingHorizontal: 15,
-      paddingVertical: 12,
-      borderRadius: 25,
+      paddingHorizontal: 20,
+      paddingVertical: 15,
+      borderRadius: 40,
       fontSize: 16,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
@@ -201,10 +222,10 @@ const styles = StyleSheet.create({
     },
     passwordInput: {
       backgroundColor: 'white',
-      paddingHorizontal: 15,
-      paddingVertical: 12,
+      paddingHorizontal: 20,
+      paddingVertical: 15,
       paddingRight: 50,
-      borderRadius: 25,
+      borderRadius: 40,
       fontSize: 16,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
@@ -243,9 +264,10 @@ const styles = StyleSheet.create({
     nextButton: {
       backgroundColor: 'white',
       paddingVertical: 15,
-      borderRadius: 25,
+      borderRadius: 40,
       alignItems: 'center',
-      marginTop: 30,
+      marginHorizontal: 80,
+      marginTop: 40,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
@@ -253,8 +275,8 @@ const styles = StyleSheet.create({
       elevation: 8,
     },
     nextButtonText: {
-      color: '#9C27B0',
-      fontSize: 16,
+      color: '#8D6CFF',
+      fontSize: 20,
       fontWeight: '600',
     },
     registerButton: {
@@ -276,10 +298,16 @@ const styles = StyleSheet.create({
     },
     backButton: {
       position: 'absolute',
-      top: 20,
-      left: 20,
+      top: 43,
+      left: 29,
       zIndex: 1,
       padding: 5,
+
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 8,
     },
   });
 
