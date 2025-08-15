@@ -8,7 +8,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
-import Texture from "../../../assets/images/Texture.png"
+import Texture from "../../../../assets/images/Texture.png"
 import { SvgXml } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';;
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -19,34 +19,25 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 </svg>
   `;
 
-const ForgotPasswordScreen3 = ({ navigation, route }) => {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const { email } = route.params || { email: 'CuentaRandom@gmail.com' };
-
-  const handleContinue = () => {
-    // TODO: Validar que las contraseñas coincidan
-    if (newPassword && confirmPassword) {
-      setShowSuccessModal(true);
-    }
-  };
+const ForgotPasswordScreen1 = ({ navigation }) => {
+  const [email, setEmail] = useState('');
 
   return (
     <SafeAreaView style={styles.container}>
 
-        <Image 
+    <Image 
             source={Texture}
             style={styles.backgroundImage}
             resizeMode="repeat"
           />
-
+        
       <LinearGradient
         colors={['#ff64c994', '#4d1bffa9', '#32255fff']}
         style={styles.gradient}
       >
 
         <SvgXml xml={miSvgXml} width="100%" height="100%" style={styles.SVGs} />
+
 
         <View style={styles.content}>
           <TouchableOpacity
@@ -67,81 +58,33 @@ const ForgotPasswordScreen3 = ({ navigation, route }) => {
 
           <View style={styles.recoveryFormContainer}>
             <Text style={styles.recoveryDescription}>
-              Ingrese una nueva contraseña (se asociara a esta cuenta)
+              Ingresa tu correo electronico para enviar un codigo de recuperacion
             </Text>
 
-            <View style={styles.emailDisplayContainer}>
-              <Icon name="person" size={20} color="#666" />
-              <Text style={styles.emailDisplayText}>{email}</Text>
-            </View>
-
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
-                placeholder="Nueva Contraseña"
-                value={newPassword}
-                onChangeText={setNewPassword}
-                secureTextEntry
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Confirme su Contraseña"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
+                placeholder="Correo electronico"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
               />
             </View>
 
             <TouchableOpacity
-              onPress={handleContinue}
+              onPress={() => navigation.navigate('ForgotPassword2', { email })}
             >
-            <LinearGradient
-              colors={['#B9B8FF', '#8D6CFF']}
-              start={{ x: 0, y: 0.5 }}
-              end={{ x: 1, y: 0.5 }}
-              style={styles.continueButton}
-            ><Text style={styles.continueButtonText}>Continuar</Text>
-            </LinearGradient>
+              <LinearGradient
+                                        colors={['#B9B8FF', '#8D6CFF']} // colores degradado
+                                        start={{ x: 0, y: 0.5 }}
+                                        end={{ x: 1, y: 0.5 }}
+                                        style={styles.nextButton}
+                                      ><Text style={styles.nextButtonText}>Enviar Codigo</Text>
+                            </LinearGradient>
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Modal de Éxito */}
-        {showSuccessModal && (
-          <View style={styles.modalOverlay}>
-            <LinearGradient
-              colors={['#FFBAE7', '#8D6CFF']} 
-              
-              start={{ x: 0, y: 0 }}  
-              
-              end={{ x: 1, y: 1 }}    
-              
-              style={styles.modalContainer}
-            >
-              <View style={styles.successIconContainer}>
-                <Icon name="check" size={60} color="white" />
-              </View>
-
-              <Text style={styles.successTitle}>¡Exito!</Text>
-              <Text style={styles.successMessage}>
-                Tu contraseña se restableció exitosamente.
-              </Text>
-
-              <TouchableOpacity
-                style={styles.backToLoginButton}
-                onPress={() => {
-                  setShowSuccessModal(false);
-                  navigation.navigate('Login');
-                }}
-              >
-                <Text style={styles.backToLoginButtonText}>Volver a inicio</Text>
-              </TouchableOpacity>
-            </LinearGradient>
-          </View>
-        )}
       </LinearGradient>
     </SafeAreaView>
   );
@@ -149,10 +92,7 @@ const ForgotPasswordScreen3 = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
 
-      container: {
-    flex: 1,
-  },
-  gradient: {
+    container: {
     flex: 1,
   },
 
@@ -167,6 +107,9 @@ const styles = StyleSheet.create({
       top: 200,
     },
 
+  gradient: {
+    flex: 1,
+  },
   content: {
     flex: 1,
     paddingHorizontal: 20,
@@ -321,19 +264,20 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   nextButton: {
-    backgroundColor: 'white',
-    paddingVertical: 15,
-    borderRadius: 25,
-    alignItems: 'center',
-    marginTop: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
+     backgroundColor: '#8B5FBF',
+      paddingVertical: 20,
+      borderRadius: 40,
+      alignItems: 'center',
+      marginHorizontal: 50,
+      marginTop: 40,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 8,
+    },
   nextButtonText: {
-    color: '#9C27B0',
+    color: '#ffffffff',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -354,7 +298,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-   backButton: {
+  backButton: {
       position: 'absolute',
       top: 43,
       left: 29,
@@ -388,7 +332,7 @@ userIconContainer: {
     shadowRadius: 8,
     elevation: 8,
   },
-recoveryTitle: {
+  recoveryTitle: {
     fontSize: 28,
     color: 'white',
     textAlign: 'center',
@@ -405,10 +349,10 @@ recoveryTitle: {
   recoveryFormContainer: {
     flex: 1,
     backgroundColor: 'white',
-    paddingTop: 40,
+    paddingTop: 70,
     padding: 30,
     marginHorizontal: 10,
-    marginBottom: 100,
+    marginBottom: 200,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -424,7 +368,7 @@ recoveryTitle: {
     lineHeight: 20,
     fontWeight: "500"
   },
-  
+
   sendCodeButton: {
     backgroundColor: '#8B5FBF',
     paddingVertical: 15,
@@ -449,7 +393,7 @@ recoveryTitle: {
     paddingHorizontal: 15,
     paddingVertical: 12,
     borderRadius: 25,
-    marginBottom: 45,
+    marginBottom: 15,
   },
   emailDisplayText: {
     marginLeft: 10,
@@ -502,18 +446,13 @@ recoveryTitle: {
     fontWeight: '600',
   },
   continueButton: {
-    paddingVertical: 20,
+    backgroundColor: '#E91E63',
+    paddingVertical: 15,
     paddingHorizontal: 30,
-    borderRadius: 40,
-    marginTop: 25,
-    marginHorizontal: 40,
+    borderRadius: 25,
+    flex: 0.45,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-},
+  },
   continueButtonText: {
     color: 'white',
     fontSize: 16,
@@ -533,7 +472,7 @@ recoveryTitle: {
   modalContainer: {
     backgroundColor: '#8B5FBF',
     borderRadius: 20,
-    padding: 50,
+    padding: 30,
     alignItems: 'center',
     marginHorizontal: 40,
     shadowColor: '#000',
@@ -578,10 +517,10 @@ recoveryTitle: {
     elevation: 4,
   },
   backToLoginButtonText: {
-    color: '#8D6CFF',
-    fontSize: 20,
+    color: '#8B5FBF',
+    fontSize: 16,
     fontWeight: '600',
   },
 });
 
-export default ForgotPasswordScreen3
+export default ForgotPasswordScreen1;

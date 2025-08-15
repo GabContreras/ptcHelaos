@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Texture from "../../../assets/images/Texture.png"
+import Texture from "../../../assets/images/Texture.png";
 import { SvgXml } from 'react-native-svg';
 
 

@@ -8,7 +8,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
-import Texture from "../../../assets/images/Texture.png"
+import Texture from "../../../../assets/images/Texture.png"
 import { SvgXml } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';;
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -19,8 +19,15 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 </svg>
   `;
 
-const ForgotPasswordScreen1 = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+const ForgotPasswordScreen2 = ({ navigation, route }) => {
+  const [code, setCode] = useState(['', '', '', '', '', '']);
+  const { email } = route.params || { email: 'CuentaRandom@gmail.com' };
+
+  const handleCodeChange = (value, index) => {
+    const newCode = [...code];
+    newCode[index] = value;
+    setCode(newCode);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,11 +37,11 @@ const ForgotPasswordScreen1 = ({ navigation }) => {
             style={styles.backgroundImage}
             resizeMode="repeat"
           />
-        
+
       <LinearGradient
-        colors={['#ff64c994', '#4d1bffa9', '#32255fff']}
-        style={styles.gradient}
-      >
+              colors={['#ff64c994', '#4d1bffa9', '#32255fff']}
+              style={styles.gradient}
+            >
 
         <SvgXml xml={miSvgXml} width="100%" height="100%" style={styles.SVGs} />
 
@@ -58,31 +65,62 @@ const ForgotPasswordScreen1 = ({ navigation }) => {
 
           <View style={styles.recoveryFormContainer}>
             <Text style={styles.recoveryDescription}>
-              Ingresa tu correo electronico para enviar un codigo de recuperacion
+              Verifica el correo asociado a esta cuenta, posteriormente ingresa el codigo para recuperar tu contraseña
             </Text>
 
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Correo electronico"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
+            <View style={styles.emailDisplayContainer}>
+              <Icon name="person" size={20} color="#a1a1a1ff" />
+              <Text style={styles.emailDisplayText}>{email}</Text>
             </View>
 
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ForgotPassword2', { email })}
-            >
-              <LinearGradient
-                                        colors={['#B9B8FF', '#8D6CFF']} // colores degradado
-                                        start={{ x: 0, y: 0.5 }}
-                                        end={{ x: 1, y: 0.5 }}
-                                        style={styles.nextButton}
-                                      ><Text style={styles.nextButtonText}>Enviar Codigo</Text>
-                            </LinearGradient>
-            </TouchableOpacity>
+            <Text style={styles.codeInstruction}>Se envio un codigo a tu cuenta de gmail</Text>
+
+            <Text style={styles.codeLabel}>Ingresa el codigo:</Text>
+
+            <View style={styles.codeInputContainer}>
+              {code.map((digit, index) => (
+                <TextInput
+                  key={index}
+                  style={styles.codeInput}
+                  value={digit}
+                  onChangeText={(value) => handleCodeChange(value, index)}
+                  keyboardType="numeric"
+                  maxLength={1}
+                  textAlign="center"
+                />
+              ))}
+            </View>
+
+            <View style={styles.buttonRow}>
+  <TouchableOpacity
+    onPress={() => {
+      // TODO: Lógica para reenviar código
+      console.log('Resend code');
+    }}
+  >
+                <LinearGradient
+                  colors={['#B9B8FF', '#8D6CFF']}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={styles.resendButton}
+                >
+                  <Text style={styles.resendButtonText}>Reenviar</Text>
+                </LinearGradient>
+              </TouchableOpacity>           
+
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ForgotPassword3', { email })}
+              >
+                <LinearGradient
+                  colors={['#FFBAE7', '#8D6CFF']}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={styles.continueButton}
+                >
+                  <Text style={styles.continueButtonText}>Continuar</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </LinearGradient>
@@ -91,25 +129,24 @@ const ForgotPasswordScreen1 = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-
     container: {
     flex: 1,
   },
+  gradient: {
+    flex: 1,
+  },
 
-    backgroundImage: {
+SVGs: {
+      position: 'absolute',
+      top: 200,
+    },
+
+  backgroundImage: {
     position: 'absolute', // para que quede detrás del contenido
     width: '100%',
     height: '100%',
   },
 
-  SVGs: {
-      position: 'absolute',
-      top: 200,
-    },
-
-  gradient: {
-    flex: 1,
-  },
   content: {
     flex: 1,
     paddingHorizontal: 20,
@@ -263,24 +300,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  nextButton: {
-     backgroundColor: '#8B5FBF',
-      paddingVertical: 20,
-      borderRadius: 40,
-      alignItems: 'center',
-      marginHorizontal: 50,
-      marginTop: 40,
+    nextButton: {
+      backgroundColor: '#8B5FBF',
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
       shadowRadius: 8,
       elevation: 8,
+
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    marginHorizontal: 10,
+    borderRadius: 40,
+    flex: 0.45,
+    alignItems: 'center',
+
     },
-  nextButtonText: {
-    color: '#ffffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+    nextButtonText: {
+      color: '#ffffffff',
+      fontSize: 20,
+      fontWeight: '600',
+    },
+
   registerButton: {
     backgroundColor: 'white',
     paddingVertical: 15,
@@ -346,13 +387,13 @@ userIconContainer: {
     marginBottom: 20,
   },
 
-  recoveryFormContainer: {
+recoveryFormContainer: {
     flex: 1,
     backgroundColor: 'white',
-    paddingTop: 70,
+    paddingTop: 40,
     padding: 30,
     marginHorizontal: 10,
-    marginBottom: 200,
+    marginBottom: 100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -360,15 +401,14 @@ userIconContainer: {
     elevation: 7,
   },
   recoveryDescription: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#666',
     textAlign: 'center',
     marginBottom: 20,
-    paddingHorizontal: 27,
+    paddingHorizontal: 20,
     lineHeight: 20,
     fontWeight: "500"
   },
-
   sendCodeButton: {
     backgroundColor: '#8B5FBF',
     paddingVertical: 15,
@@ -402,7 +442,7 @@ userIconContainer: {
   },
   codeInstruction: {
     fontSize: 14,
-    color: '#666',
+    color: '#aaaaaaff',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -411,6 +451,7 @@ userIconContainer: {
     color: '#333',
     marginBottom: 15,
     textAlign: 'center',
+    fontWeight: "600",
   },
   codeInputContainer: {
     flexDirection: 'row',
@@ -432,27 +473,35 @@ userIconContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  resendButton: {
-    backgroundColor: '#8B5FBF',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    flex: 0.45,
-    alignItems: 'center',
-  },
+    resendButton: {
+      paddingVertical: 15,
+      paddingHorizontal: 30,
+      borderRadius: 25,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 4,
+    },
+
   resendButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
   },
+  
   continueButton: {
-    backgroundColor: '#E91E63',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
-    flex: 0.45,
     alignItems: 'center',
-  },
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+},
   continueButtonText: {
     color: 'white',
     fontSize: 16,
@@ -523,4 +572,4 @@ userIconContainer: {
   },
 });
 
-export default ForgotPasswordScreen1;
+export default ForgotPasswordScreen2;
