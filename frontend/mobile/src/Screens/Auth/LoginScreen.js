@@ -92,7 +92,7 @@ const LoginScreen = ({ navigation }) => {
             <SvgXml xml={miSvgXml} width="120%" height="120%" style={styles.SVGs} />
 
             <TouchableOpacity
-              onPress={() => {
+              onPress={() => { navigation.navigate('MainApp')
               // TODO: Agregar lógica de login
               console.log('Login pressed');
             }}
