@@ -20,15 +20,15 @@ const RegisterScreen2 = ({ navigation }) => {
   const [address, setAddress] = useState('');
   const [birthDate, setBirthDate] = useState('');
 const miSvgXml = `
-    <svg width="402" height="150" viewBox="0 0 402 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M-0.249378 -25H401.751V150C401.751 150 387.251 122 337.751 114.5C288.251 107 278.251 134 216.251 134C154.251 134 166.751 89 99.7506 82.5C32.7506 76 29.7506 107.5 -11.2494 86.5C-52.2494 65.5 -0.249378 -25 -0.249378 -25Z" fill="url(#paint0_linear_468_379)"/>
-    <defs>
-    <linearGradient id="paint0_linear_468_379" x1="204" y1="36" x2="195" y2="165.5" gradientUnits="userSpaceOnUse">
-    <stop stop-color="white"/>
-    <stop offset="1" stop-color="#F8F8F8"/>
-    </linearGradient>
-    </defs>
-    </svg>
+ <svg width="402" height="150" viewBox="0 0 402 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1.32598 -25H427V150C427 150 411.646 122 359.231 114.5C306.816 107 296.227 134 230.576 134C164.925 134 178.161 89 107.215 82.5C36.2694 76 33.0927 107.5 -10.3218 86.5C-53.7363 65.5 1.32598 -25 1.32598 -25Z" fill="url(#paint0_linear_468_371)"/>
+<defs>
+<linearGradient id="paint0_linear_468_371" x1="229" y1="-42.5" x2="209.722" y2="165.653" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFBAE7"/>
+<stop offset="1" stop-color="#7B5AEF"/>
+</linearGradient>
+</defs>
+</svg>
   `;
   
   
@@ -42,7 +42,7 @@ const miSvgXml = `
           />
 
       <LinearGradient
-        colors={['#2d16ffb4', '#ffa3dfcb']}
+        colors={['#fffffff6', '#f5eee267']}
         style={styles.gradient}
       >
 
@@ -53,7 +53,7 @@ const miSvgXml = `
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Icon name="arrow-back" size={32} color="#8D6CFF" />
+            <Icon name="arrow-back" size={32} color="#ffffffff" />
           </TouchableOpacity>          
           
           <View style={styles.formContainer}>
@@ -101,7 +101,6 @@ const miSvgXml = `
             </View>
 
             <TouchableOpacity
-              style={styles.registerButton}
               onPress={() => {
                 // TODO: Agregar lógica de registro
                 console.log('Register completed');
@@ -109,7 +108,13 @@ const miSvgXml = `
                 navigation.navigate('Login');
               }}
             >
-              <Text style={styles.registerButtonText}>Registrarse</Text>
+             <LinearGradient
+                                       colors={['#B9B8FF', '#8D6CFF']} // colores degradado
+                                       start={{ x: 0, y: 0.5 }}
+                                       end={{ x: 1, y: 0.5 }}
+                                       style={styles.nextButton}
+                                     ><Text style={styles.nextButtonText}>Registrarse</Text>
+                           </LinearGradient>
             </TouchableOpacity>
           </View>
         </View>
@@ -229,7 +234,7 @@ const styles = StyleSheet.create({
     },
     label: {
       fontWeight: "600",
-      color: 'white',
+      color: '#8D6CFF',
       fontSize: 16,
       marginBottom: 8,
       marginLeft: 15,
@@ -292,11 +297,12 @@ const styles = StyleSheet.create({
       fontWeight: '600',
     },
     nextButton: {
-      backgroundColor: 'white',
+      backgroundColor: '#8B5FBF',
       paddingVertical: 15,
-      borderRadius: 25,
+      borderRadius: 40,
       alignItems: 'center',
-      marginTop: 30,
+      marginHorizontal: 80,
+      marginTop: 40,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
@@ -304,8 +310,8 @@ const styles = StyleSheet.create({
       elevation: 8,
     },
     nextButtonText: {
-      color: '#9C27B0',
-      fontSize: 16,
+      color: '#ffffffff',
+      fontSize: 20,
       fontWeight: '600',
     },
     registerButton: {

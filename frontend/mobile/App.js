@@ -5,6 +5,10 @@ import FirstHomepage from './src/Screens/FirstHomepage/FirstHomepage.js';
 import LoginScreen from './src/Screens/LoginScreen/LoginScreen.js';
 import RegisterScreen1 from './src/Screens/RegisterScreen/RegisterScreen1.js';
 import RegisterScreen2 from './src/Screens/RegisterScreen/RegisterScreen2.js';
+import ForgotPasswordScreen1 from './src/Screens/ForgotPasswordScreen/ForgotPasswordScreen1.js';
+import ForgotPasswordScreen2 from './src/Screens/ForgotPasswordScreen/ForgotPasswordScreen2.js';
+import ForgotPasswordScreen3 from './src/Screens/ForgotPasswordScreen/ForgotPasswordScreen3.js';
+
 
 const Stack = createStackNavigator();
 
@@ -21,6 +25,9 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register1" component={RegisterScreen1} />
         <Stack.Screen name="Register2" component={RegisterScreen2} />
+        <Stack.Screen name="ForgotPassword1" component={ForgotPasswordScreen1} />
+        <Stack.Screen name="ForgotPassword2" component={ForgotPasswordScreen2} />
+        <Stack.Screen name="ForgotPassword3" component={ForgotPasswordScreen3} />
       </Stack.Navigator>
     </NavigationContainer>
   );

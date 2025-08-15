@@ -33,7 +33,7 @@ const LoginScreen = ({ navigation }) => {
       />
 
       <LinearGradient
-        colors={['#8c6cff73', '#FFBAE7', '#8D6CFF']}
+        colors={['#ffbae783', '#8D6CFF', '#8D6CFF']}
         style={styles.gradient}
       >
         {/* TODO: Agregar imagen de fondo con cupcakes */}
@@ -81,8 +81,13 @@ const LoginScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.forgotText1}>¿Olvidaste tu contraseña?</Text>
-            <Text style={styles.forgotText2}>Restablecer contraseña</Text>
+            <TouchableOpacity 
+                onPress={() => navigation.navigate('ForgotPassword1')}
+                style={{ zIndex: 10 }} // esto es para que el texto este por encima del svg, sino no furula y que hueva crear un estilo solo pa esto
+              >
+                <Text style={styles.forgotText1}>¿Olvidaste tu contraseña?</Text>
+                <Text style={styles.forgotText2}>Restablecer contraseña</Text>
+              </TouchableOpacity>
 
             <SvgXml xml={miSvgXml} width="120%" height="120%" style={styles.SVGs} />
 
@@ -269,6 +274,7 @@ const styles = StyleSheet.create({
     },
     eyeButton: {
       position: 'absolute',
+      zIndex: 1,
       right: 40,
       top: 13,
     },
@@ -278,11 +284,11 @@ const styles = StyleSheet.create({
       fontSize: 14,
     },
     forgotText2: {
-      color: '#8D6CFF',
+      color: '#ffffffff',
       textAlign: 'center',
       fontSize: 14,
       marginBottom: 5,
-      fontWeight: 600,
+      fontWeight: 700,
     },
     loginButton: {
       backgroundColor: '#8B5FBF',
