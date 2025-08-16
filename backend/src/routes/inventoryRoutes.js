@@ -27,6 +27,11 @@ router.route('/:id')
     //DELETE localhost:3333/api/inventory/12345
     .delete(inventoryController.deleteInventory);
 
+// Ruta para cambiar estado activo/inactivo de inventario
+// PUT localhost:3333/api/inventory/12345/toggle-status
+router.route('/:id/toggleStatus')
+    .put(inventoryController.toggleInventoryStatus);
+
 // Rutas para lotes
 
 //Ruta para crear un lote en un inventario en específico
@@ -48,4 +53,5 @@ router.route('/batch/:batchId/movements')
 // DELETE localhost:3333/api/inventory/batch/12345
 router.route('/batch/:batchId')
     .delete(inventoryController.deleteBatch);
+
 export default router;

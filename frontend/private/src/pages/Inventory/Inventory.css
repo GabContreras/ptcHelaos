@@ -1,0 +1,1216 @@
+/* Inventory.css - Responsive */
+.inventory-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8e3ff 0%, #f0f4ff 50%, #fdf2ff 100%);
+  padding: 1rem;
+}
+
+/* Indicador de carga */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  color: #666;
+  font-size: 1rem;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e0e0e0;
+  border-top: 2px solid #8B7CF6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Header con pestañas */
+.header-tabs {
+  display: flex;
+  background: linear-gradient(135deg, #8B5CF6, #A855F7);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 1rem;
+  gap: 4px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.tab-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-button.active {
+  background: white;
+  color: #8B5CF6;
+  font-weight: 600;
+}
+
+/* Información de resultados */
+.results-info {
+  padding: 0.5rem 1rem;
+  color: #666;
+  font-size: 0.9rem;
+  text-align: right;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Contenedor principal */
+.inventory-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 2rem;
+  flex-grow: 1;
+}
+
+.main-content {
+  flex: 1;
+  background-color: transparent;
+}
+
+/* Listas */
+.inventories-list,
+.batches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0;
+}
+
+/* Mensaje cuando no hay datos */
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  border: 2px dashed #ccc;
+}
+
+.no-data-message p {
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+/* Tarjetas de inventario */
+.inventory-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.inventory-card:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.inventory-card.selected {
+  border-color: #8B5CF6;
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.inventory-card.inactive {
+  opacity: 0.6;
+  background: rgba(248, 250, 252, 0.8);
+  cursor: not-allowed;
+}
+
+.inventory-card.inactive:hover {
+  border-color: #e9ecef;
+  box-shadow: none;
+  transform: none;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.inventory-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.inventory-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.375rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn {
+  color: #6B7280;
+}
+
+.edit-btn:hover {
+  color: #8B5CF6;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.toggle-btn.active {
+  color: #10b981;
+}
+
+.toggle-btn.active:hover {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.toggle-btn.inactive {
+  color: #ef4444;
+}
+
+.toggle-btn.inactive:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.inventory-info {
+  margin-bottom: 0.75rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.info-label {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #374151;
+  font-weight: 400;
+}
+
+.inventory-stock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.stock-label {
+  font-size: 0.875rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.stock-amount {
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+.inventory-status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.inactive {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Botón de agregar inventario */
+.add-inventory-container {
+  border: 2px dashed #bbb;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.add-inventory-container:hover {
+  border-color: #8B7CF6;
+  background: rgba(139, 124, 246, 0.1);
+}
+
+.add-inventory-btn-inline {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.add-inventory-btn-inline:hover {
+  color: #8B7CF6;
+}
+
+.add-icon {
+  width: 32px;
+  height: 32px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  background: white;
+  flex-shrink: 0;
+}
+
+.add-text {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+/* Panel lateral */
+.side-panel {
+  width: 350px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.no-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #6B7280;
+  text-align: center;
+}
+
+.no-selection-icon {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.no-selection h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.no-selection p {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.inventory-details h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.detail-category {
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin-bottom: 1rem;
+}
+
+.detail-info {
+  margin-bottom: 1.5rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  min-height: 24px;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 500;
+  text-align: right;
+}
+
+.detail-value.active {
+  color: #10b981;
+}
+
+.detail-value.inactive {
+  color: #ef4444;
+}
+
+/* Sección de lotes activos */
+.active-batches-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.add-batch-btn {
+  background: #8B5CF6;
+  border: none;
+  border-radius: 6px;
+  padding: 0.375rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-batch-btn:hover {
+  background: #7C3AED;
+  transform: scale(1.05);
+}
+
+.batches-list-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.batch-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.batch-card:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.batch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.batch-header h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.batch-status {
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+}
+
+.batch-info {
+  margin-bottom: 0.5rem;
+}
+
+.batch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  margin-bottom: 0.125rem;
+}
+
+.batch-label {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.batch-value {
+  color: #374151;
+  font-weight: 400;
+}
+
+.batch-value.expiring {
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.warning-icon {
+  color: #f59e0b;
+}
+
+.batch-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.withdraw-btn {
+  background: #ef4444;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.withdraw-btn:hover {
+  background: #dc2626;
+}
+
+.no-batches {
+  text-align: center;
+  padding: 1rem;
+  color: #6B7280;
+}
+
+.no-batches p {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.add-first-batch-btn {
+  background: #8B5CF6;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-first-batch-btn:hover {
+  background: #7C3AED;
+}
+
+/* Operaciones rápidas */
+.quick-operations {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.quick-operations h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.quick-op-btn {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.quick-op-btn.withdraw {
+  background: #ef4444;
+  color: white;
+}
+
+.quick-op-btn.withdraw:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.quick-op-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tarjetas de lote para vista completa */
+.batch-card-full {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.batch-card-full:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.batch-card-full.selected {
+  border-color: #8B5CF6;
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.batch-card-full .batch-header {
+  margin-bottom: 1rem;
+}
+
+.batch-card-full h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.batch-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.batch-details .batch-row {
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Detalles del lote en panel lateral */
+.batch-details-full {
+  margin-bottom: 1.5rem;
+}
+
+.batch-details-full h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+/* Sección de movimientos */
+.movements-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.movements-section .section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.movements-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.movements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.movement-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.movement-card:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.movement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.movement-type {
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+}
+
+.movement-date {
+  font-size: 0.75rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.movement-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.movement-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+.movement-label {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.movement-value {
+  color: #374151;
+  font-weight: 400;
+  text-align: right;
+}
+
+.no-movements {
+  text-align: center;
+  padding: 1rem;
+  color: #6B7280;
+}
+
+.no-movements p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Estilos de formularios */
+.inventory-form,
+.batch-form,
+.operation-form {
+  padding: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.375rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #8B5CF6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.cancel-button,
+.save-button {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cancel-button:hover {
+  background: #e5e7eb;
+}
+
+.save-button {
+  background: #8B5CF6;
+  color: white;
+}
+
+.save-button:hover:not(:disabled) {
+  background: #7C3AED;
+}
+
+.cancel-button:disabled,
+.save-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+
+/* Tablet Design (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .inventory-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .side-panel {
+    width: 100%;
+    max-height: 400px;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .form-group.full-width {
+    grid-column: 1;
+  }
+}
+
+/* Tablet Design (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+  .inventory-page {
+    padding: 0.75rem;
+  }
+  
+  .header-tabs {
+    margin-bottom: 0.75rem;
+  }
+  
+  .tab-button {
+    font-size: 0.875rem;
+    padding: 10px 14px;
+  }
+  
+  .results-info {
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+  
+  .inventory-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .side-panel {
+    width: 100%;
+    padding: 1rem;
+    max-height: 350px;
+  }
+  
+  .loading-indicator {
+    padding: 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .spinner {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .no-data-message {
+    min-height: 250px;
+    padding: 1.5rem;
+  }
+  
+  .add-inventory-container {
+    min-height: 100px;
+    padding: 1rem;
+  }
+  
+  .add-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .cancel-button,
+  .save-button {
+    width: 100%;
+  }
+}
+
+/* Mobile Design (≤ 480px) */
+@media (max-width: 480px) {
+  .inventory-page {
+    padding: 0.5rem;
+  }
+  
+  .header-tabs {
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .tab-button {
+    font-size: 0.875rem;
+    padding: 0.75rem;
+  }
+  
+  .results-info {
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+  
+  .inventory-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .side-panel {
+    width: 100%;
+    padding: 0.75rem;
+    max-height: 300px;
+  }
+  
+  .loading-indicator {
+    padding: 1rem;
+    font-size: 0.875rem;
+    gap: 0.5rem;
+  }
+  
+  .spinner {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .no-data-message {
+    min-height: 200px;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .no-data-message p {
+    font-size: 0.9rem;
+  }
+  
+  .inventory-card {
+    padding: 0.75rem;
+  }
+  
+  .inventory-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .inventory-actions {
+    align-self: flex-end;
+  }
+  
+  .add-inventory-container {
+    min-height: 80px;
+    padding: 0.75rem;
+    border-radius: 8px;
+  }
+  
+  .add-inventory-btn-inline {
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    flex-direction: column;
+  }
+  
+  .add-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+  
+  .add-text {
+    font-size: 0.875rem;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .detail-value {
+    text-align: left;
+  }
+  
+  .batch-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .cancel-button,
+  .save-button {
+    width: 100%;
+    padding: 0.75rem;
+  }
+}
+
+/* Extra Small Mobile (≤ 320px) */
+@media (max-width: 320px) {
+  .inventory-page {
+    padding: 0.25rem;
+  }
+  
+  .header-tabs {
+    margin-bottom: 0.25rem;
+  }
+  
+  .tab-button {
+    font-size: 0.8rem;
+    padding: 0.625rem;
+  }
+  
+  .results-info {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
+  
+  .inventory-container {
+    gap: 0.5rem;
+  }
+  
+  .side-panel {
+    padding: 0.5rem;
+    max-height: 250px;
+  }
+  
+  .loading-indicator {
+    padding: 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .no-data-message {
+    min-height: 150px;
+    padding: 0.75rem;
+  }
+  
+  .no-data-message p {
+    font-size: 0.85rem;
+  }
+  
+  .inventory-card {
+    padding: 0.5rem;
+  }
+  
+  .add-inventory-container {
+    min-height: 70px;
+    padding: 0.5rem;
+  }
+  
+  .add-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+  
+  .add-text {
+    font-size: 0.8rem;
+  }
+  
+  .form-grid {
+    gap: 0.375rem;
+  }
+  
+  .cancel-button,
+  .save-button {
+    padding: 0.625rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .inventory-page {
+    padding: 0.5rem;
+  }
+  
+  .inventory-container {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .side-panel {
+    width: 300px;
+    max-height: calc(100vh - 150px);
+  }
+  
+  .no-data-message {
+    min-height: 150px;
+    padding: 1rem;
+  }
+  
+  .add-inventory-container {
+    min-height: 80px;
+    padding: 0.75rem;
+  }
+  
+  .add-inventory-btn-inline {
+    flex-direction: row;
+  }
+}

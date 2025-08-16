@@ -16,7 +16,7 @@ import Clients from "../pages/Clients/Clients";
 import Employees from "../pages/Employees/Employees";
 import PrivateRoute from "./PrivateRoute";
 import TomaDeOrdenes from "../pages/TomaDeOrdenes/TomaDeOrdenes";
-import Storage from "../pages/Storage/Storage";
+import Inventory from "../pages/Inventory/Inventory";
 import Orders from "../pages/Orders/Orders"
 import PettyCash from "../pages/PettyCash/PettyCash";
 import Category from "../pages/Categories/Categories";
@@ -199,7 +199,7 @@ function Navegation() {
         {/* Inventario - Accesible para todos */}
         <Route path="/inventory" element={
           <Layout>
-            <Storage />
+            <Inventory />
           </Layout>
         } />
 

@@ -7,11 +7,11 @@ const inventoryController = {};
 // CONTROLADOR PARA OBTENER TODOS LOS INVENTARIOS CON SUS LOTES
 inventoryController.getInventory = async (req, res) => {
     try {
-        // Buscar todos los inventarios y hacer populate de categoría y lotes
+        // Buscar todos los inventarios (activos e inactivos) y hacer populate de categoría y lotes
         const inventories = await Inventory.find()
             .populate('categoryId', 'name')    // Popular solo el nombre de la categoría
             .populate('batchId');              // Popular todos los datos de los lotes
-        
+
         res.json(inventories);
     } catch (error) {
         // Manejar errores del servidor
@@ -24,19 +24,29 @@ inventoryController.getAllBatches = async (req, res) => {
     try {
         // Buscar todos los lotes
         const batches = await Batch.find();
-        
-        // POPULATE SELECTIVO PARA MOVEMENTS.EMPLOYEEID
-        // Recorrer cada lote para hacer populate solo cuando sea necesario
-        for (let batch of batches) {
-            for (let movement of batch.movements) {
-                // Solo hacer populate si NO es admin y es un ObjectId válido
-                if (movement.employeeId !== 'admin' && typeof movement.employeeId === 'object') {
-                    await batch.populate('movements.employeeId', 'name email');
+        // HACER POPULATE MANUAL SOLO PARA OBJECTIDS VÁLIDOS
+        // Se usa Promise.all para procesar todos los movimientos en paralelo
+        const populatedMovements = await Promise.all(
+            batches.map(async (batches) => {
+                // Verificar si el employeeId no es 'admin' y existe
+                if (batches.employeeId !== 'admin' && batches.employeeId) {
+                    try {
+                        // VALIDAR QUE SEA UN OBJECTID VÁLIDO ANTES DE HACER POPULATE
+                        // Regex para verificar formato de ObjectId de MongoDB (24 caracteres hexadecimales)
+                        if (batches.employeeId.toString().match(/^[0-9a-fA-F]{24}$/)) {
+                            // Hacer populate solo de los campos necesarios
+                            await batches.populate('employeeId', 'name email');
+                        }
+                    } catch (error) {
+                        // Log del error sin interrumpir el proceso
+                        console.log('Error en populate:', error);
+                    }
                 }
-            }
-        }
-        
-        res.json(batches);
+                return batches;
+            })
+        );
+
+        res.json(populatedMovements);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -49,7 +59,7 @@ inventoryController.getInventoryById = async (req, res) => {
         const inventory = await Inventory.findById(req.params.id)
             .populate('categoryId', 'name')
             .populate('batchId');
-            
+
         // Verificar si el inventario existe
         if (!inventory) {
             return res.status(404).json({ message: 'Inventario no encontrado' });
@@ -65,7 +75,7 @@ inventoryController.getInventoryById = async (req, res) => {
 inventoryController.createInventory = async (req, res) => {
     try {
         // Extraer datos del inventario del cuerpo de la petición
-        const { name, categoryId, supplier, extraPrice, unitType, description } = req.body;
+        const { name, categoryId, supplier, extraPrice, unitType, description, isActive = true } = req.body;
 
         // VERIFICAR SI YA EXISTE UN INVENTARIO CON EL MISMO NOMBRE
         const existingInventory = await Inventory.findOne({ name });
@@ -84,13 +94,14 @@ inventoryController.createInventory = async (req, res) => {
             extraPrice,
             unitType,
             description,
+            isActive,
             batchId: [],        // Array vacío de lotes inicialmente
             currentStock: 0     // Stock inicial en 0
         });
 
         // Guardar el nuevo inventario en la base de datos
         await newInventory.save();
-        
+
         res.json({
             message: 'Inventario creado exitosamente',
             inventory: newInventory,
@@ -151,12 +162,12 @@ inventoryController.createBatch = async (req, res) => {
 inventoryController.updateInventory = async (req, res) => {
     try {
         // Extraer datos a actualizar
-        const { name, categoryId, supplier, extraPrice, unitType, description } = req.body;
+        const { name, categoryId, supplier, extraPrice, unitType, description, isActive } = req.body;
 
         // Actualizar inventario y devolver el documento actualizado
         const updatedInventory = await Inventory.findByIdAndUpdate(
             req.params.id,
-            { name, categoryId, supplier, extraPrice, unitType, description },
+            { name, categoryId, supplier, extraPrice, unitType, description, isActive },
             { new: true } // Devolver el documento actualizado
         );
 
@@ -167,6 +178,31 @@ inventoryController.updateInventory = async (req, res) => {
 
         res.json({
             message: 'Inventario actualizado exitosamente',
+            inventory: updatedInventory
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// CONTROLADOR PARA CAMBIAR ESTADO ACTIVO/INACTIVO DE INVENTARIO
+inventoryController.toggleInventoryStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+
+        const updatedInventory = await Inventory.findByIdAndUpdate(
+            id,
+            { isActive },
+            { new: true }
+        ).populate('categoryId', 'name').populate('batchId');
+
+        if (!updatedInventory) {
+            return res.status(404).json({ message: 'Inventario no encontrado' });
+        }
+
+        res.json({
+            message: `Inventario ${isActive ? 'activado' : 'desactivado'} exitosamente`,
             inventory: updatedInventory
         });
     } catch (error) {
