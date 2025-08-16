@@ -143,7 +143,7 @@ const EventsCard = ({ data, onEdit, onDelete, isLoading }) => {
       {/* Información principal */}
       <div className="event-content">
         <div className="event-info-item">
-          <span className="info-icon">📅</span>
+          <span className="info-icon"></span>
           <div className="info-content">
             <span className="info-label">FECHA:</span>
             <span className="info-value">{formatDate(date)}</span>
@@ -154,7 +154,7 @@ const EventsCard = ({ data, onEdit, onDelete, isLoading }) => {
         </div>
 
         <div className="event-info-item">
-          <span className="info-icon">📍</span>
+          <span className="info-icon"></span>
           <div className="info-content">
             <span className="info-label">UBICACIÓN:</span>
             <span className="info-value">{address}</span>
@@ -163,7 +163,7 @@ const EventsCard = ({ data, onEdit, onDelete, isLoading }) => {
 
         {/* Estado activo/inactivo */}
         <div className="event-info-item">
-          <span className="info-icon">{isActive ? '✅' : '❌'}</span>
+          <span className="info-icon">{isActive ? '' : ''}</span>
           <div className="info-content">
             <span className="info-label">ESTADO:</span>
             <span className={`info-value ${isActive ? 'active' : 'inactive'}`}>

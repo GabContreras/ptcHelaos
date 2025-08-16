@@ -1,230 +1,261 @@
-// Importaciones necesarias
-import Product from '../models/Product.js';
-import { v2 as cloudinary } from 'cloudinary';
-import { config } from '../config.js';
+// productController.js
+import Product from '../models/Product.js'; // Ajusta según tu modelo
 
-const productCtrl = {};
+const productController = {};
 
-// CONFIGURAR CLOUDINARY PARA MANEJO DE IMÁGENES
-cloudinary.config({
-    cloud_name: config.cloudinary.cloudinary_name,
-    api_key: config.cloudinary.cloudinary_api_key,
-    api_secret: config.cloudinary.cloudinary_api_secret
-});
-
-// CONTROLADOR PARA OBTENER TODOS LOS PRODUCTOS
-productCtrl.getAllProducts = async (req, res) => {
+// CONTROLADOR PARA OBTENER TODOS LOS PRODUCTOS DISPONIBLES
+productController.getAvailableProducts = async (req, res) => {
     try {
-        // Buscar todos los productos y popular la información de categoría
-        const products = await Product.find()
-            .populate('categoryId', 'name')  // Solo obtener el nombre de la categoría
-            
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-// CONTROLADOR PARA OBTENER SOLO PRODUCTOS DISPONIBLES
-productCtrl.getAvailableProducts = async (req, res) => {
-    try {
-        // Filtrar solo productos con available: true
-        const products = await Product.find({ available: true })
-            .populate('categoryId', 'name')
-            
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-// CONTROLADOR PARA OBTENER UN PRODUCTO ESPECÍFICO POR ID
-productCtrl.getProductById = async (req, res) => {
-    try {
-        // Buscar producto por ID y popular categoría
-        const product = await Product.findById(req.params.id)
-            .populate('categoryId', 'name');
+        console.log('Obteniendo productos disponibles...');
         
-        // Verificar si el producto existe
-        if (!product) {
-            return res.status(404).json({ message: 'Producto no encontrado' });
-        }
-
-        res.json(product);
+        // Buscar productos disponibles SIN populate para evitar objetos complejos
+        const products = await Product.find({ available: true })
+            .select('name description basePrice preparationTime images categoryId available')
+            .lean(); // lean() para obtener objetos JavaScript planos, no objetos de Mongoose
+        
+        console.log(`Productos encontrados: ${products.length}`);
+        
+        res.json(products);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error al obtener productos:', error);
+        res.status(500).json({ 
+            message: 'Error al obtener productos disponibles',
+            error: error.message 
+        });
+    }
+};
+
+// CONTROLADOR PARA OBTENER TODOS LOS PRODUCTOS (CON POPULATE PARA ADMIN)
+productController.getAllProducts = async (req, res) => {
+    try {
+        console.log('Obteniendo todos los productos...');
+        
+        // Para administración, SÍ incluir información de categoría poblada
+        const products = await Product.find()
+            .populate('categoryId', 'name') // Solo traer el nombre de la categoría
+            .select('name description basePrice preparationTime images categoryId available')
+            .sort({ createdAt: -1 });
+        
+        console.log(`Productos encontrados: ${products.length}`);
+        
+        res.json(products);
+    } catch (error) {
+        console.error('Error al obtener productos:', error);
+        res.status(500).json({ 
+            message: 'Error al obtener productos',
+            error: error.message 
+        });
     }
 };
 
 // CONTROLADOR PARA OBTENER PRODUCTOS POR CATEGORÍA
-productCtrl.getProductsByCategory = async (req, res) => {
+productController.getProductsByCategory = async (req, res) => {
     try {
         const { categoryId } = req.params;
+        console.log('Obteniendo productos para categoría:', categoryId);
         
-        // Filtrar productos por categoría Y que estén disponibles
+        // Buscar productos de una categoría específica
         const products = await Product.find({ 
-            categoryId, 
+            categoryId: categoryId,
             available: true 
         })
-        .populate('categoryId', 'name')
+            .select('name description basePrice preparationTime images categoryId available')
+            .lean();
+        
+        console.log(`Productos encontrados para categoría ${categoryId}: ${products.length}`);
         
         res.json(products);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error al obtener productos por categoría:', error);
+        res.status(500).json({ 
+            message: 'Error al obtener productos por categoría',
+            error: error.message 
+        });
+    }
+};
+
+// CONTROLADOR PARA OBTENER UN PRODUCTO POR ID
+productController.getProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log('Obteniendo producto:', id);
+        
+        const product = await Product.findById(id)
+            .populate('categoryId', 'name')
+            .select('name description basePrice preparationTime images categoryId available');
+        
+        if (!product) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+        
+        console.log('Producto encontrado:', product.name);
+        
+        res.json(product);
+    } catch (error) {
+        console.error('Error al obtener producto:', error);
+        res.status(500).json({ 
+            message: 'Error al obtener producto',
+            error: error.message 
+        });
     }
 };
 
 // CONTROLADOR PARA CREAR UN NUEVO PRODUCTO
-productCtrl.createProduct = async (req, res) => {
+productController.createProduct = async (req, res) => {
     try {
-        // Extraer datos del producto del cuerpo de la petición
-        const { name, categoryId, description, preparationTime, basePrice, available } = req.body;
-        let imageUrls = [];
-
-        // SUBIR MÚLTIPLES IMÁGENES A CLOUDINARY
-        if (req.files && req.files.length > 0) {
-            // Procesar cada archivo de imagen
-            for (const file of req.files) {
-                try {
-                    // Subir imagen a cloudinary con configuraciones específicas
-                    const result = await cloudinary.uploader.upload(file.path, {
-                        folder: "products",  // Carpeta en cloudinary
-                        allowed_formats: ["jpg", "png", "jpeg", "webp"]  // Formatos permitidos
-                    });
-                    // Guardar la URL segura de la imagen
-                    imageUrls.push({ url: result.secure_url });
-                } catch (uploadError) {
-                    console.error("Error subiendo imagen:", uploadError);
-                }
-            }
+        const {
+            name,
+            description,
+            basePrice,
+            preparationTime,
+            categoryId,
+            images
+        } = req.body;
+        
+        console.log('Creando nuevo producto:', name);
+        
+        // Validaciones básicas
+        if (!name || !basePrice || !categoryId) {
+            return res.status(400).json({
+                message: 'Nombre, precio base y categoría son obligatorios'
+            });
         }
-
-        // CREAR NUEVO PRODUCTO
+        
         const newProduct = new Product({
             name,
-            categoryId,
             description,
-            images: imageUrls,                                    // Array de URLs de imágenes
-            available: available !== undefined ? available : true, // Por defecto disponible
+            basePrice,
             preparationTime,
-            basePrice
+            categoryId,
+            images: images || [],
+            available: true
         });
-
-        // Guardar producto en la base de datos
+        
         await newProduct.save();
-        // Popular categoría para la respuesta
-        await newProduct.populate('categoryId', 'name');
-
+        
+        console.log('Producto creado exitosamente:', newProduct._id);
+        
         res.status(201).json({
             message: 'Producto creado exitosamente',
             product: newProduct
         });
     } catch (error) {
-        console.error("Error creando producto:", error);
-        res.status(500).json({ message: error.message });
+        console.error('Error al crear producto:', error);
+        
+        if (error.code === 11000) {
+            res.status(400).json({ message: 'Ya existe un producto con ese nombre' });
+        } else {
+            res.status(500).json({ 
+                message: 'Error al crear producto',
+                error: error.message 
+            });
+        }
     }
 };
 
-// CONTROLADOR PARA ACTUALIZAR UN PRODUCTO EXISTENTE
-productCtrl.updateProduct = async (req, res) => {
+// CONTROLADOR PARA ACTUALIZAR UN PRODUCTO
+productController.updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        // Extraer datos a actualizar
-        const { name, categoryId, description, preparationTime, basePrice, available } = req.body;
-        
-        // VERIFICAR QUE EL PRODUCTO EXISTE
-        const product = await Product.findById(id);
-        if (!product) {
-            return res.status(404).json({ message: 'Producto no encontrado' });
-        }
-
-        let imageUrls = [];
-
-        // SUBIR NUEVAS IMÁGENES SI SE PROPORCIONAN
-        if (req.files && req.files.length > 0) {
-            for (const file of req.files) {
-                try {
-                    const result = await cloudinary.uploader.upload(file.path, {
-                        folder: "products",
-                        allowed_formats: ["jpg", "png", "jpeg", "webp"]
-                    });
-                    imageUrls.push({ url: result.secure_url });
-                } catch (uploadError) {
-                    console.error("Error subiendo imagen:", uploadError);
-                }
-            }
-        }
-
-        // PREPARAR DATOS DE ACTUALIZACIÓN
-        const updateData = {
+        const {
             name,
-            categoryId,
             description,
-            preparationTime,
             basePrice,
-            // Mantener disponibilidad actual si no se especifica
-            available: available !== undefined ? available : product.available
-        };
-
-        // SOLO ACTUALIZAR IMÁGENES SI SE SUBIERON NUEVAS
-        // Esto preserva las imágenes existentes si no se cargan nuevas
-        if (imageUrls.length > 0) {
-            updateData.images = imageUrls;
-        }
-
-        // Actualizar producto y devolver el documento actualizado
+            preparationTime,
+            categoryId,
+            images,
+            available
+        } = req.body;
+        
+        console.log('Actualizando producto:', id);
+        
         const updatedProduct = await Product.findByIdAndUpdate(
-            id, 
-            updateData, 
+            id,
+            {
+                name,
+                description,
+                basePrice,
+                preparationTime,
+                categoryId,
+                images,
+                available
+            },
             { new: true }
         ).populate('categoryId', 'name');
-
+        
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+        
+        console.log('Producto actualizado exitosamente:', updatedProduct.name);
+        
         res.json({
             message: 'Producto actualizado exitosamente',
             product: updatedProduct
         });
     } catch (error) {
-        console.error("Error actualizando producto:", error);
-        res.status(500).json({ message: error.message });
+        console.error('Error al actualizar producto:', error);
+        res.status(500).json({ 
+            message: 'Error al actualizar producto',
+            error: error.message 
+        });
+    }
+};
+
+// CONTROLADOR PARA CAMBIAR DISPONIBILIDAD DE UN PRODUCTO
+productController.toggleAvailability = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        console.log('📦 Cambiando disponibilidad del producto:', id);
+        
+        const product = await Product.findById(id);
+        
+        if (!product) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+        
+        product.available = !product.available;
+        await product.save();
+        
+        console.log(`Disponibilidad del producto cambiada a: ${product.available}`);
+        
+        res.json({
+            message: `Producto ${product.available ? 'activado' : 'desactivado'} exitosamente`,
+            product: product
+        });
+    } catch (error) {
+        console.error('Error al cambiar disponibilidad:', error);
+        res.status(500).json({ 
+            message: 'Error al cambiar disponibilidad del producto',
+            error: error.message 
+        });
     }
 };
 
 // CONTROLADOR PARA ELIMINAR UN PRODUCTO
-productCtrl.deleteProduct = async (req, res) => {
+productController.deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
         
-        // Buscar el producto a eliminar
-        const product = await Product.findById(id);
-        if (!product) {
+        console.log('Eliminando producto:', id);
+        
+        const deletedProduct = await Product.findByIdAndDelete(id);
+        
+        if (!deletedProduct) {
             return res.status(404).json({ message: 'Producto no encontrado' });
         }
-
-        // ELIMINAR IMÁGENES DE CLOUDINARY ANTES DE ELIMINAR EL PRODUCTO
-        if (product.images && product.images.length > 0) {
-            for (const image of product.images) {
-                try {
-                    // EXTRAER PUBLIC_ID DE LA URL DE CLOUDINARY
-                    // Las URLs de cloudinary tienen formato: .../.../products/public_id.extension
-                    const publicId = image.url.split('/').pop().split('.')[0];
-                    
-                    // ELIMINAR IMAGEN DE CLOUDINARY PERMANENTEMENTE
-                    // Usar la ruta completa con la carpeta 'products'
-                    await cloudinary.uploader.destroy(`products/${publicId}`);
-                } catch (deleteError) {
-                    console.error("Error eliminando imagen de cloudinary:", deleteError);
-                }
-            }
-        }
-
-        // ELIMINAR EL PRODUCTO DE LA BASE DE DATOS
-        await Product.findByIdAndDelete(id);
-
+        
+        console.log('Producto eliminado exitosamente:', deletedProduct.name);
+        
         res.json({ message: 'Producto eliminado exitosamente' });
     } catch (error) {
-        console.error("Error eliminando producto:", error);
-        res.status(500).json({ message: error.message });
+        console.error('Error al eliminar producto:', error);
+        res.status(500).json({ 
+            message: 'Error al eliminar producto',
+            error: error.message 
+        });
     }
 };
 
-export default productCtrl;
+export default productController;

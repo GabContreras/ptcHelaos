@@ -106,7 +106,7 @@ const Navbar = () => {
         },
         {
             path: "/orders",
-            label: "Ordenes y ventas",
+            label: "Ventas",
             icon: "🚚",
             adminOnly: false
         },

@@ -1,332 +1,461 @@
-import React, { useState } from 'react';
-import { MapPin, Clock, Phone, User, Package, ChevronDown, ChevronUp, Star, Copy } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  MapPin, 
+  Clock, 
+  Phone, 
+  User, 
+  Package, 
+  ChevronDown, 
+  ChevronUp, 
+  Copy,
+  Plus,
+  RefreshCw,
+  Search,
+  DollarSign,
+  Check,
+  X,
+  AlertCircle,
+  Truck,
+  Store,
+  Eye,
+  Edit
+} from 'lucide-react';
+import { useOrder } from '../../hooks/OrdersHook/useOrder';
+import OrdersCard from '../../components/Cards/OrdersCard/OrdersCard'; // CORREGIDO: Ruta simplificada
 import './Orders.css';
 
-const Delivery = () => {
+const Orders = () => {
+  // Usar el hook useOrder
+  const {
+    orders,
+    loading,
+    error,
+    success,
+    fetchOrders,
+    updateOrderStatus,
+    clearMessages
+  } = useOrder();
+
+  // Estados locales para UI
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [expandedOrder, setExpandedOrder] = useState(null);
 
-  const orders = [
-    {
-      id: '00',
-      status: 'en preparacion',
-      client: {
-        name: 'Nombre Apellido',
-        phone: '0000-0000',
-        rating: 4.5
-      },
-      address: 'Calle Principal #123, San Salvador',
-      coordinates: { lat: 13.7028, lng: -89.2181 },
-      products: [
-        {
-          name: 'Producto 3',
-          quantity: 1,
-          size: 'opcion 2',
-          flavors: ['opcion 2', 'opcion 8'],
-          complements: ['opcion 6'],
-          extras: ['opcion 8'],
-          price: 5.80
-        }
-      ],
-      subtotal: 13.45,
-      discount: 0.00,
-      total: 15.95,
-      estimatedTime: '25-30 min',
-      orderTime: '14:30',
-      paymentMethod: 'contra entrega'
-    },
-    {
-      id: '01',
-      status: 'recibido',
-      client: {
-        name: 'María González',
-        phone: '2222-3333',
-        rating: 5.0
-      },
-      address: 'Colonia Escalón, Block A, Casa 45',
-      coordinates: { lat: 13.7089, lng: -89.2348 },
-      products: [
-        {
-          name: 'Producto 1',
-          quantity: 2,
-          size: 'opcion 2',
-          flavors: ['opcion 2', 'opcion 8'],
-          complements: ['opcion 6'],
-          extras: ['opcion 8'],
-          price: 7.65
-        }
-      ],
-      subtotal: 18.30,
-      discount: 0.00,
-      total: 18.30,
-      estimatedTime: '20-25 min',
-      orderTime: '14:45',
-      paymentMethod: 'tarjeta'
-    },
-    {
-      id: '02',
-      status: 'recibido',
-      client: {
-        name: 'Carlos Mendoza',
-        phone: '7777-8888',
-        rating: 4.2
-      },
-      address: 'Centro Comercial Galerías, Local 234',
-      coordinates: { lat: 13.6929, lng: -89.2182 },
-      products: [
-        {
-          name: 'Producto 2',
-          quantity: 1,
-          size: 'grande',
-          flavors: ['chocolate', 'vainilla'],
-          complements: ['crema'],
-          extras: ['extra dulce'],
-          price: 8.50
-        }
-      ],
-      subtotal: 8.50,
-      discount: 1.00,
-      total: 7.50,
-      estimatedTime: '30-35 min',
-      orderTime: '15:00',
-      paymentMethod: 'efectivo'
-    },
-    {
-      id: '03',
-      status: 'en camino',
-      client: {
-        name: 'Ana Rodríguez',
-        phone: '5555-6666',
-        rating: 4.8
-      },
-      address: 'Zona Rosa, Edificio Torre Sur, Apt 502',
-      coordinates: { lat: 13.7156, lng: -89.2456 },
-      products: [
-        {
-          name: 'Producto 4',
-          quantity: 3,
-          size: 'mediano',
-          flavors: ['fresa'],
-          complements: ['frutas', 'miel'],
-          extras: [],
-          price: 6.25
-        }
-      ],
-      subtotal: 18.75,
-      discount: 0.50,
-      total: 18.25,
-      estimatedTime: '10-15 min',
-      orderTime: '14:15',
-      paymentMethod: 'contra entrega'
+  // Estados de filtros
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+
+  // Estados del modal
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [newStatus, setNewStatus] = useState('');
+
+  // Debug - agregar logs para diagnóstico
+  console.log('Orders Debug:', {
+    orders: orders,
+    ordersLength: orders?.length,
+    filteredOrders: filteredOrders,
+    filteredOrdersLength: filteredOrders?.length,
+    loading,
+    error
+  });
+
+  // Cargar órdenes al montar el componente
+  useEffect(() => {
+    console.log('Ejecutando fetchOrders...');
+    fetchOrders();
+  }, [fetchOrders]);
+
+  // Filtrar órdenes cuando cambien los filtros o las órdenes
+  useEffect(() => {
+    console.log('Aplicando filtros...');
+    filterOrders();
+  }, [orders, searchTerm, statusFilter, typeFilter]);
+
+  const filterOrders = () => {
+    console.log('filterOrders ejecutándose con orders:', orders);
+    
+    if (!orders || !Array.isArray(orders)) {
+      console.log('Orders no es un array válido:', orders);
+      setFilteredOrders([]);
+      return;
     }
-  ];
+
+    let filtered = [...orders];
+
+    // Filtro por búsqueda
+    if (searchTerm) {
+      filtered = filtered.filter(order =>
+        order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order._id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customerPhone?.includes(searchTerm)
+      );
+    }
+
+    // Filtro por estado
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(order => order.orderStatus === statusFilter);
+    }
+
+    // Filtro por tipo
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(order => order.orderType === typeFilter);
+    }
+
+    console.log('Órdenes filtradas:', filtered);
+    setFilteredOrders(filtered);
+  };
 
   const handleOrderClick = (orderId) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'en preparacion': return '#f59e0b';
-      case 'recibido': return '#10b981';
-      case 'en camino': return '#3b82f6';
-      case 'entregado': return '#6b7280';
-      default: return '#6b7280';
+  const handleStatusUpdate = (order) => {
+    setSelectedOrder(order);
+    setNewStatus(order.orderStatus);
+    setShowStatusModal(true);
+  };
+
+  const handleContactClient = (order) => {
+    // Implementar lógica de contacto
+    console.log('Contactar cliente:', order.customerName);
+    // Aquí podrías abrir un modal de WhatsApp, email, etc.
+  };
+
+  const handleMarkCompleted = async (order) => {
+    try {
+      await updateOrderStatus(order._id, 'entregado');
+    } catch (err) {
+      console.error('Error al marcar como completado:', err);
     }
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'en preparacion': return <Package size={16} />;
-      case 'recibido': return <Clock size={16} />;
-      case 'en camino': return <MapPin size={16} />;
-      default: return <Package size={16} />;
+  const confirmStatusUpdate = async () => {
+    if (!selectedOrder || !newStatus) return;
+
+    try {
+      await updateOrderStatus(selectedOrder._id, newStatus);
+      setShowStatusModal(false);
+      setSelectedOrder(null);
+      setNewStatus('');
+    } catch (err) {
+      console.error('Error al actualizar estado:', err);
     }
   };
 
-  const MiniMap = ({ coordinates, address }) => (
-    <div className="mini-map">
-      <div className="map-placeholder">
-        <MapPin className="map-icon" />
-        <div className="coordinates">
-          {coordinates.lat.toFixed(4)}, {coordinates.lng.toFixed(4)}
+  const calculateStats = () => {
+    if (!orders || !Array.isArray(orders)) {
+      return {
+        totalOrders: 0,
+        todayOrders: 0,
+        activeOrders: 0,
+        todayRevenue: 0,
+        averageTime: '0 min'
+      };
+    }
+
+    const today = new Date().toDateString();
+    const todayOrders = orders.filter(order => 
+      new Date(order.createdAt).toDateString() === today
+    );
+
+    return {
+      totalOrders: orders.length,
+      todayOrders: todayOrders.length,
+      activeOrders: orders.filter(order => 
+        ['pendiente', 'recibido', 'en preparación', 'en camino'].includes(order.orderStatus)
+      ).length,
+      todayRevenue: todayOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0),
+      averageTime: '22 min'
+    };
+  };
+
+  const stats = calculateStats();
+
+  const StatusModal = () => {
+    if (!showStatusModal) return null;
+
+    const statusOptions = [
+      { value: 'pendiente', label: 'Pendiente', icon: Clock },
+      { value: 'recibido', label: 'Recibido', icon: Check },
+      { value: 'en preparación', label: 'En Preparación', icon: Package },
+      { value: 'en camino', label: 'En Camino', icon: Truck },
+      { value: 'entregado', label: 'Entregado', icon: Check },
+      { value: 'cancelado', label: 'Cancelado', icon: X }
+    ];
+
+    return (
+      <div className="status-modal-overlay" onClick={() => setShowStatusModal(false)}>
+        <div className="status-modal" onClick={e => e.stopPropagation()}>
+          <h3>Actualizar Estado de Orden #{selectedOrder?._id?.slice(-6)}</h3>
+          <div className="status-options">
+            {statusOptions.map(option => {
+              const IconComponent = option.icon;
+              return (
+                <div
+                  key={option.value}
+                  className={`status-option ${newStatus === option.value ? 'selected' : ''}`}
+                  onClick={() => setNewStatus(option.value)}
+                >
+                  <IconComponent size={16} />
+                  {option.label}
+                </div>
+              );
+            })}
+          </div>
+          <div className="modal-actions">
+            <button 
+              className="action-btn btn-secondary"
+              onClick={() => setShowStatusModal(false)}
+            >
+              Cancelar
+            </button>
+            <button 
+              className="action-btn btn-primary"
+              onClick={confirmStatusUpdate}
+              disabled={loading || newStatus === selectedOrder?.orderStatus}
+            >
+              {loading ? <div className="loading-spinner" /> : 'Actualizar'}
+            </button>
+          </div>
         </div>
       </div>
-      <div className="map-overlay">
-        <button className="copy-link-btn">
-          <Copy size={12} />
-          copiar link
-        </button>
+    );
+  };
+
+  const formatCurrency = (amount) => {
+    return `$${(amount || 0).toFixed(2)}`;
+  };
+
+  // Renderizado condicional para debugging
+  if (loading && (!orders || orders.length === 0)) {
+    return (
+      <div className="orders-container">
+        <div className="main-content" style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div className="loading-spinner" style={{ width: '40px', height: '40px', margin: '0 auto 20px' }} />
+            <p>Cargando órdenes...</p>
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
-    <div className="delivery-container">
-      <div className="delivery-header">
-        <h1>Gestión de Delivery</h1>
-        <div className="delivery-stats">
-          <div className="stat-card">
-            <span className="stat-number">4</span>
-            <span className="stat-label">Órdenes activas</span>
+    <>
+      <div className="orders-header">
+        <div className="header-left">
+          <h1 className="header-title">Gestión de Órdenes</h1>
+          <div className="stats-container">
+            <div className="stat-card">
+              <span className="stat-number">{stats.activeOrders}</span>
+              <span className="stat-label">Activas</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">{stats.todayOrders}</span>
+              <span className="stat-label">Hoy</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">{stats.averageTime}</span>
+              <span className="stat-label">Promedio</span>
+            </div>
           </div>
-          <div className="stat-card">
-            <span className="stat-number">25 min</span>
-            <span className="stat-label">Tiempo promedio</span>
-          </div>
+        </div>
+        
+        <div className="header-actions">
+          <button 
+            className="action-btn btn-secondary"
+            onClick={fetchOrders}
+            disabled={loading}
+          >
+            <RefreshCw size={16} />
+            {loading ? 'Actualizando...' : 'Actualizar'}
+          </button>
+          <button className="action-btn btn-primary">
+            <Plus size={16} />
+            Nueva Orden
+          </button>
         </div>
       </div>
 
       <div className="orders-container">
-        {orders.map((order) => (
-          <div key={order.id} className={`order-card ${expandedOrder === order.id ? 'expanded' : ''}`}>
-            <div className="order-header" onClick={() => handleOrderClick(order.id)}>
-              <div className="order-info">
-                <div className="order-number">
-                  <span className="order-label">orden:</span>
-                  <span className="order-id">{order.id}</span>
-                </div>
-                
-                <div className="client-info">
-                  <div className="client-name">
-                    <User size={16} />
-                    {order.client.name}
-                    <div className="client-rating">
-                      <Star size={12} fill="currentColor" />
-                      {order.client.rating}
-                    </div>
-                  </div>
-                  <div className="client-phone">
-                    <Phone size={14} />
-                    {order.client.phone}
-                  </div>
-                </div>
-
-                <div className="order-status">
-                  <span 
-                    className="status-badge" 
-                    style={{ backgroundColor: getStatusColor(order.status) }}
-                  >
-                    {getStatusIcon(order.status)}
-                    {order.status}
-                  </span>
-                </div>
-
-                <div className="order-time">
-                  <Clock size={14} />
-                  <span>{order.orderTime}</span>
-                  <span className="estimated-time">{order.estimatedTime}</span>
-                </div>
-              </div>
-
-              <div className="expand-icon">
-                {expandedOrder === order.id ? <ChevronUp /> : <ChevronDown />}
-              </div>
+        <div className="main-content">
+          {/* Filtros */}
+          <div className="filters-section">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+              <Search size={16} color="#64748b" />
+              <input
+                type="text"
+                placeholder="Buscar por cliente, teléfono o ID..."
+                className="search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
+            
+            <select
+              className="filter-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">Todos los estados</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="recibido">Recibido</option>
+              <option value="en preparación">En Preparación</option>
+              <option value="en camino">En Camino</option>
+              <option value="entregado">Entregado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
 
-            <div className="order-preview">
-              <div className="address-section">
-                <span className="address-label">dirección:</span>
-                <div className="address-content">
-                  <MiniMap coordinates={order.coordinates} address={order.address} />
-                  <span className="address-text">{order.address}</span>
-                </div>
-              </div>
+            <select
+              className="filter-select"
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+            >
+              <option value="all">Todos los tipos</option>
+              <option value="delivery">Delivery</option>
+              <option value="local">Local</option>
+            </select>
+          </div>
+
+          {/* Mensajes de estado */}
+          {error && (
+            <div style={{ 
+              background: '#fee2e2', 
+              color: '#dc2626', 
+              padding: '12px', 
+              borderRadius: '8px',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <AlertCircle size={16} />
+              {error}
+              <button 
+                onClick={clearMessages}
+                style={{ 
+                  marginLeft: 'auto', 
+                  background: 'none', 
+                  border: 'none', 
+                  color: '#dc2626', 
+                  cursor: 'pointer' 
+                }}
+              >
+                <X size={16} />
+              </button>
             </div>
+          )}
 
-            {expandedOrder === order.id && (
-              <div className="order-details">
-                <div className="products-section">
-                  <h4>Productos:</h4>
-                  {order.products.map((product, index) => (
-                    <div key={index} className="product-detail">
-                      <div className="product-header">
-                        <span className="product-name">{product.name}</span>
-                        <span className="product-quantity">x{product.quantity}</span>
-                        <span className="product-price">${product.price}</span>
-                      </div>
-                      <div className="product-specs">
-                        <div className="spec-item">
-                          <span className="spec-label">tamaño:</span>
-                          <span className="spec-value">{product.size}</span>
-                        </div>
-                        {product.flavors.length > 0 && (
-                          <div className="spec-item">
-                            <span className="spec-label">sabor:</span>
-                            <span className="spec-value">{product.flavors.join(', ')}</span>
-                          </div>
-                        )}
-                        {product.complements.length > 0 && (
-                          <div className="spec-item">
-                            <span className="spec-label">complemento:</span>
-                            <span className="spec-value">{product.complements.join(', ')}</span>
-                          </div>
-                        )}
-                        {product.extras.length > 0 && (
-                          <div className="spec-item">
-                            <span className="spec-label">extras:</span>
-                            <span className="spec-value">{product.extras.join(', ')}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+          {success && (
+            <div style={{ 
+              background: '#d1fae5', 
+              color: '#059669', 
+              padding: '12px', 
+              borderRadius: '8px',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <Check size={16} />
+              {success}
+              <button 
+                onClick={clearMessages}
+                style={{ 
+                  marginLeft: 'auto', 
+                  background: 'none', 
+                  border: 'none', 
+                  color: '#059669', 
+                  cursor: 'pointer' 
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
 
-                <div className="order-summary">
-                  <div className="summary-row">
-                    <span>subtotal:</span>
-                    <span>${order.subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="summary-row">
-                    <span>descuento:</span>
-                    <span>-${order.discount.toFixed(2)}</span>
-                  </div>
-                  <div className="summary-row total-row">
-                    <span>Total:</span>
-                    <span>${order.total.toFixed(2)}</span>
-                  </div>
-                  <div className="payment-method">
-                    <span>forma de pago:</span>
-                    <span className="payment-badge">{order.paymentMethod}</span>
-                  </div>
-                </div>
-
-                <div className="order-actions">
-                  <button className="action-btn secondary">Contactar Cliente</button>
-                  <button className="action-btn primary">Actualizar Estado</button>
-                  <button className="action-btn success">Marcar Entregado</button>
-                </div>
+          {/* Lista de órdenes */}
+          <div className="orders-list" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            minHeight: '400px',
+            backgroundColor: '#f8fafc',
+            padding: '20px',
+            borderRadius: '12px'
+          }}>
+            {console.log('Renderizando lista con filteredOrders:', filteredOrders)}
+            
+            {!filteredOrders || filteredOrders.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-state-icon">📋</div>
+                <h3>No se encontraron órdenes</h3>
+                <p>
+                  {searchTerm || statusFilter !== 'all' || typeFilter !== 'all'
+                    ? 'Intenta ajustar los filtros de búsqueda'
+                    : 'Aún no hay órdenes registradas. Las órdenes aparecerán aquí cuando se carguen desde la API.'}
+                </p>
               </div>
+            ) : (
+              filteredOrders.map((order) => {
+                console.log('Renderizando orden:', order);
+                return (
+                  <div key={order._id} style={{
+                    background: 'white',
+                    padding: '20px',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    marginBottom: '16px'
+                  }}>
+                    <OrdersCard
+                      order={order}
+                      isExpanded={expandedOrder === order._id}
+                      onToggleExpand={() => handleOrderClick(order._id)}
+                      onStatusUpdate={handleStatusUpdate}
+                      onContactClient={handleContactClient}
+                      onMarkCompleted={handleMarkCompleted}
+                      loading={loading}
+                    />
+                  </div>
+                );
+              })
             )}
           </div>
-        ))}
-      </div>
+        </div>
 
-      <div className="summary-panel">
-        <div className="panel-content">
-          <h3>Resumen del día</h3>
-          <div className="daily-stats">
-            <div className="daily-stat">
-              <span className="stat-value">12</span>
-              <span className="stat-text">Órdenes completadas</span>
+        {/* Panel de resumen */}
+        <div className="summary-panel">
+          <div className="panel-content">
+            <h3>Resumen del Día</h3>
+            <div className="daily-stats">
+              <div className="daily-stat">
+                <span className="daily-stat-value">{stats.todayOrders}</span>
+                <span className="daily-stat-label">Órdenes completadas</span>
+              </div>
+              <div className="daily-stat">
+                <span className="daily-stat-value">{formatCurrency(stats.todayRevenue)}</span>
+                <span className="daily-stat-label">Ingresos del día</span>
+              </div>
+              <div className="daily-stat">
+                <span className="daily-stat-value">{stats.activeOrders}</span>
+                <span className="daily-stat-label">Órdenes activas</span>
+              </div>
             </div>
-            <div className="daily-stat">
-              <span className="stat-value">$245.80</span>
-              <span className="stat-text">Ingresos totales</span>
-            </div>
-            <div className="daily-stat">
-              <span className="stat-value">4.7</span>
-              <span className="stat-text">Rating promedio</span>
-            </div>
+            
+            <button className="action-btn btn-primary" style={{ width: '100%' }}>
+              <Eye size={16} />
+              Ver Reportes
+            </button>
           </div>
-          
-          <button className="order-list-btn">
-            Orden lista
-          </button>
         </div>
       </div>
-    </div>
+
+      {/* Modal de actualización de estado */}
+      <StatusModal />
+    </>
   );
 };
 
-export default Delivery;
+export default Orders;
