@@ -36,6 +36,8 @@ const ProductsPage = () => {
     setAvailable,
     selectedImages,
     imagePreview,
+    existingImages,
+    setExistingImages,
 
     // Funciones
     fetchProducts,
@@ -163,6 +165,13 @@ const ProductsPage = () => {
   useEffect(() => {
     if (success) toast.success(success);
   }, [success]);
+
+  // Función para eliminar imagen existente
+  const removeExistingImage = (index) => {
+    const updatedExisting = [...existingImages];
+    updatedExisting.splice(index, 1);
+    setExistingImages(updatedExisting);
+  };
 
   return (
     <div className="products-page">
@@ -438,9 +447,42 @@ const ProductsPage = () => {
               </label>
             </div>
 
+            {/* Mostrar imágenes existentes cuando estamos editando */}
+            {isEditing && existingImages.length > 0 && (
+              <div className="form-group full-width">
+                <label>Imágenes Actuales</label>
+                <div className="image-preview-grid">
+                  {existingImages.map((imageUrl, index) => (
+                    <div key={`existing-${index}`} className="image-preview-item">
+                      <img 
+                        src={imageUrl} 
+                        alt={`Imagen existente ${index + 1}`}
+                        onError={(e) => {
+                          console.error('Error cargando imagen existente:', imageUrl);
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="remove-image-btn"
+                        onClick={() => removeExistingImage(index)}
+                        disabled={isLoading}
+                        title={`Eliminar imagen existente ${index + 1}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <small style={{ color: "#666", fontSize: "0.8rem", marginTop: "0.5rem", display: "block" }}>
+                  {existingImages.length} imagen{existingImages.length !== 1 ? 'es' : ''} actual{existingImages.length !== 1 ? 'es' : ''}
+                </small>
+              </div>
+            )}
+
             <div className="form-group full-width">
               <label htmlFor="images">
-                Imágenes del Producto {!isEditing && "(Requerido)"}
+                {isEditing ? 'Agregar Nuevas Imágenes (Opcional)' : 'Imágenes del Producto (Requerido)'}
               </label>
               <input
                 type="file"
@@ -449,7 +491,7 @@ const ProductsPage = () => {
                 accept="image/jpeg,image/jpg,image/png,image/webp"
                 onChange={handleImageChange}
                 disabled={isLoading}
-                key={selectedImages.length} // Force re-render when images change
+                key={selectedImages.length}
                 style={{
                   padding: "1rem 1.25rem",
                   borderRadius: "12px",
@@ -462,6 +504,8 @@ const ProductsPage = () => {
                   outline: "none",
                   width: "100%",
                   boxSizing: "border-box",
+                  position: "relative",
+                  zIndex: "1",
                 }}
               />
               <small
@@ -472,20 +516,19 @@ const ProductsPage = () => {
                   display: "block",
                 }}
               >
-                Máximo 5 imágenes. Formatos: JPG, PNG, WebP. Tamaño máximo: 5MB
-                por imagen.
-                {selectedImages.length > 0 &&
-                  ` (${selectedImages.length}/5 seleccionadas)`}
+                Máximo 5 imágenes en total. Formatos: JPG, PNG, WebP. Tamaño máximo: 5MB por imagen.
+                {selectedImages.length > 0 && ` (${selectedImages.length} nueva${selectedImages.length !== 1 ? 's' : ''} seleccionada${selectedImages.length !== 1 ? 's' : ''})`}
+                {isEditing && ` | Total: ${existingImages.length + selectedImages.length}/5`}
               </small>
             </div>
 
-            {/* Preview de imágenes */}
+            {/* Preview de imágenes nuevas */}
             {imagePreview.length > 0 && (
               <div className="form-group full-width">
-                <label>Vista Previa de Imágenes</label>
+                <label>Vista Previa de Nuevas Imágenes</label>
                 <div className="image-preview-grid">
                   {imagePreview.map((preview, index) => (
-                    <div key={index} className="image-preview-item">
+                    <div key={`new-${index}`} className="image-preview-item">
                       <img src={preview} alt={`Preview ${index + 1}`} />
                       <button
                         type="button"
@@ -502,7 +545,7 @@ const ProductsPage = () => {
             )}
           </div>
 
-          <div className="form-actions">
+          <div className="form-actions" style={{ zIndex: 10, position: "relative" }}>
             <button
               type="button"
               className="cancel-button"

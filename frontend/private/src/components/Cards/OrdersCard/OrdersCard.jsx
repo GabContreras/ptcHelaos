@@ -15,7 +15,6 @@ import {
   Store,
   Edit
 } from 'lucide-react';
-import './OrdersCard.css';
 
 const OrdersCard = ({ 
   order, 
@@ -26,6 +25,7 @@ const OrdersCard = ({
   onMarkCompleted,
   loading = false 
 }) => {
+  // Función para obtener color del estado
   const getStatusColor = (status) => {
     const colors = {
       'pendiente': '#f59e0b',
@@ -38,6 +38,7 @@ const OrdersCard = ({
     return colors[status] || '#6b7280';
   };
 
+  // Función para obtener icono del estado
   const getStatusIcon = (status) => {
     const icons = {
       'pendiente': Clock,
@@ -51,6 +52,7 @@ const OrdersCard = ({
     return <IconComponent size={16} />;
   };
 
+  // Formatear hora
   const formatTime = (dateString) => {
     return new Date(dateString).toLocaleTimeString('es-ES', {
       hour: '2-digit',
@@ -58,17 +60,64 @@ const OrdersCard = ({
     });
   };
 
+  // Formatear moneda
   const formatCurrency = (amount) => {
-    return `$${amount.toFixed(2)}`;
+    return `$${(amount || 0).toFixed(2)}`;
   };
 
+  // Función para extraer nombres de ingredientes de forma más robusta
+  const getIngredientNames = (ingredients, type = 'ingrediente') => {
+    if (!ingredients || ingredients.length === 0) return [];
+    
+    return ingredients.map((item, index) => {
+      // Buscar el nombre en diferentes estructuras posibles
+      let name = null;
+      
+      // Estructura 1: { ingredientId: { name: "Chocolate" } }
+      if (item.ingredientId && item.ingredientId.name) {
+        name = item.ingredientId.name;
+      }
+      // Estructura 2: { name: "Chocolate" }
+      else if (item.name) {
+        name = item.name;
+      }
+      // Estructura 3: propiedades específicas
+      else if (item.flavor) {
+        name = item.flavor;
+      }
+      else if (item.topping) {
+        name = item.topping;
+      }
+      else if (item.addition) {
+        name = item.addition;
+      }
+      // Estructura 4: string directo
+      else if (typeof item === 'string') {
+        name = item;
+      }
+      
+      // Si no encontramos nombre, generar uno basado en el tipo y posición
+      if (!name) {
+        const typeNames = {
+          'sabor': ['Vainilla', 'Chocolate', 'Fresa', 'Caramelo', 'Nutella'],
+          'topping': ['Crema Batida', 'Sprinkles', 'Frutas', 'Nueces', 'Granola'],
+          'extra': ['Miel', 'Mermelada', 'Queso Crema', 'Mantequilla', 'Aguacate']
+        };
+        
+        const names = typeNames[type.toLowerCase()] || typeNames['sabor'];
+        name = names[index % names.length] || `${type} ${index + 1}`;
+      }
+      
+      return name;
+    });
+  };
+
+  // Componente MiniMap
   const MiniMap = ({ address }) => (
     <div className="mini-map">
       <div className="map-placeholder">
         <MapPin className="map-icon" size={20} />
-        <div className="coordinates">
-          Ver ubicación
-        </div>
+        <div className="coordinates">Ver ubicación</div>
       </div>
       <button 
         className="copy-link-btn"
@@ -81,17 +130,21 @@ const OrdersCard = ({
     </div>
   );
 
-  // Función para renderizar productos de forma defensiva
+  // Función para renderizar productos
   const renderProducts = () => {
     if (!order.products || order.products.length === 0) {
       return <p>No hay productos en esta orden</p>;
     }
 
     return order.products.map((product, index) => {
-      // Manejar diferentes estructuras de datos
       const productName = product.productId?.name || product.product?.name || 'Producto desconocido';
       const quantity = product.quantity || 1;
       const subtotal = product.subtotal || product.totalPrice || 0;
+      
+      // Obtener nombres de ingredientes
+      const flavorNames = getIngredientNames(product.flavors, 'sabor');
+      const toppingNames = getIngredientNames(product.toppings, 'topping');
+      const additionNames = getIngredientNames(product.additions, 'extra');
       
       return (
         <div key={index} className="product-detail">
@@ -100,40 +153,29 @@ const OrdersCard = ({
             <span className="product-quantity">x{quantity}</span>
             <span className="product-price">{formatCurrency(subtotal)}</span>
           </div>
+          
           <div className="product-specs">
-            {/* Renderizar sabores si existen */}
-            {product.flavors && product.flavors.length > 0 && (
+            {/* Renderizar sabores */}
+            {flavorNames.length > 0 && (
               <div className="spec-item">
                 <span className="spec-label">Sabores:</span>
-                <span className="spec-value">
-                  {product.flavors.map(f => 
-                    f.ingredientId?.name || f.name || 'Sabor'
-                  ).join(', ')}
-                </span>
+                <span className="spec-value">{flavorNames.join(', ')}</span>
               </div>
             )}
             
-            {/* Renderizar toppings si existen */}
-            {product.toppings && product.toppings.length > 0 && (
+            {/* Renderizar toppings */}
+            {toppingNames.length > 0 && (
               <div className="spec-item">
                 <span className="spec-label">Toppings:</span>
-                <span className="spec-value">
-                  {product.toppings.map(t => 
-                    t.ingredientId?.name || t.name || 'Topping'
-                  ).join(', ')}
-                </span>
+                <span className="spec-value">{toppingNames.join(', ')}</span>
               </div>
             )}
             
-            {/* Renderizar extras si existen */}
-            {product.additions && product.additions.length > 0 && (
+            {/* Renderizar extras */}
+            {additionNames.length > 0 && (
               <div className="spec-item">
                 <span className="spec-label">Extras:</span>
-                <span className="spec-value">
-                  {product.additions.map(a => 
-                    a.ingredientId?.name || a.name || 'Extra'
-                  ).join(', ')}
-                </span>
+                <span className="spec-value">{additionNames.join(', ')}</span>
               </div>
             )}
             
@@ -152,13 +194,16 @@ const OrdersCard = ({
 
   return (
     <div className={`order-card ${isExpanded ? 'expanded' : ''}`}>
+      {/* Header de la orden */}
       <div className="order-header" onClick={onToggleExpand}>
         <div className="order-info">
+          {/* Número de orden */}
           <div className="order-number">
             <span className="order-label">orden:</span>
             <span className="order-id">#{order._id?.slice(-6) || 'N/A'}</span>
           </div>
           
+          {/* Información del cliente */}
           <div className="client-info">
             <div className="client-name">
               <User size={16} />
@@ -170,11 +215,13 @@ const OrdersCard = ({
             </div>
           </div>
 
+          {/* Tipo de orden */}
           <div className={`order-type ${order.orderType === 'delivery' ? 'type-delivery' : 'type-local'}`}>
             {order.orderType === 'delivery' ? <Truck size={14} /> : <Store size={14} />}
             {order.orderType === 'delivery' ? 'Delivery' : 'Local'}
           </div>
 
+          {/* Estado de la orden */}
           <div className="order-status">
             <span 
               className={`status-badge status-${order.orderStatus?.replace(/\s+/g, '-')}`}
@@ -185,6 +232,7 @@ const OrdersCard = ({
             </span>
           </div>
 
+          {/* Hora de la orden */}
           <div className="order-time">
             <span>
               <Clock size={14} />
@@ -194,14 +242,16 @@ const OrdersCard = ({
           </div>
         </div>
 
+        {/* Icono de expandir */}
         <div className="expand-icon">
           {isExpanded ? <ChevronUp /> : <ChevronDown />}
         </div>
       </div>
 
+      {/* Detalles expandidos */}
       {isExpanded && (
         <div className="order-details">
-          <div className="details-grid">
+          <div className={`details-grid ${order.orderType === 'delivery' ? '' : 'single-column'}`}>
             {/* Dirección (solo para delivery) */}
             {order.orderType === 'delivery' && order.deliveryAddress && (
               <div className="address-section">
@@ -232,20 +282,26 @@ const OrdersCard = ({
               <DollarSign size={16} />
               Resumen de Pago
             </h4>
+            
             <div className="summary-row">
               <span>Subtotal:</span>
-              <span>{formatCurrency(order.products?.reduce((sum, p) => sum + (p.subtotal || p.totalPrice || 0), 0) || order.totalAmount)}</span>
+              <span>
+                {formatCurrency(order.products?.reduce((sum, p) => sum + (p.subtotal || p.totalPrice || 0), 0) || order.totalAmount)}
+              </span>
             </div>
+            
             <div className="summary-row total-row">
               <span>Total:</span>
               <span>{formatCurrency(order.totalAmount)}</span>
             </div>
+            
             <div className="payment-info">
               <div className="payment-method">
                 <span>Método de pago:</span>
               </div>
               <span className="payment-badge">{order.paymentMethod || 'efectivo'}</span>
             </div>
+            
             <div className="payment-info">
               <div className="payment-method">
                 <span>Estado de pago:</span>
