@@ -283,9 +283,10 @@
 .cart-slide {
     position: absolute;
     backdrop-filter: blur(6px);
-    background-color: #00000033;
-    top: 100%;
+    background: #B9B8FF85;
+    border-radius: 25px;
     right: 0;
+    margin: 10px;
     width: 30%;
     display: flex;
     flex-direction: column;
@@ -298,8 +299,8 @@
 
 .cart-slide .items {
     width: 100%;
-    height: 80%;
-    margin-bottom: 20px;
+    height: 90%;
+    margin: 10px 0px;
     display: block;
     flex-wrap: wrap;
     justify-content: center;
@@ -309,7 +310,7 @@
 }
 
 .cart-slide h1 {
-    color: #fff;
+    color: #8d6cff;
     text-align: center;
 }
 

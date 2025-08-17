@@ -24,13 +24,17 @@ const batchSchema = new Schema({
         type: String,
         trim: true
     },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
     // Array de movimientos asociados a este lote
     movements: [
         {
             type: {
                 type: String,
                 enum: [
-                   'entrada',    // Nuevo stock, devoluciones, ajustes positivos
+                    'entrada',    // Nuevo stock, devoluciones, ajustes positivos
                     'salida',     // Consumo, ventas, ajustes negativos
                     'daño'        // Producto dañado, vencido, etc
                 ],
