@@ -20,13 +20,19 @@ const batchSchema = new Schema({
     completedDate: {
         type: Date
     },
-    notes: {
-        type: String,
-        trim: true
-    },
     isActive: {
         type: Boolean,
         default: true
+    },
+    lostInventory: {
+        type: Number,
+        default: 0,
+    },
+    batchIdentifier: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
     },
     // Array de movimientos asociados a este lote
     movements: [
@@ -36,7 +42,8 @@ const batchSchema = new Schema({
                 enum: [
                     'entrada',    // Nuevo stock, devoluciones, ajustes positivos
                     'salida',     // Consumo, ventas, ajustes negativos
-                    'daño'        // Producto dañado, vencido, etc
+                    'daño',     // Producto dañado, etc
+                    'vencido'
                 ],
                 required: true
             },

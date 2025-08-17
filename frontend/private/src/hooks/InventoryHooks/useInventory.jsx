@@ -18,6 +18,7 @@ export function useInventoryManager() {
     const [showOperationModal, setShowOperationModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showBatchDeleteModal, setShowBatchDeleteModal] = useState(false);
+    const [showExpireModal, setShowExpireModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -28,6 +29,7 @@ export function useInventoryManager() {
     const [selectedInventory, setSelectedInventory] = useState(null);
     const [inventoryToDelete, setInventoryToDelete] = useState(null);
     const [batchToDelete, setBatchToDelete] = useState(null);
+    const [batchToExpire, setBatchToExpire] = useState(null);
     
     // Estados del formulario de inventario
     const [name, setName] = useState('');
@@ -37,11 +39,10 @@ export function useInventoryManager() {
     const [unitType, setUnitType] = useState('');
     const [description, setDescription] = useState('');
     
-    // Estados del formulario de lote
+    // Estados del formulario de lote (SIN batchIdentifier)
     const [quantity, setQuantity] = useState('');
     const [expirationDate, setExpirationDate] = useState('');
     const [purchaseDate, setPurchaseDate] = useState('');
-    const [notes, setNotes] = useState('');
     const [reason, setReason] = useState('');
     
     // Estados del formulario de operación
@@ -61,6 +62,22 @@ export function useInventoryManager() {
         { value: 'salida', label: 'Salida (Consumir stock)' },
         { value: 'daño', label: 'Daño (Marcar como dañado)' }
     ];
+
+    // Validar si el inventario está activo
+    const validateInventoryActive = (inventoryId) => {
+        const inventory = inventories.find(inv => inv._id === inventoryId);
+        if (!inventory) {
+            setError('Inventario no encontrado');
+            return false;
+        }
+        
+        if (!inventory.isActive) {
+            setError('No se pueden realizar operaciones en un inventario inactivo');
+            return false;
+        }
+        
+        return true;
+    };
 
     // GET - Obtener todos los inventarios
     const fetchInventories = async () => {
@@ -240,12 +257,17 @@ export function useInventoryManager() {
         }
     };
 
-    // POST - Crear nuevo lote
+    // POST - Crear nuevo lote (CON IDENTIFICADOR AUTOMÁTICO)
     const handleBatchSubmit = async (e) => {
         e.preventDefault();
         
         if (!selectedInventory) {
             setError('Selecciona un inventario primero');
+            return;
+        }
+
+        // Validar que el inventario esté activo antes de crear lote
+        if (!validateInventoryActive(selectedInventory)) {
             return;
         }
         
@@ -259,12 +281,32 @@ export function useInventoryManager() {
                 return;
             }
 
+            // Procesar fechas para asegurar formato correcto
+            let processedPurchaseDate = purchaseDate;
+            let processedExpirationDate = expirationDate;
+
+            // Si no hay fecha de compra, usar fecha actual de El Salvador
+            if (!processedPurchaseDate) {
+                processedPurchaseDate = getCurrentDateSalvador();
+            }
+
+            // Convertir fechas a formato ISO pero manteniendo zona horaria local
+            if (processedPurchaseDate) {
+                const purchaseDateObj = new Date(processedPurchaseDate + 'T12:00:00');
+                processedPurchaseDate = purchaseDateObj.toISOString();
+            }
+
+            if (processedExpirationDate) {
+                const expirationDateObj = new Date(processedExpirationDate + 'T12:00:00');
+                processedExpirationDate = expirationDateObj.toISOString();
+            }
+
             const dataToSend = {
                 quantity: Number(quantity),
-                expirationDate: expirationDate || null,
-                purchaseDate: purchaseDate || new Date().toISOString().split('T')[0],
-                notes: notes.trim(),
+                expirationDate: processedExpirationDate,
+                purchaseDate: processedPurchaseDate,
                 reason: reason.trim() || 'Lote inicial'
+                // NO enviar batchIdentifier - se genera automáticamente en el backend
             };
 
             const response = await authenticatedFetch(`${API_BASE}inventory/${selectedInventory}/batch`, {
@@ -280,8 +322,10 @@ export function useInventoryManager() {
                 throw new Error(errorData.message || 'Error al crear el lote');
             }
             
-            setSuccess('Lote creado exitosamente');
-            setTimeout(() => setSuccess(''), 3000);
+            const responseData = await response.json();
+            
+            setSuccess(`Lote creado exitosamente con ID: ${responseData.batchIdentifier || 'N/A'}`);
+            setTimeout(() => setSuccess(''), 4000);
             
             await fetchInventories();
             setShowBatchModal(false);
@@ -301,6 +345,11 @@ export function useInventoryManager() {
         
         if (!selectedBatchId) {
             setError('Selecciona un lote');
+            return;
+        }
+
+        // Validar que el inventario del lote esté activo
+        if (!validateInventoryActive(selectedInventory)) {
             return;
         }
         
@@ -347,6 +396,57 @@ export function useInventoryManager() {
         } catch (error) {
             console.error('Error al realizar operación:', error);
             setError(error.message || 'Error al realizar la operación');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Función para marcar lote como vencido
+    const markBatchAsExpired = async () => {
+        if (!batchToExpire) return;
+
+        // Validar que el lote tenga fecha de vencimiento
+        if (!batchToExpire.expirationDate) {
+            setError('No se puede marcar como vencido un lote sin fecha de vencimiento');
+            return;
+        }
+
+        // Validar que el inventario del lote esté activo
+        if (!validateInventoryActive(selectedInventory)) {
+            return;
+        }
+        
+        try {
+            setIsLoading(true);
+            setError('');
+
+            const response = await authenticatedFetch(`${API_BASE}inventory/batch/${batchToExpire._id}/operation`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    operationType: 'vencido',
+                    reason: 'Lote marcado manualmente como vencido'
+                }),
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al marcar el lote como vencido');
+            }
+            
+            setSuccess('Lote marcado como vencido exitosamente');
+            setTimeout(() => setSuccess(''), 3000);
+            
+            setShowExpireModal(false);
+            setBatchToExpire(null);
+            
+            await fetchInventories();
+            
+        } catch (error) {
+            console.error('Error al marcar lote como vencido:', error);
+            setError(error.message || 'Error al marcar el lote como vencido');
         } finally {
             setIsLoading(false);
         }
@@ -444,6 +544,12 @@ export function useInventoryManager() {
         setBatchToDelete(null);
     };
 
+    // Cancelar proceso de vencimiento
+    const cancelExpireBatch = () => {
+        setShowExpireModal(false);
+        setBatchToExpire(null);
+    };
+
     // Funciones de reset
     const resetInventoryForm = () => {
         setName('');
@@ -461,8 +567,8 @@ export function useInventoryManager() {
         setQuantity('');
         setExpirationDate('');
         setPurchaseDate('');
-        setNotes('');
         setReason('');
+        // NO resetear batchIdentifier porque ya no existe
         setError('');
     };
 
@@ -506,9 +612,42 @@ export function useInventoryManager() {
             setError('Selecciona un inventario primero');
             return;
         }
+
+        // Validar que el inventario esté activo
+        if (!validateInventoryActive(selectedInventory)) {
+            return;
+        }
+
         resetBatchForm();
         setReason('Lote inicial');
+        // Establecer fecha actual de El Salvador por defecto
+        setPurchaseDate(getCurrentDateSalvador());
         setShowBatchModal(true);
+    };
+
+    const handleMarkAsExpired = (batchId) => {
+        // Encontrar el lote
+        const batch = allBatches.find(b => b._id === batchId) || 
+                     inventories.flatMap(inv => inv.batchId || []).find(b => b._id === batchId);
+        
+        if (!batch) {
+            setError('Lote no encontrado');
+            return;
+        }
+
+        // Validar que el lote tenga fecha de vencimiento
+        if (!batch.expirationDate) {
+            setError('No se puede marcar como vencido un lote sin fecha de vencimiento');
+            return;
+        }
+
+        // Validar que el inventario esté activo antes de marcar como vencido
+        if (!validateInventoryActive(selectedInventory)) {
+            return;
+        }
+
+        setBatchToExpire(batch);
+        setShowExpireModal(true);
     };
 
     const handleWithdrawFromBatch = (batchId = null) => {
@@ -516,6 +655,12 @@ export function useInventoryManager() {
             setError('Selecciona un inventario primero');
             return;
         }
+
+        // Validar que el inventario esté activo
+        if (!validateInventoryActive(selectedInventory)) {
+            return;
+        }
+
         resetOperationForm();
         setOperationType('salida');
         setOperationReason('Consumo de ingrediente');
@@ -536,7 +681,50 @@ export function useInventoryManager() {
     // Funciones utilitarias
     const formatDate = (dateString) => {
         if (!dateString) return 'No especificada';
-        return new Date(dateString).toLocaleDateString('es-ES');
+        
+        // Crear fecha en zona horaria de El Salvador (GMT-6)
+        const date = new Date(dateString);
+        
+        // Agregar offset de zona horaria de El Salvador si es necesario
+        const salvadorOffset = -6 * 60; // GMT-6 en minutos
+        const userOffset = date.getTimezoneOffset();
+        const offsetDifference = userOffset - salvadorOffset;
+        
+        // Ajustar la fecha para El Salvador
+        const adjustedDate = new Date(date.getTime() + (offsetDifference * 60 * 1000));
+        
+        return adjustedDate.toLocaleDateString('es-SV', {
+            timeZone: 'America/El_Salvador',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+    };
+
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return '';
+        
+        // Crear fecha y forzar zona horaria de El Salvador
+        const date = new Date(dateString);
+        
+        // Obtener componentes de fecha en zona horaria de El Salvador
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}`;
+    };
+
+    const getCurrentDateSalvador = () => {
+        // Obtener fecha actual en zona horaria de El Salvador
+        const now = new Date();
+        const salvadorTime = new Date(now.toLocaleString("en-US", {timeZone: "America/El_Salvador"}));
+        
+        const year = salvadorTime.getFullYear();
+        const month = String(salvadorTime.getMonth() + 1).padStart(2, '0');
+        const day = String(salvadorTime.getDate()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}`;
     };
 
     const formatCurrency = (amount) => {
@@ -559,32 +747,34 @@ export function useInventoryManager() {
     const getBatchStatus = (batch) => {
         if (!batch) return 'Desconocido';
         
+        // Si ya está marcado como vencido explícitamente
+        if (batch.status === 'Vencido') return 'Vencido';
+        
         // Si la cantidad es 0, está agotado
         if (batch.quantity === 0) return 'Agotado';
         
-        // Si no hay fecha de vencimiento, usar el estado del batch
-        if (!batch.expirationDate) {
-            return batch.status || 'En uso';
-        }
-        
-        // Verificar si está vencido (solo si hay fecha de vencimiento)
-        const now = new Date();
-        const expiration = new Date(batch.expirationDate);
-        
-        // Si la fecha de vencimiento es válida y ya pasó
-        if (!isNaN(expiration.getTime()) && expiration < now) {
-            return 'Vencido';
-        }
-        
-        // En cualquier otro caso, devolver el estado original del batch
+        // Devolver el estado original del batch sin verificación automática de fechas
         return batch.status || 'En uso';
     };
 
     const getActiveBatches = (inventory) => {
         if (!inventory || !inventory.batchId) return [];
-        return inventory.batchId.filter(batch => 
-            batch.status === 'En uso' && batch.quantity > 0
-        );
+        return inventory.batchId.filter(batch => {
+            // Solo incluir lotes que estén explícitamente marcados como "En uso" y tengan cantidad
+            return batch.status === 'En uso' && batch.quantity > 0;
+        });
+    };
+
+    const isExpiringSoon = (batch) => {
+        if (!batch.expirationDate) return false;
+        
+        const now = new Date();
+        const expiration = new Date(batch.expirationDate);
+        const diffTime = expiration - now;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        // Retorna true si faltan 7 días o menos para vencer
+        return diffDays <= 7 && diffDays >= 0;
     };
 
     const getMovementTypeLabel = (type) => {
@@ -592,6 +782,7 @@ export function useInventoryManager() {
             case 'entrada': return 'Entrada';
             case 'salida': return 'Salida';
             case 'daño': return 'Daño';
+            case 'vencido': return 'Vencido';
             default: return type;
         }
     };
@@ -601,6 +792,7 @@ export function useInventoryManager() {
             case 'entrada': return '#10b981'; // Verde
             case 'salida': return '#ef4444';  // Rojo
             case 'daño': return '#f59e0b';    // Naranja
+            case 'vencido': return '#8b5cf6'; // Púrpura
             default: return '#6b7280';       // Gris
         }
     };
@@ -629,8 +821,10 @@ export function useInventoryManager() {
         setShowOperationModal,
         showDeleteModal,
         showBatchDeleteModal,
+        showExpireModal,
         inventoryToDelete,
         batchToDelete,
+        batchToExpire,
         
         // Estados de formularios
         isEditingInventory,
@@ -650,15 +844,13 @@ export function useInventoryManager() {
         description,
         setDescription,
         
-        // Estados del formulario de lote
+        // Estados del formulario de lote (SIN batchIdentifier)
         quantity,
         setQuantity,
         expirationDate,
         setExpirationDate,
         purchaseDate,
         setPurchaseDate,
-        notes,
-        setNotes,
         reason,
         setReason,
         
@@ -684,10 +876,12 @@ export function useInventoryManager() {
         handleInventorySubmit,
         handleBatchSubmit,
         handleOperationSubmit,
+        markBatchAsExpired,
         startDeleteInventory,
         confirmDeleteInventory,
         cancelDeleteInventory,
         cancelDeleteBatch,
+        cancelExpireBatch,
         resetInventoryForm,
         resetBatchForm,
         resetOperationForm,
@@ -699,16 +893,23 @@ export function useInventoryManager() {
         handleSelectBatch,
         handleAddBatch,
         handleWithdrawFromBatch,
+        handleMarkAsExpired,
         handleToggleInventoryStatus,
         handleRefresh,
         
         // Funciones utilitarias
         formatDate,
+        formatDateForInput,
+        getCurrentDateSalvador,
         formatCurrency,
         getStatusColor,
         getBatchStatus,
         getActiveBatches,
+        isExpiringSoon,
         getMovementTypeLabel,
-        getMovementTypeColor
+        getMovementTypeColor,
+        
+        // Nueva función de validación
+        validateInventoryActive
     };
 }

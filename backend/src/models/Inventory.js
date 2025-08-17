@@ -24,7 +24,7 @@ const inventorySchema = new Schema({
     unitType: {
         type: String,
         enum: ["kilogramos", "kilos", "unidades", "litros", "libras", "gramos"],
-        required: true 
+        required: true
     },
     description: {
         type: String,
