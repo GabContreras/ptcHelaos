@@ -1,3 +1,5 @@
+@import "leaflet/dist/leaflet.css";
+
 @font-face {
   font-family: montserratRegular;
   src: url(../fonts/MontserratAlternates-Regular.ttf);
@@ -5,6 +7,10 @@
 
 * {
   font-family: 'montserratRegular';
+}
+
+body {
+    background-color: #8D6CFF;
 }
 
 .finishOrder {
@@ -52,21 +58,20 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
 }
 
-.finishOrder .direction iframe {
+.finishOrder .direction .details {
     width: 80%;
-    aspect-ratio: 1 / 0.6;
 }
 
  .finishOrder .direction h4 {
-    width: 80%;
+    width: 100%;
     text-align: left;
-    margin-bottom: 10px;
 }
 
 .finishOrder .direction textarea {
-    width: 80%;
+    width: 100%;
     resize: none;
     padding: 12px;
     font-size: 16px;
