@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './PaymentMethod.css';
 import Button from '../assets/Button';
 
-function PaymentMethod({ subtotal, descuento, total, envio }) {
+function PaymentMethod({ subtotal, total, envio }) {
   const [opcion, setOpcion] = React.useState(null);
 
   const navigate = useNavigate();
@@ -72,7 +72,6 @@ function PaymentMethod({ subtotal, descuento, total, envio }) {
         <h4>subtotal: {subtotal}</h4>
         <h4>método de pago: {opcion ? opcion : 'Selecciona un método'}</h4>
         <h4>envio: {envio}</h4>
-        <h4>descuento: {descuento}</h4>
         <h2>Total: {total}</h2>
         <Button titulo="Pagar" color="#33A9FE" tipoColor="background" onClick={handlePago}/>
       </div>
