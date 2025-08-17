@@ -4,7 +4,12 @@ const ingredientSchema = new Schema({
     ingredientId: {
         type: Schema.Types.ObjectId,
         ref: "inventory",
-        required: true
+        required: false  // Cambiar a false para que sea opcional
+    },
+    // Agregar nombre como alternativa para ingredientes no registrados
+    ingredientName: {
+        type: String,
+        required: false
     },
     quantity: {
         type: Number,

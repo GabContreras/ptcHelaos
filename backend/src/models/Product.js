@@ -17,6 +17,7 @@ const productSchema = new Schema({
         trim: true,
         required: true
     },
+    // Cambio principal: estructura similar al modelo de watches
     images: [
         {
             url: {
@@ -32,13 +33,11 @@ const productSchema = new Schema({
     preparationTime: {
         type: String,
         trim: true
-
     },
     basePrice: {
         type: Number,
         required: true,
-        trim: true
-
+        min: 0
     }
 }, {
     timestamps: true,

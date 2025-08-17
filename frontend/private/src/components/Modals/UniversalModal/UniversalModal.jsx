@@ -1,11 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo } from 'react';
+import './UniversalModal.css';
 
-import './UniversalModal.css'; // Asegúrate de tener los estilos necesarios
-
-const UniversalModal = ({ 
+const UniversalModal = React.memo(({ 
   isOpen, 
   onClose, 
-  type = 'form', // 'form', 'success', 'delete', 'code'
+  type = 'form',
   title,
   message,
   itemName,
@@ -22,20 +21,52 @@ const UniversalModal = ({
   customButtons,
   // Estilos adicionales
   containerStyle,
-  size = 'medium' // 'small', 'medium', 'large'
+  size = 'medium'
 }) => {
   const modalRef = useRef(null);
-
+  const overlayRef = useRef(null);
+  
+  // Refs para evitar cierres accidentales
+  const isClosingRef = useRef(false);
+  const lastOpenStateRef = useRef(isOpen);
+  
+  // Efecto para manejar foco en código
   useEffect(() => {
-    if (isOpen && type === 'code' && inputRefs?.current?.[0]) {
-      inputRefs.current[0].focus();
+    if (isOpen && type === 'code' && inputRefs?.current?.[0] && !isClosingRef.current) {
+      // Pequeño delay para asegurar que el modal esté renderizado
+      const timer = setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, [isOpen, type, inputRefs]);
 
-  if (!isOpen) return null;
+  // Efecto para manejar el estado de apertura
+  useEffect(() => {
+    if (lastOpenStateRef.current !== isOpen) {
+      lastOpenStateRef.current = isOpen;
+      isClosingRef.current = false;
+    }
+  }, [isOpen]);
 
-  // Configuración de estilos según el tipo
-  const getModalConfig = () => {
+  // Callback estabilizado para cerrar modal
+  const handleClose = useCallback(() => {
+    if (isClosingRef.current) return;
+    
+    isClosingRef.current = true;
+    onClose?.();
+  }, [onClose]);
+
+  // Callback para manejar clicks en overlay
+  const handleOverlayClick = useCallback((e) => {
+    if (e.target === overlayRef.current && !isClosingRef.current) {
+      handleClose();
+    }
+  }, [handleClose]);
+
+  // Configuración del modal memoizada
+  const modalConfig = useMemo(() => {
     const configs = {
       success: {
         containerBg: 'linear-gradient(135deg, #FFBAE7 0%, #E8B8FF 50%, #D4C5FF 100%)',
@@ -75,17 +106,16 @@ const UniversalModal = ({
         textColor: '#333',
         showHeader: false,
         showIcon: true,
-        icon: '🍦',
+        icon: '🔒',
         iconSize: '2rem',
         maxWidth: '450px'
       }
     };
     return configs[type] || configs.form;
-  };
+  }, [type, size]);
 
-  const config = getModalConfig();
-
-  const modalStyles = {
+  // Estilos del modal memoizados
+  const modalStyles = useMemo(() => ({
     overlay: {
       position: 'fixed',
       top: 0,
@@ -97,17 +127,18 @@ const UniversalModal = ({
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      zIndex: 1000,
+      zIndex: 9999,
       animation: 'fadeIn 0.3s ease-out',
-      padding: '1rem'
+      padding: '1rem',
+      contain: 'layout style'
     },
     container: {
-      background: config.containerBg,
+      background: modalConfig.containerBg,
       backdropFilter: type === 'form' ? 'blur(20px)' : 'none',
       borderRadius: type === 'success' || type === 'code' ? '20px' : '16px',
       padding: 0,
       width: '100%',
-      maxWidth: config.maxWidth,
+      maxWidth: modalConfig.maxWidth,
       maxHeight: '90vh',
       overflowY: 'auto',
       boxShadow: type === 'success' 
@@ -119,13 +150,17 @@ const UniversalModal = ({
       animation: 'slideInScale 0.4s ease-out',
       overflow: 'hidden',
       position: 'relative',
+      transform: 'translateZ(0)',
+      backfaceVisibility: 'hidden',
+      willChange: 'auto',
+      contain: 'layout style',
       ...containerStyle
     }
-  };
+  }), [modalConfig, type, containerStyle]);
 
-  // Renderizar header según el tipo
-  const renderHeader = () => {
-    if (!config.showHeader) return null;
+  // Renderizar header memoizado
+  const headerComponent = useMemo(() => {
+    if (!modalConfig.showHeader) return null;
 
     const headerStyle = {
       display: 'flex',
@@ -135,16 +170,16 @@ const UniversalModal = ({
       borderBottom: type === 'delete' 
         ? 'none' 
         : '2px solid rgba(139, 124, 246, 0.1)',
-      background: config.headerBg || (type === 'delete' ? config.headerBg : 'transparent'),
-      color: config.headerBg ? 'white' : config.textColor
+      background: modalConfig.headerBg || (type === 'delete' ? modalConfig.headerBg : 'transparent'),
+      color: modalConfig.headerBg ? 'white' : modalConfig.textColor
     };
 
     return (
       <div style={headerStyle}>
         {type === 'delete' && (
           <div style={{ textAlign: 'center', width: '100%' }}>
-            <span style={{ fontSize: config.iconSize, marginBottom: '0.5rem', display: 'block' }}>
-              {config.icon}
+            <span style={{ fontSize: modalConfig.iconSize, marginBottom: '0.5rem', display: 'block' }}>
+              {modalConfig.icon}
             </span>
             <h2 style={{ 
               fontSize: '1.5rem', 
@@ -161,7 +196,7 @@ const UniversalModal = ({
           <>
             <h2 style={{
               margin: 0,
-              color: config.textColor,
+              color: modalConfig.textColor,
               fontSize: '1.5rem',
               fontWeight: 600,
               background: 'linear-gradient(135deg, #8B7CF6, #B9B8FF)',
@@ -178,22 +213,24 @@ const UniversalModal = ({
                 borderRadius: '50%',
                 border: 'none',
                 background: 'rgba(139, 124, 246, 0.1)',
-                color: config.iconColor,
+                color: modalConfig.iconColor,
                 fontSize: '1.5rem',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden'
               }}
-              onClick={onClose}
+              onClick={handleClose}
               onMouseEnter={(e) => {
                 e.target.style.background = 'rgba(139, 124, 246, 0.2)';
-                e.target.style.transform = 'rotate(90deg)';
+                e.target.style.transform = 'rotate(90deg) translateZ(0)';
               }}
               onMouseLeave={(e) => {
                 e.target.style.background = 'rgba(139, 124, 246, 0.1)';
-                e.target.style.transform = 'rotate(0deg)';
+                e.target.style.transform = 'rotate(0deg) translateZ(0)';
               }}
             >
               ×
@@ -202,10 +239,10 @@ const UniversalModal = ({
         )}
       </div>
     );
-  };
+  }, [modalConfig, type, title, handleClose]);
 
-  // Renderizar contenido según el tipo
-  const renderContent = () => {
+  // Renderizar contenido principal memoizado
+  const contentComponent = useMemo(() => {
     const contentStyle = {
       padding: type === 'success' 
         ? '2.5rem 2rem'
@@ -215,8 +252,9 @@ const UniversalModal = ({
             ? '2.5rem 2.5rem'
             : '1.5rem 2rem 2rem',
       textAlign: type === 'success' || type === 'delete' || type === 'code' ? 'center' : 'left',
-      color: config.textColor,
-      position: 'relative'
+      color: modalConfig.textColor,
+      position: 'relative',
+      contain: 'layout style'
     };
 
     return (
@@ -232,15 +270,15 @@ const UniversalModal = ({
             position: 'relative'
           }}>
             <span style={{
-              fontSize: config.iconSize,
+              fontSize: modalConfig.iconSize,
               animation: 'pulse 2s ease-in-out infinite'
             }}>
-              {config.icon}
+              {modalConfig.icon}
             </span>
             <span style={{
               fontSize: '1.5rem',
               fontWeight: 600,
-              color: config.iconColor
+              color: modalConfig.iconColor
             }}>
               Moon Ice Cream
             </span>
@@ -248,16 +286,16 @@ const UniversalModal = ({
         )}
 
         {/* Icono para success */}
-        {type === 'success' && config.showIcon && (
+        {type === 'success' && modalConfig.showIcon && (
           <div style={{
-            width: config.iconSize,
-            height: config.iconSize,
+            width: modalConfig.iconSize,
+            height: modalConfig.iconSize,
             margin: '0 auto 1.5rem',
             position: 'relative'
           }}>
             <svg viewBox="0 0 52 52" style={{
-              width: config.iconSize,
-              height: config.iconSize,
+              width: modalConfig.iconSize,
+              height: modalConfig.iconSize,
               borderRadius: '50%',
               display: 'block',
               strokeWidth: 3,
@@ -303,7 +341,7 @@ const UniversalModal = ({
             fontSize: type === 'success' ? '1.75rem' : '1.5rem',
             fontWeight: type === 'success' ? 700 : 600,
             marginBottom: '1rem',
-            color: config.textColor,
+            color: modalConfig.textColor,
             textShadow: type === 'success' ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none'
           }}>
             {title}
@@ -319,7 +357,7 @@ const UniversalModal = ({
               ? 'rgba(255, 255, 255, 0.95)'
               : type === 'delete'
                 ? '#666'
-                : config.textColor,
+                : modalConfig.textColor,
             lineHeight: 1.5,
             fontWeight: type === 'success' ? 500 : 'normal'
           }}>
@@ -330,35 +368,9 @@ const UniversalModal = ({
         {/* Info del usuario para code */}
         {type === 'code' && userEmail && (
           <>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.75rem',
-              background: 'rgba(139, 124, 246, 0.1)',
-              padding: '1rem',
-              borderRadius: '12px',
-              marginBottom: '1rem'
-            }}>
-              <div style={{
-                width: '32px',
-                height: '32px',
-                background: 'rgba(139, 124, 246, 0.2)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1rem'
-              }}>
-                👤
-              </div>
-              <span style={{
-                color: '#333',
-                fontWeight: 500,
-                fontSize: '0.9rem'
-              }}>
-                {userEmail}
-              </span>
+            <div className="user-info-section">
+              <div className="user-info-icon">👤</div>
+              <span className="user-info-email">{userEmail}</span>
             </div>
             <p style={{
               fontSize: '0.85rem',
@@ -401,52 +413,20 @@ const UniversalModal = ({
 
         {/* Inputs para código */}
         {type === 'code' && code && (
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '0.375rem',
-            marginBottom: '1.5rem',
-            flexWrap: 'wrap',
-            maxWidth: '320px',
-            margin: '0 auto 1.5rem'
-          }}>
+          <div className="code-inputs-container">
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <input
-                key={index}
+                key={`code-input-${index}`}
                 ref={(el) => inputRefs && (inputRefs.current[index] = el)}
                 type="text"
                 inputMode="numeric"
                 autoComplete="one-time-code"
                 maxLength="1"
-                style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '8px',
-                  background: '#8B7CF6',
-                  border: 'none',
-                  color: 'white',
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                  textAlign: 'center',
-                  transition: 'all 0.3s ease',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  flexShrink: 0
-                }}
-                value={code[index]}
+                className="code-input"
+                value={code[index] || ''}
                 onChange={(e) => onCodeChange && onCodeChange(index, e.target.value)}
                 onKeyDown={(e) => onCodeKeyDown && onCodeKeyDown(index, e)}
                 disabled={isLoading}
-                onFocus={(e) => {
-                  e.target.style.background = '#7C3AED';
-                  e.target.style.boxShadow = '0 0 0 2px rgba(139, 124, 246, 0.3)';
-                  e.target.style.transform = 'translateY(-1px)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.background = '#8B7CF6';
-                  e.target.style.boxShadow = 'none';
-                  e.target.style.transform = 'translateY(0)';
-                }}
               />
             ))}
           </div>
@@ -464,8 +444,10 @@ const UniversalModal = ({
             flexWrap: 'wrap',
             alignItems: 'center'
           }}>
+            {/* Botones específicos por tipo... */}
             {type === 'success' && (
               <button 
+                className="button-success-default"
                 style={{
                   background: 'rgba(255, 255, 255, 0.2)',
                   backdropFilter: 'blur(10px)',
@@ -477,169 +459,36 @@ const UniversalModal = ({
                   fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
-                  textTransform: 'none',
                   minWidth: '160px',
-                  position: 'relative',
-                  overflow: 'hidden'
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden'
                 }}
-                onClick={onClose}
-                onMouseEnter={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.3)';
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-                  e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = 'none';
-                }}
+                onClick={handleClose}
               >
-                Volver al login
+                Siguiente
               </button>
             )}
 
-            {type === 'delete' && (
-              <>
+            {/* Resto de botones... */}
+            {(type === 'delete' || type === 'code') && (
+              <div className="code-buttons-container">
                 <button 
-                  style={{
-                    padding: '0.75rem 2rem',
-                    borderRadius: '8px',
-                    border: '1px solid #ddd',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    minWidth: '120px',
-                    background: '#f0f0f0',
-                    color: '#666'
-                  }}
-                  onClick={onClose}
+                  className="cancel-button"
+                  onClick={handleClose}
                   disabled={isLoading}
-                  onMouseEnter={(e) => {
-                    if (!isLoading) e.target.style.background = '#e0e0e0';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isLoading) e.target.style.background = '#f0f0f0';
-                  }}
                 >
-                  Cancelar
+                  {type === 'code' ? 'Regresar' : 'Cancelar'}
                 </button>
                 
                 <button 
-                  style={{
-                    padding: '0.75rem 2rem',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    cursor: isLoading ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.3s ease',
-                    minWidth: '120px',
-                    background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%)',
-                    color: 'white',
-                    opacity: isLoading ? 0.7 : 1
-                  }}
+                  className="save-button"
                   onClick={onConfirm}
-                  disabled={isLoading}
-                  onMouseEnter={(e) => {
-                    if (!isLoading) {
-                      e.target.style.background = 'linear-gradient(135deg, #FF5252 0%, #FF7979 100%)';
-                      e.target.style.transform = 'translateY(-1px)';
-                      e.target.style.boxShadow = '0 4px 12px rgba(255, 107, 107, 0.4)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isLoading) {
-                      e.target.style.background = 'linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%)';
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = 'none';
-                    }
-                  }}
+                  disabled={isLoading || (type === 'code' && !code?.every(digit => digit !== ''))}
                 >
-                  {isLoading ? 'Eliminando...' : 'Eliminar'}
-                </button>
-              </>
-            )}
-
-            {type === 'code' && (
-              <div style={{
-                display: 'flex',
-                gap: '1rem',
-                width: '100%',
-                justifyContent: 'center',
-                flexWrap: 'wrap'
-              }}>
-                <button 
-                  style={{
-                    padding: '1rem 2rem',
-                    borderRadius: '12px',
-                    border: 'none',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    minWidth: '120px',
-                    background: '#f0f0f0',
-                    color: '#666',
-                    flex: '1',
-                    maxWidth: '150px'
-                  }}
-                  onClick={onClose}
-                  disabled={isLoading}
-                  onMouseEnter={(e) => {
-                    if (!isLoading) {
-                      e.target.style.background = '#e0e0e0';
-                      e.target.style.transform = 'translateY(-1px)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isLoading) {
-                      e.target.style.background = '#f0f0f0';
-                      e.target.style.transform = 'translateY(0)';
-                    }
-                  }}
-                >
-                  Regresar
-                </button>
-                
-                <button 
-                  style={{
-                    padding: '1rem 2rem',
-                    borderRadius: '12px',
-                    border: 'none',
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    minWidth: '120px',
-                    background: 'linear-gradient(135deg, #FFBAE7 0%, #FF9DE0 100%)',
-                    color: 'white',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    opacity: isLoading ? 0.6 : 1,
-                    flex: '1',
-                    maxWidth: '150px'
-                  }}
-                  onClick={onConfirm}
-                  disabled={isLoading || !code?.every(digit => digit !== '')}
-                  onMouseEnter={(e) => {
-                    if (!isLoading && code?.every(digit => digit !== '')) {
-                      e.target.style.transform = 'translateY(-2px)';
-                      e.target.style.boxShadow = '0 10px 25px rgba(255, 186, 231, 0.4)';
-                      e.target.style.background = 'linear-gradient(135deg, #FF9DE0 0%, #FF87D4 100%)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isLoading) {
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = 'none';
-                      e.target.style.background = 'linear-gradient(135deg, #FFBAE7 0%, #FF9DE0 100%)';
-                    }
-                  }}
-                >
-                  {isLoading ? 'Verificando...' : 'Continuar'}
+                  {isLoading ? 
+                    (type === 'code' ? 'Verificando...' : 'Eliminando...') : 
+                    (type === 'code' ? 'Continuar' : 'Eliminar')
+                  }
                 </button>
               </div>
             )}
@@ -650,7 +499,14 @@ const UniversalModal = ({
         {customButtons}
       </div>
     );
-  };
+  }, [
+    type, modalConfig, title, message, userEmail, itemName, 
+    code, onCodeChange, onCodeKeyDown, inputRefs, isLoading, 
+    children, customButtons, handleClose, onConfirm
+  ]);
+
+  // No renderizar si no está abierto
+  if (!isOpen) return null;
 
   return (
     <>
@@ -664,11 +520,11 @@ const UniversalModal = ({
           @keyframes slideInScale {
             0% {
               opacity: 0;
-              transform: translateY(-20px) scale(0.95);
+              transform: translateY(-20px) scale(0.95) translateZ(0);
             }
             100% {
               opacity: 1;
-              transform: translateY(0) scale(1);
+              transform: translateY(0) scale(1) translateZ(0);
             }
           }
           
@@ -677,8 +533,8 @@ const UniversalModal = ({
           }
           
           @keyframes scale {
-            0%, 100% { transform: none; }
-            50% { transform: scale3d(1.1, 1.1, 1); }
+            0%, 100% { transform: translateZ(0); }
+            50% { transform: scale3d(1.1, 1.1, 1) translateZ(0); }
           }
           
           @keyframes fill {
@@ -686,69 +542,32 @@ const UniversalModal = ({
           }
           
           @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-          }
-
-          @media (max-width: 768px) {
-            .universal-modal-container {
-              margin: 0.5rem;
-              max-height: 95vh;
-            }
-            
-            .code-inputs-container {
-              gap: 0.375rem !important;
-            }
-            
-            .code-input {
-              width: 40px !important;
-              height: 40px !important;
-              font-size: 1rem !important;
-            }
-            
-            .code-buttons-container {
-              flex-direction: column !important;
-              gap: 0.75rem !important;
-            }
-            
-            .code-buttons-container button {
-              width: 100% !important;
-              max-width: none !important;
-            }
-          }
-
-          @media (max-width: 480px) {
-            .universal-modal-overlay {
-              padding: 0.5rem;
-            }
-            .universal-modal-container {
-              width: 95%;
-            }
-            
-            .code-inputs-container {
-              gap: 0.25rem !important;
-            }
-            
-            .code-input {
-              width: 35px !important;
-              height: 35px !important;
-              font-size: 0.9rem !important;
-            }
+            0%, 100% { transform: scale(1) translateZ(0); }
+            50% { transform: scale(1.1) translateZ(0); }
           }
         `}
       </style>
-      <div style={modalStyles.overlay} className="universal-modal-overlay">
+      <div 
+        ref={overlayRef}
+        style={modalStyles.overlay} 
+        className="universal-modal-overlay"
+        onClick={handleOverlayClick}
+      >
         <div 
           ref={modalRef}
           style={modalStyles.container} 
           className="universal-modal-container"
+          onClick={(e) => e.stopPropagation()}
         >
-          {renderHeader()}
-          {renderContent()}
+          {headerComponent}
+          {contentComponent}
         </div>
       </div>
     </>
   );
-};
+});
+
+// Establecer displayName para debugging
+UniversalModal.displayName = 'UniversalModal';
 
 export default UniversalModal;
