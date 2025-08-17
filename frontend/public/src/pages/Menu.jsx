@@ -32,6 +32,16 @@ const Menu = () => {
     toppings: []
   });
 
+  const handleAddToCart = () => {
+    addToCart({
+      product: selectedItem,
+      customization: needsCustomization(selectedItem.name) ? customization : null,
+      totalPrice: needsCustomization(selectedItem.name) ? calculateTotalPrice() : selectedItem.basePrice,
+      timestamp: new Date().toISOString()
+    });
+    closeModal();
+  };
+
   // Estado para el carrusel de imágenes
   const [currentImageIndex, setCurrentImageIndex] = useState({});
 
@@ -554,7 +564,7 @@ const Menu = () => {
                 Atrás
               </button>
               
-              <button onClick={addToCart} className="btn-add-to-cart">
+              <button onClick={handleAddToCart} className="btn-add-to-cart">
                 Agregar al carrito - ${calculateTotalPrice().toFixed(2)}
               </button>
             </div>
@@ -686,58 +696,82 @@ const Menu = () => {
 
           {/* Modal */}
           {isModalOpen && selectedItem && (
-            <div className="modal-overlay" onClick={closeModal}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <button className="modal-close" onClick={closeModal}>
-                  <X size={20} />
-                </button>
-                
-                {!isCustomizing ? (
-                  <div className="modal-body">
-                    <ImageCarousel product={selectedItem} isModal={true} />
+          <div className="modal-overlay" onClick={closeModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="modal-close" onClick={closeModal}>
+                <X size={20} />
+              </button>
+              
+              {!isCustomizing ? (
+                <div className="modal-body">
+                  <ImageCarousel product={selectedItem} isModal={true} />
+                  
+                  <div className="modal-info">
+                    <h2 className="modal-title">{selectedItem.name}</h2>
                     
-                    <div className="modal-info">
-                      <h2 className="modal-title">{selectedItem.name}</h2>
-                      
-                      <div className="modal-section">
-                        <h3 className="modal-subtitle">Descripción:</h3>
-                        <p className="modal-description">
-                          {selectedItem.fullDescription || selectedItem.description}
-                        </p>
-                      </div>
-                      
-                      <div className="modal-section">
-                        <h3 className="modal-subtitle">Precio:</h3>
-                        <p className="modal-price">
-                          ${formatPrice(selectedItem.basePrice)}
-                        </p>
-                      </div>
-                      
-                      <button 
-                        className="action-btn"
-                        onClick={() => {
-                          addToCart(selectedItem);
+                    <div className="modal-section">
+                      <h3 className="modal-subtitle">Descripción:</h3>
+                      <p className="modal-description">
+                        {selectedItem.fullDescription || selectedItem.description}
+                      </p>
+                    </div>
+                    
+                    <div className="modal-section">
+                      <h3 className="modal-subtitle">Precio:</h3>
+                      <p className="modal-price">
+                        ${formatPrice(selectedItem.basePrice)}
+                      </p>
+                    </div>
+                    
+                    <button 
+                      className="action-btn"
+                      onClick={() => {
+                        if (needsCustomization(selectedItem.name)) {
+                          setIsCustomizing(true);
+                        } else {
+                          addToCart({
+                            product: selectedItem,
+                            customization: null,
+                            totalPrice: selectedItem.basePrice,
+                            timestamp: new Date().toISOString()
+                          });
                           closeModal();
-                          //selectedItem.isSpecial ? startCustomization : closeModal
-                        }}
-                      >
-                        {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
-                      </button>
-                    </div>
+                        }
+                      }}
+                    >
+                      {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
+                    </button>
                   </div>
-                ) : (
-                  <div className="customization-modal">
-                    <div className="customization-header">
-                      <h1 className="customization-main-title">
-                        Personaliza tu {selectedItem.name}
-                      </h1>
-                    </div>
-                    {renderCustomizationStep()}
+                </div>
+              ) : (
+                <div className="customization-modal">
+                  <div className="customization-header">
+                    <h1 className="customization-main-title">
+                      Personaliza tu {selectedItem.name}
+                    </h1>
                   </div>
-                )}
-              </div>
+                  
+                  {renderCustomizationStep()}
+
+                  <div className="step-actions mt-4">
+                    <button 
+                      className="action-btn"
+                      onClick={() => {
+                        if (needsCustomization(selectedItem.name)) {
+                          setIsCustomizing(true);
+                        } else {
+                          handleAddToCart();
+                        }
+                      }}
+                    >
+                      {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
+        )}
         </div>
       </div>
       <Footer/>

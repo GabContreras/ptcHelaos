@@ -1,11 +1,17 @@
-import React from 'react';
-import NavBar from '../components/NavBar';
+import React, { useState } from 'react';
 import Cart from "../components/Cart"
 import PaymentMethod from '../components/PaymentMethod';
 import '../styles/FinishOrder.css';
-import Button from '../assets/Button';
+import { useCart } from '../context/CartContext';
+import LocationPicker from "../components/LocationPicker";
 
 function FinishOrder() {
+
+    const { total } = useCart();
+
+    const envio = 2.0;
+    const totalFinal = total + envio;
+
   return (
     <>
     <div className="finishOrder">
@@ -17,33 +23,34 @@ function FinishOrder() {
             </div>
             <div className='orderDetails'>
                 <div className="direction">
-                    <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d7751.636619526111!2d-89.20199709999994!3d13.729447400000003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2ssv!4v1751664838209!5m2!1ses-419!2ssv" 
-                    allowFullScreen="" 
-                    loading="lazy" 
-                    referrerPolicy="no-referrer-when-downgrade">
-                    </iframe>
+                        
+                    <h2>Selecciona la dirección de entrega:</h2>
 
-                    <h4>Punto de referencia (opcional):</h4>
-                    <textarea
-                        rows={3}
-                        maxLength={300}
-                        placeholder="(Ejemplo:) Esquina de la plaza mayor, frente a la iglesia principal."
-                    ></textarea>
+                    <LocationPicker />
+                        
+                    <div className="details"> 
+                        <h4>Punto de referencia (opcional):</h4>
+                        <textarea
+                            rows={5}
+                            maxLength={300}
+                            placeholder="(Ejemplo:) Esquina de la plaza mayor, frente a la iglesia principal."
+                        ></textarea>
+                    </div>   
 
-                    <h4>Instrucciones de entrega (opcional):</h4>
-                    <textarea
-                        rows={3}
-                        maxLength={300}
-                        placeholder="(Ejemplo:) Entregar en la puerta principal, llamar al timbre y esperar."
-                    ></textarea>
+                    <div className="details">
+                        <h4>Instrucciones de entrega (opcional):</h4>
+                        <textarea
+                            rows={5}
+                            maxLength={300}
+                            placeholder="(Ejemplo:) Entregar en la puerta principal, llamar al timbre y esperar."
+                        ></textarea>
+                    </div>
                 </div>
                 <div className="total">
                     <PaymentMethod 
-                    subtotal="$ 30.50"
-                    envio="$ 02.00"
-                    descuento="$ 02.10"
-                    total="$ 27.40"
+                    subtotal={`$ ${total.toFixed(2)}`}
+                    envio={`$ ${envio.toFixed(2)}`}
+                    total={`$ ${totalFinal.toFixed(2)}`}
                     />
                 </div>
             </div>
