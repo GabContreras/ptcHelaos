@@ -63,7 +63,7 @@ app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/employees", validateAuthToken(['admin']), employeesRoutes);
 app.use("/api/customers", validateAuthToken(['admin', 'employee']), customersRoutes);
 app.use("/api/category", validateAuthToken(['admin', 'employee']), categoryRoutes);
-app.use("/api/inventory", validateAuthToken(['admin', 'employee']), inventoryRoutes);
+app.use("/api/inventory", inventoryRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/registerCustomer", registerCustomerRoutes);
