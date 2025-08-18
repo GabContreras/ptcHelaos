@@ -7,7 +7,7 @@ const router = express.Router();
 // Rutas para inventarios
 router.route('/')
     //Ruta para ver todos los inventarios existentes
-    .get(validateAuthToken(['admin', 'employee', 'customer']), inventoryController.getInventory)
+    .get(inventoryController.getInventory)
 
     //Ruta para crear un inventario nuevo (sin lotes inicialmente)
     .post(validateAuthToken(['admin', 'employee']), inventoryController.createInventory);
@@ -20,7 +20,7 @@ router.route('/batch')
 router.route('/:id')
     //Ruta para ver información de un inventario en específico
     //GET localhost:3333/api/inventory/12345
-    .get(validateAuthToken(['admin', 'employee', 'customer']), inventoryController.getInventoryById)
+    .get(inventoryController.getInventoryById)
     //Ruta para editar información de un inventario en específico
     //PUT localhost:3333/api/inventory/12345
     .put(validateAuthToken(['admin', 'employee']), inventoryController.updateInventory)
