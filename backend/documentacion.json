@@ -1,10 +1,11 @@
 {
   "openapi" : "3.0.0",
   "info" : {
-    "title" : "Moon Ice Cream API",
-    "description" : "API para el sistema de gestión de Moon Ice Cream",
+    "title" : "Moon Ice Cream Rolls API",
+    "description" : "Editar información de un evento",
     "contact" : {
-      "email" : "contact@moonicecream.com"
+      "email" : "noreply.moonsicecreamrolls@gmail.com",
+      "name" : ""
     },
     "license" : {
       "name" : "Apache 2.0",
@@ -18,10 +19,16 @@
   }, {
     "url" : "http://localhost:3333",
     "description" : "Development server"
+  }, {
+    "url" : "https://ptchelaos.onrender.com",
+    "description" : "API"
   } ],
   "tags" : [ {
     "name" : "Customers",
     "description" : "Operaciones relacionadas con clientes"
+  }, {
+    "name" : "Events",
+    "description" : "Operaciones relacionadas con eventos"
   }, {
     "name" : "Employees",
     "description" : "Operaciones relacionadas con empleados"
@@ -236,7 +243,7 @@
         }
       }
     },
-    "/api/categories" : {
+    "/api/category" : {
       "get" : {
         "tags" : [ "Categories" ],
         "summary" : "Obtener todas las categorías",
@@ -273,9 +280,10 @@
             "description" : "Bad Request"
           }
         }
-      }
+      },
+      "parameters" : [ ]
     },
-    "/api/categories/{id}" : {
+    "/api/category/{id}" : {
       "put" : {
         "tags" : [ "Categories" ],
         "summary" : "Actualizar categoría",
@@ -328,7 +336,15 @@
             "description" : "Bad Request"
           }
         }
-      }
+      },
+      "parameters" : [ {
+        "schema" : {
+          "type" : "string"
+        },
+        "name" : "id",
+        "in" : "path",
+        "required" : true
+      } ]
     },
     "/api/products" : {
       "get" : {
@@ -1022,7 +1038,7 @@
         }
       }
     },
-    "/api/petty-cash" : {
+    "/api/pettyCash" : {
       "get" : {
         "tags" : [ "PettyCash" ],
         "summary" : "Obtener movimientos de caja chica",
@@ -1059,7 +1075,8 @@
             "description" : "Bad Request"
           }
         }
-      }
+      },
+      "parameters" : [ ]
     },
     "/api/petty-cash/balance" : {
       "get" : {
@@ -1089,6 +1106,35 @@
           },
           "400" : {
             "description" : "Bad Request"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "email" : {
+                    "type" : "string",
+                    "x-stoplight" : {
+                      "id" : "yf6n7po88iivo"
+                    }
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "x-stoplight" : {
+                      "id" : "3gwi1htnrawlx"
+                    }
+                  },
+                  "" : {
+                    "type" : "string",
+                    "x-stoplight" : {
+                      "id" : "msn6aqq5qft4r"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1228,6 +1274,115 @@
             "description" : "Bad Request"
           }
         }
+      }
+    },
+    "/api/events" : {
+      "get" : {
+        "tags" : [ "Events" ],
+        "summary" : "Obtener todos los eventos",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          },
+          "404" : {
+            "description" : "Not Found"
+          },
+          "500" : {
+            "description" : "Internal Server Error"
+          }
+        },
+        "operationId" : "get-api-events"
+      },
+      "post" : {
+        "summary" : "Insertar un evento",
+        "tags" : [ "Events" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "201" : {
+            "description" : "Created"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          },
+          "500" : {
+            "description" : "Internal Server Error"
+          }
+        },
+        "operationId" : "post-api-events",
+        "parameters" : [ {
+          "schema" : {
+            "type" : "string"
+          },
+          "in" : "query"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Events"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/{id}" : {
+      "parameters" : [ {
+        "schema" : {
+          "type" : "string"
+        },
+        "name" : "id",
+        "in" : "path",
+        "required" : true
+      } ],
+      "put" : {
+        "summary" : "Actualizar información de un evento",
+        "tags" : [ "Events" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "description" : "Internal Server Error"
+          }
+        },
+        "operationId" : "put-api-events-id",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Events"
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Eliminar un evento",
+        "tags" : [ "Events" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "500" : {
+            "description" : "Internal Server Error"
+          }
+        },
+        "operationId" : "delete-api-events-id"
       }
     }
   },
@@ -1967,6 +2122,80 @@
                       "quantity" : null
                     }
                   }
+                }
+              }
+            }
+          }
+        },
+        "description" : ""
+      },
+      "Events" : {
+        "type" : "array",
+        "x-examples" : {
+          "Example 1" : [ {
+            "_id" : {
+              "$oid" : "689c28beb1d393f3279aa472"
+            },
+            "name" : "Día de la familia Ricaldone",
+            "date" : {
+              "$date" : "2025-08-16T14:00:00.000Z"
+            },
+            "address" : "Avenida Aguilares 218 San Salvador CP, San Salvador 1101",
+            "type" : "Evento escolar",
+            "isActive" : true,
+            "createdAt" : {
+              "$date" : "2025-08-13T05:55:10.830Z"
+            },
+            "updatedAt" : {
+              "$date" : "2025-08-13T05:55:10.830Z"
+            },
+            "__v" : 0
+          } ]
+        },
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "_id" : {
+              "type" : "object",
+              "properties" : {
+                "$oid" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "name" : {
+              "type" : "string"
+            },
+            "date" : {
+              "type" : "object",
+              "properties" : {
+                "$date" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "address" : {
+              "type" : "string"
+            },
+            "type" : {
+              "type" : "string"
+            },
+            "isActive" : {
+              "type" : "boolean"
+            },
+            "createdAt" : {
+              "type" : "object",
+              "properties" : {
+                "$date" : {
+                  "type" : "string"
+                }
+              }
+            },
+            "updatedAt" : {
+              "type" : "object",
+              "properties" : {
+                "$date" : {
+                  "type" : "string"
                 }
               }
             }
