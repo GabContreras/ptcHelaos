@@ -195,7 +195,7 @@ export const AuthProvider = ({ children }) => {
 
             // ✅ Verificar con el servidor si hay cookie
             if (cookieExists) {
-                fetch(`${SERVER_URL}auth/me`, {
+                fetch(`${SERVER_URL}login/auth/me`, {
                     credentials: "include",
                     headers: { "Content-Type": "application/json" }
                 })

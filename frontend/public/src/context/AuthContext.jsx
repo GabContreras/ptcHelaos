@@ -55,7 +55,8 @@ export const AuthProvider = ({ children }) => {
             console.log("Login exitoso Moon Ice Cream:", {
                 userType: data.userType,
                 userId: data.userId,
-                name: userData.name
+                name: userData.name,
+                cookieWillBeSet: true
             });
 
             return { success: true, message: data.message };
@@ -94,24 +95,15 @@ export const AuthProvider = ({ children }) => {
             ...(token && { 'Authorization': `Bearer ${token}` })
         };
     };
-
-    // Utilidad para fetch autenticado - adaptado para Moon Ice Cream
+    // Utilidad para fetch autenticado
     const authenticatedFetch = async (url, options = {}) => {
-        const token = authCokie || localStorage.getItem('authToken') ||
-            document.cookie.split('; ').find(row => row.startsWith('authToken='))?.split('=')[1];
-
-        // Detectar si se está enviando FormData
         const isFormData = options.body instanceof FormData;
 
         const config = {
             ...options,
             credentials: 'include',
             headers: {
-                // Solo agregar Content-Type si NO es FormData
                 ...(!isFormData && { 'Content-Type': 'application/json' }),
-                // Siempre agregar Authorization si hay token
-                ...(token && { 'Authorization': `Bearer ${token}` }),
-                // Mantener headers adicionales
                 ...options.headers
             }
         };
@@ -136,36 +128,18 @@ export const AuthProvider = ({ children }) => {
     const isAuthenticated = !!(user && authCokie);
 
     // Verificar si el usuario tiene un rol específico
-    const hasRole = (role) => {
-        return user?.userType === role;
-    };
-
-    // Verificar si el usuario tiene alguno de los roles permitidos
-    const hasAnyRole = (roles) => {
-        return roles.includes(user?.userType);
-    };
-
-    // Verificar si es empleado (puede acceder al dashboard)
-    const isEmployee = () => {
-        return user?.userType === 'employee';
-    };
-
-    // Verificar si es admin
-    const isAdmin = () => {
-        return user?.userType === 'admin';
-    };
-
-    // Verificar si es customer
-    const isCustomer = () => {
-        return user?.userType === 'customer';
-    };
+    const hasRole = (role) => user?.userType === role;
+    const hasAnyRole = (roles) => roles.includes(user?.userType);
+    const isCustomer = () => user?.userType === 'customer';
+    const isEmployee = () => user?.userType === 'employee';
+    const isAdmin = () => user?.userType === 'admin';
 
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         const savedUser = localStorage.getItem("user");
         const cookieExists = checkAuthTokenCookie();
 
-        console.log("useEffect - Checking stored auth for Moon Ice Cream:", { 
+        console.log("🔄 useEffect - Checking stored auth for Moon Ice Cream:", { 
             hasToken: !!token, 
             hasSavedUser: !!savedUser, 
             cookieExists: !!cookieExists 
@@ -185,11 +159,11 @@ export const AuthProvider = ({ children }) => {
                 
                 // Solo redirigir si no estamos en rutas públicas
                 const currentPath = window.location.pathname;
-                const publicPaths = ['/', '/login', '/register', '/recuperacion', '/recuperacioncodigo', '/cambiarpassword', '/LoginPage', '/RegistroPage', '/PasswordRecovery'];
+                const publicPaths = ['/', '/LoginPage', '/RegistroPage', '/PasswordRecovery', '/recuperacioncodigo', '/cambiarpassword'];
                 
                 if (!publicPaths.includes(currentPath)) {
-                    console.log("Redirigiendo al login...");
-                    window.location.href = '/LoginPage';
+                    console.log("🔄 Redirigiendo al login...");
+                    window.location.href = '/login';
                 }
                 setIsLoading(false);
                 return;
@@ -214,7 +188,7 @@ export const AuthProvider = ({ children }) => {
 
             // ✅ Verificar con el servidor si hay cookie
             if (cookieExists) {
-                fetch(`${SERVER_URL}auth/me`, {
+                fetch(`${SERVER_URL}login/auth/me`, {
                     credentials: "include",
                     headers: { "Content-Type": "application/json" }
                 })
@@ -259,6 +233,7 @@ export const AuthProvider = ({ children }) => {
             setIsLoading(false);
         }
     }, []);
+   
 
     return (
         <AuthContext.Provider
