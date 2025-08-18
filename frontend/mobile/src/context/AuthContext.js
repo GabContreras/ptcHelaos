@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { config } from '../../config';
 
 const SERVER_URL = config.api.API_BASE;
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
