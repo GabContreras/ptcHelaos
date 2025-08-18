@@ -16,7 +16,6 @@ function UserAccount() {
   //const [newPassword, setNewPassword] = useState("");
   //const [confirmPassword, setConfirmPassword] = useState("");
 
-
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
@@ -24,7 +23,7 @@ function UserAccount() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // 🔥 manda solo los campos que realmente existen en tu modelo
+      // manda solo los campos que permitira actualizar
       const updatedProfile = {
         name: profile.name,
         birthday: profile.birthday,
@@ -32,10 +31,10 @@ function UserAccount() {
       };
 
       await updateUserProfile(updatedProfile);
-      alert("✅ Perfil actualizado con éxito");
+      alert("Perfil actualizado con éxito");
     } catch (err) {
       console.error("Error al actualizar perfil", err);
-      alert("❌ Error al actualizar perfil");
+      alert("Error al actualizar perfil");
     }
   };
 
@@ -48,6 +47,7 @@ function UserAccount() {
         {isLoading && <p>Cargando...</p>}
         {error && <p style={{color:"red"}}>{error}</p>}
 
+        {/* NO SE PODRA ACTUALIZAR LA CONTRASENA DESDE PERFIL */}
         {/*{isPasswordModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -82,21 +82,54 @@ function UserAccount() {
       )}*/}
 
 
+        {/* CAMPOS DE INFORMACION DE LA CUENTA */}
         <section>
           <h3 className="section-title">Información Personal</h3>
           <form onSubmit={handleSubmit} className="account-form">
             <label>Nombre:</label>
             <input type="text" name="name" value={profile.name || ''} onChange={handleChange} />
 
+            {/* correo electronico desshabilitado para actualizar */}
             <label>Correo Electrónico:</label>
             <input type="email" name="email" value={profile.email || ''}disabled/>
 
-            <label>Fecha de nacimiento:</label>
-            <input type="text" name="birthday" value={profile.birthday || ''} onChange={handleChange} />
+            {/* fecha de nacimiento con formato mas comodo */}
+            <div className="form-group-1">
+            <label className="form-label">Fecha de nacimiento:</label>
+            <input
+              type="date"
+              name="birthday"
+              value={profile.birthday ? profile.birthday.split("T")[0] : ""}
+              onChange={handleChange}
+              className="form-input date-input"
+              max={(() => {
+                const today = new Date();
+                const maxDate = new Date(today.getFullYear() - 15, today.getMonth(), today.getDate());
+                return maxDate.toISOString().split("T")[0];
+              })()}
+              min={(() => {
+                // Fecha mínima de hace 100 años
+                const today = new Date();
+                const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
+                return minDate.toISOString().split("T")[0];
+              })()}
+            />
+            <small className="date-help-text">
+              Debes tener al menos 15 años para registrarte
+            </small>
+          </div>
+
 
             <label>Número de teléfono:</label>
-            <input type="text" name="phone" value={profile.phone || ''} onChange={handleChange} />
+            <input 
+            type="text" 
+            name="phone" 
+            minLength={8}
+            maxLength={9}
+            value={profile.phone || ''} 
+            onChange={handleChange} />
 
+            {/* contraseña deshabilitada para actualizar (o ver) */} 
             <label>Contraseña:</label>
             <div className="password-input-container">
               <input type='password' name="password" placeholder='*********' disabled/>
@@ -109,10 +142,12 @@ function UserAccount() {
               </button>*/}
 
             </div>
+            {/* ejecuta la actualizacion al enviar el formulario */}
             <button type="submit">Actualizar Datos</button>
           </form>
         </section>
 
+        {/*
         <section>
           <h3 className="section-title">Direcciones de Envío</h3>
           <div className="direccion-box">
@@ -162,7 +197,10 @@ function UserAccount() {
             </tbody>
             </table>
         </section>
+        */}
+
         </div>
+        
         <Footer />
     </>
   );
