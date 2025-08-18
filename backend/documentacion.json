@@ -17,7 +17,7 @@
     "description" : "SwaggerHub API Auto Mocking",
     "url" : "https://virtserver.swaggerhub.com/ricaldone-8ee/MoonsIceCreamRolls/1.0.0"
   }, {
-    "url" : "http://localhost:3333",
+    "url" : "http://localhost:4000",
     "description" : "Development server"
   }, {
     "url" : "https://ptchelaos.onrender.com",
@@ -688,6 +688,42 @@
           "400" : {
             "description" : "Bad Request"
           }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "operationType" : {
+                    "x-stoplight" : {
+                      "id" : "j5mw5lroyqpk9"
+                    },
+                    "enum" : [ "entrada", "salida", "daño", "vencido" ]
+                  },
+                  "reason" : {
+                    "type" : "string",
+                    "x-stoplight" : {
+                      "id" : "93kncqohlx7bl"
+                    }
+                  },
+                  "employeeId" : {
+                    "type" : "string",
+                    "x-stoplight" : {
+                      "id" : "ez7ogeaaptb3g"
+                    }
+                  },
+                  "quantity" : {
+                    "type" : "number",
+                    "x-stoplight" : {
+                      "id" : "rxyfgoewf9fh4"
+                    },
+                    "minimum" : 1
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -924,6 +960,23 @@
           "400" : {
             "description" : "Bad Request"
           }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "orderStatus" : {
+                    "x-stoplight" : {
+                      "id" : "o2zcoeku2p6uj"
+                    },
+                    "enum" : [ "pendiente", "en preparación", "en camino", "entregado", "cancelado" ]
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -948,6 +1001,23 @@
           "400" : {
             "description" : "Bad Request"
           }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "paymentStatus" : {
+                    "x-stoplight" : {
+                      "id" : "oyd0bdhc74vt7"
+                    },
+                    "enum" : [ "pagado", "pendiente", "rechazado", "reembolsado", "cancelado" ]
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -971,6 +1041,33 @@
           },
           "400" : {
             "description" : "Bad Request"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "reviewId" : {
+                    "type" : "object",
+                    "x-stoplight" : {
+                      "id" : "yr5s759vto8de"
+                    },
+                    "default" : "686b5e119dc6c8d7884d08b5",
+                    "properties" : {
+                      "$oid" : {
+                        "type" : "string",
+                        "x-stoplight" : {
+                          "id" : "17hmq3tx9q90g"
+                        },
+                        "example" : "686b5e119dc6c8d7884d08b5"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1078,7 +1175,7 @@
       },
       "parameters" : [ ]
     },
-    "/api/petty-cash/balance" : {
+    "/api/pettyCash/balance" : {
       "get" : {
         "tags" : [ "PettyCash" ],
         "summary" : "Obtener balance actual",
@@ -1092,7 +1189,8 @@
             "description" : "Bad Request"
           }
         }
-      }
+      },
+      "parameters" : [ ]
     },
     "/api/login" : {
       "post" : {
@@ -1124,12 +1222,6 @@
                     "type" : "string",
                     "x-stoplight" : {
                       "id" : "3gwi1htnrawlx"
-                    }
-                  },
-                  "" : {
-                    "type" : "string",
-                    "x-stoplight" : {
-                      "id" : "msn6aqq5qft4r"
                     }
                   }
                 }
@@ -1196,6 +1288,41 @@
         }
       }
     },
+    "/api/passwordRecovery/requestCode" : {
+      "post" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Solicitar código de recuperación",
+        "description" : "Envía un código de recuperación al email del usuario",
+        "operationId" : "post-api-password-recovery-requestCode",
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "400" : {
+            "description" : "Bad Request"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "email" : {
+                    "type" : "string",
+                    "x-stoplight" : {
+                      "id" : "cfejkk4l8xfaf"
+                    },
+                    "example" : "moonsicecream@gmail.com"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters" : [ ]
+    },
     "/api/register/verify" : {
       "post" : {
         "tags" : [ "Authentication" ],
@@ -1209,26 +1336,28 @@
           "400" : {
             "description" : "Bad Request"
           }
-        }
-      }
-    },
-    "/api/password-recovery/requestCode" : {
-      "post" : {
-        "tags" : [ "Authentication" ],
-        "summary" : "Solicitar código de recuperación",
-        "description" : "Envía un código de recuperación al email del usuario",
-        "operationId" : "post-api-password-recovery-requestCode",
-        "responses" : {
-          "200" : {
-            "description" : "OK"
-          },
-          "400" : {
-            "description" : "Bad Request"
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "code" : {
+                    "type" : "number",
+                    "x-stoplight" : {
+                      "id" : "e3kvdny2u1mkj"
+                    },
+                    "example" : 23654
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
-    "/api/password-recovery/verifyCode" : {
+    "/api/passwordRecovery/verifyCode" : {
       "post" : {
         "tags" : [ "Authentication" ],
         "summary" : "Verificar código de recuperación",
@@ -1242,9 +1371,10 @@
             "description" : "Bad Request"
           }
         }
-      }
+      },
+      "parameters" : [ ]
     },
-    "/api/password-recovery/getTokenInfo" : {
+    "/api/passwordRecovery/getTokenInfo" : {
       "get" : {
         "tags" : [ "Authentication" ],
         "summary" : "Obtener información del token",
@@ -1258,9 +1388,10 @@
             "description" : "Bad Request"
           }
         }
-      }
+      },
+      "parameters" : [ ]
     },
-    "/api/password-recovery/resetPassword" : {
+    "/api/passwordRecovery/resetPassword" : {
       "post" : {
         "tags" : [ "Authentication" ],
         "summary" : "Restablecer contraseña",
@@ -1273,8 +1404,26 @@
           "400" : {
             "description" : "Bad Request"
           }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "password" : {
+                    "type" : "string",
+                    "x-stoplight" : {
+                      "id" : "zoux2wrdb4did"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-      }
+      },
+      "parameters" : [ ]
     },
     "/api/events" : {
       "get" : {
@@ -1450,8 +1599,24 @@
           "isVerified" : {
             "type" : "boolean",
             "default" : false
+          },
+          "loginAttempts" : {
+            "type" : "number",
+            "x-stoplight" : {
+              "id" : "omof2tj49kv87"
+            },
+            "minimum" : 0,
+            "maximum" : 5
+          },
+          "lockTime" : {
+            "type" : "string",
+            "x-stoplight" : {
+              "id" : "2h7q4kj570r60"
+            },
+            "nullable" : true
           }
-        }
+        },
+        "description" : ""
       },
       "Employee" : {
         "type" : "object",
@@ -1508,8 +1673,25 @@
           },
           "dui" : {
             "type" : "string"
+          },
+          "loginAttempts" : {
+            "type" : "number",
+            "x-stoplight" : {
+              "id" : "o6viz2byk23v0"
+            },
+            "default" : 0,
+            "minimum" : 0,
+            "maximum" : 5
+          },
+          "lockTime" : {
+            "type" : "string",
+            "x-stoplight" : {
+              "id" : "9eert619a0tfh"
+            },
+            "nullable" : true
           }
-        }
+        },
+        "description" : ""
       },
       "Category" : {
         "type" : "object",
@@ -1895,239 +2077,234 @@
         }
       },
       "Inventory" : {
-        "type" : "array",
+        "type" : "object",
         "x-examples" : {
-          "Example 1" : [ {
+          "Example 1" : {
             "_id" : {
-              "$oid" : "686760093d3a4de871b903cb"
+              "$oid" : "68a247d8ffb4ada5f3708595"
             },
-            "name" : "Leche entera",
+            "name" : "Oreo",
             "categoryId" : {
-              "$oid" : "686754b342c12a05bc091831"
+              "$oid" : "689e9aa8186699139d154e4e"
             },
-            "supplier" : "Lacteos SA",
-            "unitType" : "litros",
+            "supplier" : "Oreo",
+            "extraPrice" : 0,
+            "unitType" : "gramos",
+            "description" : "Galleta Oreo",
             "batchId" : [ {
-              "$oid" : "686760843d3a4de871b903d9"
+              "$oid" : "68a340a9f465fb048669b767"
             } ],
-            "currentStock" : 80,
+            "currentStock" : 10,
+            "isActive" : true,
             "createdAt" : {
-              "$date" : "2025-07-04T05:00:57.653Z"
+              "$date" : "2025-08-17T21:21:28.323Z"
             },
             "updatedAt" : {
-              "$date" : "2025-07-07T01:51:28.077Z"
-            },
-            "__v" : 3,
-            "extraPrice" : 0
-          } ]
+              "$date" : "2025-08-18T15:03:05.385Z"
+            }
+          }
         },
-        "items" : {
-          "type" : "object",
-          "required" : [ "name", "categoryId", "unitType" ],
-          "properties" : {
-            "_id" : {
+        "required" : [ "categoryId", "unitType", "batchId", "currentStock" ],
+        "properties" : {
+          "_id" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "categoryId" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
+              }
+            }
+          },
+          "supplier" : {
+            "type" : "string"
+          },
+          "extraPrice" : {
+            "type" : "number",
+            "minimum" : 0
+          },
+          "unitType" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "batchId" : {
+            "type" : "array",
+            "items" : {
               "type" : "object",
               "properties" : {
                 "$oid" : {
                   "type" : "string"
                 }
               }
-            },
-            "name" : {
-              "type" : "string"
-            },
-            "categoryId" : {
-              "type" : "object",
-              "description" : "Categoría a la que pertenece, \"materia prima\", \"topping\", etc.",
-              "properties" : {
-                "$oid" : {
-                  "type" : "string"
-                }
+            }
+          },
+          "currentStock" : {
+            "type" : "number"
+          },
+          "isActive" : {
+            "type" : "boolean"
+          },
+          "createdAt" : {
+            "type" : "object",
+            "properties" : {
+              "$date" : {
+                "type" : "string"
               }
-            },
-            "supplier" : {
-              "type" : "string",
-              "description" : "Quién lo proporciona o dónde fue comprado"
-            },
-            "unitType" : {
-              "type" : "string",
-              "enum" : [ "kilogramos", "kilos", "unidades", "litros", "libras", "gramos" ]
-            },
-            "batchId" : {
-              "type" : "array",
-              "description" : "Id de los lotes de este inventario en específico",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "$oid" : {
-                    "type" : "string"
-                  }
-                }
+            }
+          },
+          "updatedAt" : {
+            "type" : "object",
+            "properties" : {
+              "$date" : {
+                "type" : "string"
               }
-            },
-            "currentStock" : {
-              "type" : "number",
-              "description" : "Se calcula automáticamente",
-              "minimum" : 0
-            },
-            "extraPrice" : {
-              "type" : "number",
-              "minimum" : 0.25,
-              "description" : "En caso de ser toppings u otros extras"
             }
           }
         }
       },
       "Batches" : {
-        "type" : "array",
+        "type" : "object",
         "x-examples" : {
-          "Example 1" : [ {
+          "Example 1" : {
             "_id" : {
-              "$oid" : "686760843d3a4de871b903d9"
+              "$oid" : "68a340a9f465fb048669b767"
             },
-            "quantity" : 80,
+            "quantity" : 10,
             "expirationDate" : {
-              "$date" : "2024-12-31T00:00:00.000Z"
+              "$date" : "2025-08-23T18:00:00.000Z"
             },
             "purchaseDate" : {
-              "$date" : "2024-07-03T00:00:00.000Z"
+              "$date" : "2025-08-18T18:00:00.000Z"
             },
             "status" : "En uso",
-            "notes" : "Lote de leche fresca",
+            "lostInventory" : 0,
+            "batchIdentifier" : "ORE-293852920",
             "movements" : [ {
               "type" : "entrada",
-              "quantity" : 100,
-              "reason" : "Nuevo stock",
-              "employeeId" : {
-                "$oid" : "68675c7d1b9bfc67bd494213"
-              },
-              "_id" : {
-                "$oid" : "686760843d3a4de871b903da"
-              },
-              "date" : {
-                "$date" : "2025-07-04T05:03:00.307Z"
-              }
-            }, {
-              "type" : "salida",
               "quantity" : 10,
-              "reason" : "Venta mostrador",
-              "employeeId" : {
-                "$oid" : "68675c7d1b9bfc67bd494213"
-              },
+              "reason" : "Lote inicial",
+              "employeeId" : "68675c7d1b9bfc67bd494213",
               "_id" : {
-                "$oid" : "6868756a1036eb649471f745"
+                "$oid" : "68a340a9f465fb048669b768"
               },
               "date" : {
-                "$date" : "2025-07-05T00:44:26.590Z"
+                "$date" : "2025-08-18T15:03:05.295Z"
               }
             } ],
             "createdAt" : {
-              "$date" : "2025-07-04T05:03:00.308Z"
+              "$date" : "2025-08-18T15:03:05.299Z"
             },
             "updatedAt" : {
-              "$date" : "2025-07-07T01:51:28.001Z"
-            },
-            "__v" : 5
-          } ]
+              "$date" : "2025-08-18T15:03:05.299Z"
+            }
+          }
         },
-        "items" : {
-          "type" : "object",
-          "required" : [ "quantity", "expirationDate", "purchaseDate", "status" ],
-          "properties" : {
-            "_id" : {
-              "type" : "object",
-              "properties" : {
-                "$oid" : {
-                  "type" : "string"
-                }
+        "required" : [ "quantity", "batchIdentifier", "movements" ],
+        "properties" : {
+          "_id" : {
+            "type" : "object",
+            "properties" : {
+              "$oid" : {
+                "type" : "string"
               }
-            },
-            "quantity" : {
-              "type" : "number",
-              "minimum" : 1,
-              "description" : "Cantidad (ya sean kilogramos, kilos, etc)"
-            },
-            "expirationDate" : {
-              "type" : "object",
-              "properties" : {
-                "$date" : {
-                  "type" : "string"
-                }
+            }
+          },
+          "quantity" : {
+            "type" : "number",
+            "minimum" : 0
+          },
+          "expirationDate" : {
+            "type" : "object",
+            "properties" : {
+              "$date" : {
+                "type" : "string"
               }
-            },
-            "purchaseDate" : {
-              "type" : "object",
-              "properties" : {
-                "$date" : {
-                  "type" : "string"
-                }
+            }
+          },
+          "purchaseDate" : {
+            "type" : "object",
+            "properties" : {
+              "$date" : {
+                "type" : "string"
               }
-            },
-            "status" : {
-              "type" : "string",
-              "enum" : [ "En uso", "Agotado", "Vencido", "Dañado" ],
-              "default" : "En uso"
-            },
-            "notes" : {
-              "type" : "string",
-              "description" : "Razón de movimiento, no es obligatorio",
-              "nullable" : true
-            },
-            "movements" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "required" : [ "type", "quantity", "reason", "employeeId", "date" ],
-                "properties" : {
-                  "type" : {
-                    "type" : "string",
-                    "enum" : [ "daño", "salida", "entrada" ]
-                  },
-                  "quantity" : {
-                    "type" : "number",
-                    "minimum" : 1
-                  },
-                  "reason" : {
-                    "type" : "string"
-                  },
-                  "employeeId" : {
-                    "type" : "string",
-                    "description" : "La página lo toma automáticamente"
-                  },
-                  "date" : {
-                    "type" : "object",
-                    "description" : "Toma la fecha del sistema",
-                    "required" : [ "$date" ],
-                    "properties" : {
-                      "$date" : {
-                        "type" : "string"
-                      }
+            }
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "lostInventory" : {
+            "type" : "number",
+            "minimum" : 0
+          },
+          "batchIdentifier" : {
+            "type" : "string"
+          },
+          "movements" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "required" : [ "type", "quantity", "reason", "employeeId", "date" ],
+              "properties" : {
+                "type" : {
+                  "type" : "string"
+                },
+                "quantity" : {
+                  "type" : "number",
+                  "minimum" : 1
+                },
+                "reason" : {
+                  "type" : "string"
+                },
+                "employeeId" : {
+                  "type" : "string"
+                },
+                "_id" : {
+                  "type" : "object",
+                  "properties" : {
+                    "$oid" : {
+                      "type" : "string"
                     }
                   }
                 },
-                "toppings" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "object",
-                    "required" : [ "ingredientId", "quantity" ],
-                    "properties" : {
-                      "ingredientId" : {
-                        "type" : "object",
-                        "properties" : {
-                          "$oid" : {
-                            "type" : "string"
-                          }
-                        }
-                      },
-                      "quantity" : null
+                "date" : {
+                  "type" : "object",
+                  "properties" : {
+                    "$date" : {
+                      "type" : "string"
                     }
                   }
                 }
               }
             }
+          },
+          "createdAt" : {
+            "type" : "object",
+            "properties" : {
+              "$date" : {
+                "type" : "string"
+              }
+            }
+          },
+          "updatedAt" : {
+            "type" : "object",
+            "properties" : {
+              "$date" : {
+                "type" : "string"
+              }
+            }
           }
-        },
-        "description" : ""
+        }
       },
       "Events" : {
         "type" : "array",
