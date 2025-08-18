@@ -6,92 +6,151 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
+  Alert,
+  ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext';
 
 const ProfileScreen = () => {
-  const navigation = useNavigation();
+  const { user, logout, isLoading } = useAuth();
 
-  const handleChangePassword = () => {
-    // Navegar a la pantalla de cambiar contraseña
-    navigation.navigate('ForgotPassword1');
+  // Función para obtener el nombre a mostrar
+  const getDisplayName = () => {
+    if (!user) return 'Usuario';
+
+    if (user.name && user.name !== user.email) return user.name;
+
+    if (user.email) {
+      const emailName = user.email.split('@')[0];
+      return emailName
+        .replace(/[._-]/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    return 'Usuario';
   };
 
   const handleLogout = () => {
-    // Navegar a la pantalla de bienvenida
-    navigation.navigate('Welcome');
+    Alert.alert(
+      "Cerrar Sesión",
+      "¿Estás seguro de que quieres cerrar sesión?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Cerrar Sesión",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await logout();
+              // La navegación será automática por el cambio de authToken
+            } catch (error) {
+              console.error('Error durante el logout:', error);
+              Alert.alert('Error', 'Hubo un problema al cerrar sesión');
+            }
+          }
+        }
+      ]
+    );
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#8D6CFF" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#8D6CFF" />
+          <Text style={styles.loadingText}>Cargando perfil...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#8D6CFF" />
       
-      {/* Header with Profile */}
-      <LinearGradient
-        colors={['#8D6CFF', '#B9B8FF']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.header}
-      >
-        <View style={styles.profileIconLarge}>
-          <Ionicons name="person-circle-outline" size={80} color="#FFFFFF" />
-        </View>
-        
-        <Text style={styles.profileName}>NombreCuenta</Text>
-        
-        <View style={styles.profileDetails}>
-          <Text style={styles.profileDetail}>Se creó en: XX/XX/XX</Text>
-          <Text style={styles.profileDetail}>Hace: XXX D/M/Y</Text>
-        </View>
-      </LinearGradient>
-
-      {/* Profile Information */}
-      <View style={styles.content}>
-        <View style={styles.infoSection}>
-          <Text style={styles.infoLabel}>Correo:</Text>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoValue}>moonsicecream@gmail.com</Text>
-            <TouchableOpacity style={styles.changeButton}>
-              <Text style={styles.changeButtonText}>Cambiar correo</Text>
-              <Ionicons name="chevron-forward" size={16} color="#8D6CFF" />
-            </TouchableOpacity>
+      <ScrollView style={styles.scrollView}>
+        {/* Header with Profile */}
+        <LinearGradient
+          colors={['#8D6CFF', '#B9B8FF']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.header}
+        >
+          <View style={styles.profileIconLarge}>
+            <Ionicons name="person-circle-outline" size={80} color="#FFFFFF" />
           </View>
-        </View>
-
-        <View style={styles.infoSection}>
-          <Text style={styles.infoLabel}>Número de teléfono:</Text>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoValue}>111-1111</Text>
-            <TouchableOpacity style={styles.changeButton}>
-              <Text style={styles.changeButtonText}>Cambiar número</Text>
-              <Ionicons name="chevron-forward" size={16} color="#8D6CFF" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={handleChangePassword}
-          >
-            <Text style={styles.actionButtonText}>Cambiar Contraseña</Text>
-            <Ionicons name="chevron-forward" size={20} color="#8D6CFF" />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.logoutButton]}
-            onPress={handleLogout}
-          >
-            <Text style={[styles.actionButtonText, styles.logoutButtonText]}>
-              Cerrar Sesión
+          
+          <Text style={styles.profileName}>{getDisplayName()}</Text>
+          
+          <View style={styles.profileDetails}>
+            <Text style={styles.profileDetail}>
+              Rol: {user?.userType === 'admin' ? 'Administrador' : 'Empleado'}
             </Text>
-            <Ionicons name="log-out-outline" size={20} color="#FF4757" />
-          </TouchableOpacity>
+            <Text style={styles.profileDetail}>
+              Email: {user?.email || 'No disponible'}
+            </Text>
+          </View>
+        </LinearGradient>
+
+        {/* Profile Information */}
+        <View style={styles.content}>
+          <View style={styles.infoSection}>
+            <Text style={styles.infoLabel}>Información del Usuario:</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoValue}>
+                Tipo: {user?.userType === 'admin' ? 'Administrador' : 'Empleado'}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.infoSection}>
+            <Text style={styles.infoLabel}>Correo:</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoValue}>
+                {user?.email || 'No disponible'}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.infoSection}>
+            <Text style={styles.infoLabel}>ID de Usuario:</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoValue}>
+                {user?.id || 'No disponible'}
+              </Text>
+            </View>
+          </View>
+
+          {/* Action Buttons */}
+          <View style={styles.actionsContainer}>
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.logoutButton]}
+              onPress={handleLogout}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FF4757" />
+              ) : (
+                <>
+                  <Text style={[styles.actionButtonText, styles.logoutButtonText]}>
+                    Cerrar Sesión
+                  </Text>
+                  <Ionicons name="log-out-outline" size={20} color="#FF4757" />
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -100,6 +159,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#8D6CFF',
   },
   header: {
     paddingHorizontal: 20,
@@ -117,6 +189,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 15,
+    textAlign: 'center',
   },
   profileDetails: {
     alignItems: 'center',
@@ -126,6 +199,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     opacity: 0.9,
     marginVertical: 2,
+    textAlign: 'center',
   },
   content: {
     flex: 1,
@@ -141,9 +215,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     padding: 15,
     borderRadius: 12,
@@ -159,17 +230,6 @@ const styles = StyleSheet.create({
   infoValue: {
     fontSize: 16,
     color: '#666666',
-    flex: 1,
-  },
-  changeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  changeButtonText: {
-    fontSize: 14,
-    color: '#8D6CFF',
-    fontWeight: '500',
-    marginRight: 5,
   },
   actionsContainer: {
     marginTop: 30,
