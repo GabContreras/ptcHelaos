@@ -65,7 +65,10 @@ export function useUserProfile(userId) {
       setIsLoading(true);
       setError("");
 
-      const response = await fetch(`${API_BASE}profile/${userId}`, {
+      const userIdToUpdate = profile?._id || profile?.id;  
+        console.log("PUT con ID:", userIdToUpdate);
+
+      const response = await fetch(`${API_BASE}profile/${userIdToUpdate}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -79,6 +82,8 @@ export function useUserProfile(userId) {
       }
 
       const result = await response.json();
+        console.log("PUT response:", result);
+
       setProfile(result);
       return result;
     } catch (err) {
@@ -86,7 +91,7 @@ export function useUserProfile(userId) {
       setError("No se pudo actualizar el perfil. " + err.message);
       throw err;
     } finally {
-      setIsLoading(false);
+      fetchUserProfile();
     }
   };
 

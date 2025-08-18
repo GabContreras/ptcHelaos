@@ -86,9 +86,11 @@ function LocationPicker({ onLocationChange }) { // Asegurar que recibe la prop
 
   const handleSave = async () => {
     if (position) {
-      await fetchAddress(position.lat, position.lng);
-    }
-    setIsOpen(false);
+    // Guardar coordenadas en localStorage
+    localStorage.setItem("customerLocation", JSON.stringify(position));
+    fetchAddress(position.lat, position.lng);
+  }
+  setIsOpen(false);
   };
 
   // Función para limpiar la ubicación seleccionada
