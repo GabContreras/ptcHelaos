@@ -1,71 +1,132 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import '../styles/UserAccount.css';
+import { Eye, EyeOff } from 'lucide-react';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
-import { FaEdit } from 'react-icons/fa'; // Instala con npm install react-icons
+import { FaEdit } from 'react-icons/fa';
+import { useUserProfile } from '../hooks/AccountHook/useAccount';
+import { useAuth } from '../context/AuthContext';
 
 function UserAccount() {
-  const [datos, setDatos] = useState({
-    nombre: 'Kevin Fernando Portillo Avelar',
-    email: 'kevinPortillo@gmail.com',
-    telefono: '7000-6000',
-    password: '',
-    direccionCasa: '123 Maple Street, Anytown, CA 91234',
-    direccionTrabajo: '456 Oak Avenue, Anytown, CA 91234',
-    fechaNacimiento: '08/03/2007'
-  });
+  //const [showPassword, setShowPassword] = useState(false);
+  const { user } = useAuth();
+  const userId = user?.id;
+  const { profile, setProfile, updateUserProfile, isLoading, error } = useUserProfile(userId);
+  //const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  //const [newPassword, setNewPassword] = useState("");
+  //const [confirmPassword, setConfirmPassword] = useState("");
+
 
   const handleChange = (e) => {
-    setDatos({ ...datos, [e.target.name]: e.target.value });
+    setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Datos actualizados:', datos);
+    try {
+      // 🔥 manda solo los campos que realmente existen en tu modelo
+      const updatedProfile = {
+        name: profile.name,
+        birthday: profile.birthday,
+        phone: profile.phone,
+      };
+
+      await updateUserProfile(updatedProfile);
+      alert("✅ Perfil actualizado con éxito");
+    } catch (err) {
+      console.error("Error al actualizar perfil", err);
+      alert("❌ Error al actualizar perfil");
+    }
   };
 
   return (
     <>
-    <NavBar/>
-        <div className="account-container">
+      <NavBar/>
+      <div className="account-container">
         <h2 className="account-title">Cuenta</h2>
 
+        {isLoading && <p>Cargando...</p>}
+        {error && <p style={{color:"red"}}>{error}</p>}
+
+        {/*{isPasswordModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Cambiar contraseña</h3>
+            <label>Nueva contraseña:</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+
+            <label>Confirmar contraseña:</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+
+            <div className="modal-actions">
+              <button onClick={() => setIsPasswordModalOpen(false)}>Cancelar</button>
+              <button onClick={() => {
+                handlePasswordUpdate(newPassword, confirmPassword);
+                setIsPasswordModalOpen(false);
+                setNewPassword("");
+                setConfirmPassword("");
+                }}>
+                  Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}*/}
+
+
         <section>
-            <h3 className="section-title">Información Personal</h3>
-            <form onSubmit={handleSubmit} className="account-form">
+          <h3 className="section-title">Información Personal</h3>
+          <form onSubmit={handleSubmit} className="account-form">
             <label>Nombre:</label>
-            <input type="text" name="nombre" value={datos.nombre} onChange={handleChange} />
+            <input type="text" name="name" value={profile.name || ''} onChange={handleChange} />
 
             <label>Correo Electrónico:</label>
-            <input type="email" name="email" value={datos.email} onChange={handleChange} />
+            <input type="email" name="email" value={profile.email || ''}disabled/>
 
             <label>Fecha de nacimiento:</label>
-            <input type="text" name="fechaNacimiento" value={datos.fechaNacimiento} onChange={handleChange} />
+            <input type="text" name="birthday" value={profile.birthday || ''} onChange={handleChange} />
 
             <label>Número de teléfono:</label>
-            <input type="text" name="telefono" value={datos.telefono} onChange={handleChange} />
+            <input type="text" name="phone" value={profile.phone || ''} onChange={handleChange} />
 
             <label>Contraseña:</label>
-            <input type="password" name="password" value={datos.password} onChange={handleChange} />
+            <div className="password-input-container">
+              <input type='password' name="password" placeholder='*********' disabled/>
+              {/*<button
+                type="button"
+                className="password-toggle-1"
+                onClick={() => setIsPasswordModalOpen(true)}
+              >
+                Cambiar contraseña
+              </button>*/}
 
+            </div>
             <button type="submit">Actualizar Datos</button>
-            </form>
+          </form>
         </section>
 
         <section>
-            <h3 className="section-title">Direcciones de Envío</h3>
-            <div className="direccion-box">
+          <h3 className="section-title">Direcciones de Envío</h3>
+          <div className="direccion-box">
             <div className="direccion-item">
-                <strong>Casa</strong>
-                <p>{datos.direccionCasa}</p>
-                <FaEdit className="edit-icon" />
+              <strong>Casa</strong>
+              <p>{profile.direccionCasa}</p>
+              <FaEdit className="edit-icon" />
             </div>
             <div className="direccion-item">
-                <strong>Trabajo</strong>
-                <p>{datos.direccionTrabajo}</p>
-                <FaEdit className="edit-icon" />
+              <strong>Trabajo</strong>
+              <p>{profile.direccionTrabajo}</p>
+              <FaEdit className="edit-icon" />
             </div>
-            </div>
+          </div>
         </section>
 
         <section>

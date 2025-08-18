@@ -1,13 +1,18 @@
 import React, { createContext ,useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Agregar useNavigate
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext'; // Agregar useAuth
 import { ChevronDown, X, ArrowLeft, ArrowRight, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import '../styles/Menu.css';
 import Navbar from "../components/NavBar";
 import Footer from "../components/Footer";
 import { usePublicProducts } from '../hooks/MenuHook/usePublicProducts';
-import { useInventory } from '../hooks/MenuHook/useInventory'; // NUEVO IMPORT
+import { useInventory } from '../hooks/MenuHook/useInventory';
 
 const Menu = () => {
+  const navigate = useNavigate(); // Hook para navegación
+  const { isAuthenticated } = useAuth(); // Hook de autenticación
+  
   // Hook para productos públicos (mantener tu lógica existente)
   const {
     products,
@@ -45,13 +50,77 @@ const Menu = () => {
     toppings: []
   });
 
+  // MODIFICAR: Verificar autenticación antes de agregar al carrito
   const handleAddToCart = () => {
-    addToCart({
-      product: selectedItem,
-      customization: needsCustomization(selectedItem.name) ? customization : null,
+    if (!isAuthenticated) {
+      navigate('/LoginPage');
+      return;
+    }
+    
+    // Crear el objeto completo del carrito con todos los datos del producto
+    const cartItem = {
+      product: {
+        ...selectedItem, // Todos los datos del producto original
+        // Asegurar que tenemos las propiedades esenciales
+        _id: selectedItem._id,
+        name: selectedItem.name,
+        description: selectedItem.description,
+        basePrice: selectedItem.basePrice,
+        images: selectedItem.images,
+        // Cualquier otro dato del producto que necesites
+      },
+      customization: needsCustomization(selectedItem.name) ? {
+        ...customization,
+        // Agregar información adicional de la personalización
+        productName: selectedItem.name,
+        hasFixedFlavor: hasFixedFlavor(selectedItem.name),
+        sizeName: customization.size?.name,
+        flavorPrices: customization.flavors.map(flavor => ({
+          name: flavor,
+          extraPrice: getFlavorExtraPrice(flavor)
+        })),
+        toppingPrices: customization.toppings.map(topping => ({
+          name: topping,
+          extraPrice: getToppingExtraPrice(topping)
+        }))
+      } : null,
       totalPrice: needsCustomization(selectedItem.name) ? calculateTotalPrice() : selectedItem.basePrice,
-      timestamp: new Date().toISOString()
-    });
+      timestamp: new Date().toISOString(),
+      // Agregar información adicional para el carrito
+      addedBy: 'menu', // Para saber desde dónde se agregó
+      sessionId: Date.now() // Para tracking si es necesario
+    };
+  
+    console.log('Agregando al carrito:', cartItem);
+    addToCart(cartItem);
+    closeModal();
+  };
+
+  // FUNCIÓN AUXILIAR: Para agregar productos simples (sin personalización) al carrito
+  const handleAddSimpleToCart = (product) => {
+    if (!isAuthenticated) {
+      navigate('/LoginPage');
+      return;
+    }
+
+    const cartItemSimple = {
+      product: {
+        ...product,
+        _id: product._id,
+        name: product.name,
+        description: product.description,
+        basePrice: product.basePrice,
+        images: product.images
+      },
+      customization: null,
+      totalPrice: product.basePrice,
+      timestamp: new Date().toISOString(),
+      addedBy: 'menu-simple',
+      sessionId: Date.now()
+    };
+    
+    console.log('Agregando producto simple al carrito:', cartItemSimple);
+    addToCart(cartItemSimple);
     closeModal();
   };
 
@@ -802,9 +871,21 @@ const Menu = () => {
                       </div>
                     )}
                     
+                    {/* MODIFICAR: Agregar mensaje si no hay sesión iniciada */}
+                    {!isAuthenticated && (
+                      <div className="auth-warning">
+                        <p>⚠️ Necesitas iniciar sesión para agregar productos al carrito.</p>
+                      </div>
+                    )}
+                    
                     <button 
                       className="action-btn"
                       onClick={() => {
+                        if (!isAuthenticated) {
+                          navigate('/LoginPage');
+                          return;
+                        }
+                        
                         if (needsCustomization(selectedItem.name)) {
                           if (flavors.length === 0 && toppings.length === 0) {
                             alert('Los sabores y toppings están cargando. Por favor espera un momento.');
@@ -812,18 +893,18 @@ const Menu = () => {
                           }
                           setIsCustomizing(true);
                         } else {
-                          addToCart({
-                            product: selectedItem,
-                            customization: null,
-                            totalPrice: selectedItem.basePrice,
-                            timestamp: new Date().toISOString()
-                          });
-                          closeModal();
+                          // Usar la función auxiliar para productos simples
+                          handleAddSimpleToCart(selectedItem);
                         }
                       }}
                       disabled={needsCustomization(selectedItem.name) && flavors.length === 0}
                     >
-                      {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
+                      {!isAuthenticated 
+                        ? 'Iniciar sesión para comprar' 
+                        : needsCustomization(selectedItem.name) 
+                          ? 'Personalizar producto' 
+                          : 'Añadir al carrito'
+                      }
                     </button>
                   </div>
                 </div>

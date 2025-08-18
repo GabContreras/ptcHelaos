@@ -5,8 +5,7 @@ const inventorySchema = new Schema({
         type: String,
         required: true,
         maxlength: 100,
-        trim: true,
-        unique: true
+        trim: true
     },
     categoryId: {
         type: Schema.Types.ObjectId,
