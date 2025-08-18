@@ -67,9 +67,11 @@ function LocationPicker() {
 
   const handleSave = () => {
     if (position) {
-      fetchAddress(position.lat, position.lng);
-    }
-    setIsOpen(false);
+    // Guardar coordenadas en localStorage
+    localStorage.setItem("customerLocation", JSON.stringify(position));
+    fetchAddress(position.lat, position.lng);
+  }
+  setIsOpen(false);
   };
 
   return (

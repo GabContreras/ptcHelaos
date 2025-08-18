@@ -9,10 +9,6 @@
   font-family: 'montserratRegular';
 }
 
-body {
-    background-color: #8D6CFF;
-}
-
 .finishOrder {
     display: flex;
     flex-wrap: wrap;

@@ -31,10 +31,7 @@
     width: 60px;
 }
 
-.follow-status iframe {
+.follow-status .iframe {
     width: 100%;
-    height: 300px;
-    border: none;
-    border-radius: 15px;
-    margin-top: 20px;
+    height: 100%;
 }
