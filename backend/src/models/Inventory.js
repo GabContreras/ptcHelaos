@@ -4,6 +4,7 @@ const inventorySchema = new Schema({
     name: {
         type: String,
         required: true,
+        maxlength: 100,
         trim: true,
         unique: true
     },
@@ -14,6 +15,7 @@ const inventorySchema = new Schema({
     },
     supplier: {
         type: String,
+        maxlength: 100,
         trim: true
     },
     extraPrice: {
@@ -28,6 +30,7 @@ const inventorySchema = new Schema({
     },
     description: {
         type: String,
+        maxlength: 500,
         trim: true
     },
     // Array de IDs de lotes (solo referencias)
@@ -40,6 +43,10 @@ const inventorySchema = new Schema({
         type: Number,
         default: 0,
         min: 0
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true,

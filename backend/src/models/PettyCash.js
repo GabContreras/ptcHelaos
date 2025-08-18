@@ -17,6 +17,7 @@ const pettyCashSchema = new Schema({
     reason: {
         type: String,
         required: true,
+        maxlength: 200,
         trim: true
 
     },
