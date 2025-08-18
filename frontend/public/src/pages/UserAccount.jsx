@@ -4,9 +4,11 @@ import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 import { FaEdit } from 'react-icons/fa';
 import { useUserProfile } from '../hooks/AccountHook/useAccount';
+import { useAuth } from '../context/AuthContext';
 
 function UserAccount() {
-  const userId = "123"; // <- este lo sacarías de tu contexto de auth o del login
+  const { user } = useAuth();
+  const userId = user?.id;
   const { profile, setProfile, updateUserProfile, isLoading, error } = useUserProfile(userId);
 
   const handleChange = (e) => {
@@ -22,6 +24,9 @@ function UserAccount() {
       alert("Error al actualizar perfil");
     }
   };
+
+  console.log("userId recibido en el hook:", userId);
+
 
   return (
     <>

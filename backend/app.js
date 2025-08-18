@@ -15,6 +15,7 @@ import registerCustomerRoutes from "./src/routes/registerCustomerRoutes.js";
 import registerEmployeeRoutes from "./src/routes/registerEmployeeRoutes.js";
 import passwordRecoveryRoutes from "./src/routes/passwordRecoveryRoutes.js";
 import pettyCashRoutes from "./src/routes/pettyCashRoutes.js"
+import profileRoutes from "./src/routes/profileRoutes.js";
 import productRoutes from "./src/routes/productRoutes.js";
 import reviewRoutes from "./src/routes/reviewRoutes.js";
 import orderRoutes from "./src/routes/orderRoutes.js";
@@ -71,6 +72,7 @@ app.use("/api/pettyCash", validateAuthToken(['admin', 'employee']), pettyCashRou
 app.use("/api/registerEmployee", validateAuthToken(['admin']), registerEmployeeRoutes);
 app.use("/api/passwordRecovery", passwordRecoveryRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/profile", profileRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/events", eventsRoutes)

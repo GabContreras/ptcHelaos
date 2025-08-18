@@ -15,7 +15,7 @@ export function useUserProfile(userId) {
       setIsLoading(true);
       setError("");
 
-      const response = await fetch(`${API_BASE}customers/${userId}`, {
+      const response = await fetch(`${API_BASE}profile/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
