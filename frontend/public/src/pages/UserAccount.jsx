@@ -1,71 +1,73 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../styles/UserAccount.css';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
-import { FaEdit } from 'react-icons/fa'; // Instala con npm install react-icons
+import { FaEdit } from 'react-icons/fa';
+import { useUserProfile } from '../hooks/AccountHook/useAccount';
 
 function UserAccount() {
-  const [datos, setDatos] = useState({
-    nombre: 'Kevin Fernando Portillo Avelar',
-    email: 'kevinPortillo@gmail.com',
-    telefono: '7000-6000',
-    password: '',
-    direccionCasa: '123 Maple Street, Anytown, CA 91234',
-    direccionTrabajo: '456 Oak Avenue, Anytown, CA 91234',
-    fechaNacimiento: '08/03/2007'
-  });
+  const userId = "123"; // <- este lo sacarías de tu contexto de auth o del login
+  const { profile, setProfile, updateUserProfile, isLoading, error } = useUserProfile(userId);
 
   const handleChange = (e) => {
-    setDatos({ ...datos, [e.target.name]: e.target.value });
+    setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Datos actualizados:', datos);
+    try {
+      await updateUserProfile(profile);
+      alert("Perfil actualizado con éxito");
+    } catch (err) {
+      alert("Error al actualizar perfil");
+    }
   };
 
   return (
     <>
-    <NavBar/>
-        <div className="account-container">
+      <NavBar/>
+      <div className="account-container">
         <h2 className="account-title">Cuenta</h2>
 
+        {isLoading && <p>Cargando...</p>}
+        {error && <p style={{color:"red"}}>{error}</p>}
+
         <section>
-            <h3 className="section-title">Información Personal</h3>
-            <form onSubmit={handleSubmit} className="account-form">
+          <h3 className="section-title">Información Personal</h3>
+          <form onSubmit={handleSubmit} className="account-form">
             <label>Nombre:</label>
-            <input type="text" name="nombre" value={datos.nombre} onChange={handleChange} />
+            <input type="text" name="nombre" value={profile.nombre || ''} onChange={handleChange} />
 
             <label>Correo Electrónico:</label>
-            <input type="email" name="email" value={datos.email} onChange={handleChange} />
+            <input type="email" name="email" value={profile.email || ''} onChange={handleChange} />
 
             <label>Fecha de nacimiento:</label>
-            <input type="text" name="fechaNacimiento" value={datos.fechaNacimiento} onChange={handleChange} />
+            <input type="text" name="fechaNacimiento" value={profile.fechaNacimiento || ''} onChange={handleChange} />
 
             <label>Número de teléfono:</label>
-            <input type="text" name="telefono" value={datos.telefono} onChange={handleChange} />
+            <input type="text" name="telefono" value={profile.telefono || ''} onChange={handleChange} />
 
             <label>Contraseña:</label>
-            <input type="password" name="password" value={datos.password} onChange={handleChange} />
+            <input type="password" name="password" value={profile.password || ''} onChange={handleChange} />
 
             <button type="submit">Actualizar Datos</button>
-            </form>
+          </form>
         </section>
 
         <section>
-            <h3 className="section-title">Direcciones de Envío</h3>
-            <div className="direccion-box">
+          <h3 className="section-title">Direcciones de Envío</h3>
+          <div className="direccion-box">
             <div className="direccion-item">
-                <strong>Casa</strong>
-                <p>{datos.direccionCasa}</p>
-                <FaEdit className="edit-icon" />
+              <strong>Casa</strong>
+              <p>{profile.direccionCasa}</p>
+              <FaEdit className="edit-icon" />
             </div>
             <div className="direccion-item">
-                <strong>Trabajo</strong>
-                <p>{datos.direccionTrabajo}</p>
-                <FaEdit className="edit-icon" />
+              <strong>Trabajo</strong>
+              <p>{profile.direccionTrabajo}</p>
+              <FaEdit className="edit-icon" />
             </div>
-            </div>
+          </div>
         </section>
 
         <section>

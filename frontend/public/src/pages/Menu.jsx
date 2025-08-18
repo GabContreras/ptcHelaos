@@ -752,21 +752,6 @@ const Menu = () => {
                   </div>
                   
                   {renderCustomizationStep()}
-
-                  <div className="step-actions mt-4">
-                    <button 
-                      className="action-btn"
-                      onClick={() => {
-                        if (needsCustomization(selectedItem.name)) {
-                          setIsCustomizing(true);
-                        } else {
-                          handleAddToCart();
-                        }
-                      }}
-                    >
-                      {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
-                    </button>
-                  </div>
                 </div>
               )}
             </div>
