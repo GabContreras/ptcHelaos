@@ -5,19 +5,32 @@ import '../styles/Menu.css';
 import Navbar from "../components/NavBar";
 import Footer from "../components/Footer";
 import { usePublicProducts } from '../hooks/MenuHook/usePublicProducts';
+import { useInventory } from '../hooks/MenuHook/useInventory'; // NUEVO IMPORT
 
 const Menu = () => {
   // Hook para productos públicos (mantener tu lógica existente)
   const {
     products,
     filteredProducts,
-    isLoading,
-    error,
+    isLoading: productsLoading,
+    error: productsError,
     searchTerm,
     filterBySearch,
     resetFilters,
     getProductById
   } = usePublicProducts();
+
+  // NUEVO: Hook para inventario
+  const {
+    getFlavorNames,
+    getToppingNames,
+    getFlavorExtraPrice,
+    getToppingExtraPrice,
+    isFlavorAvailable,
+    isToppingAvailable,
+    isLoading: inventoryLoading,
+    error: inventoryError
+  } = useInventory();
 
   const {addToCart} = useCart();
 
@@ -64,16 +77,15 @@ const Menu = () => {
     { id: 3, name: "Tres Sabores (Grande)", price: 4.50, maxFlavors: 3 }
   ];
 
-  const flavors = [
-    "Vainilla", "Chocolate", "Fresa", "Matcha", "Cookies & Cream", 
-    "Caramelo", "Mango", "Coco", "Piña", "Frambuesa"
-  ];
+  // MODIFICADO: Usar sabores reales del inventario
+  const flavors = getFlavorNames();
 
-  const toppings = [
-    "Maní", "Pistacho", "Mango", "Crispy", "Jalea de mora", "Mora",
-    "Galleta", "Jalea de chocolate", "Piña", "Pixie", "Nueces", "Jalea de piña",
-    "Chocolate", "Almendras", "Jalea de Caramelo", "Jalea de Fresa", "Fresa", "Uva"
-  ];
+  // MODIFICADO: Usar toppings reales del inventario  
+  const toppings = getToppingNames();
+
+  // Estados de carga combinados
+  const isLoading = productsLoading || inventoryLoading;
+  const error = productsError || inventoryError;
 
   // Función para obtener imágenes del producto (mantener tu lógica existente)
   const getProductImages = (product) => {
@@ -217,7 +229,14 @@ const Menu = () => {
     setCustomizationStep(1);
   };
 
+  // MODIFICADO: Agregar verificación de disponibilidad
   const toggleFlavor = (flavor) => {
+    // Verificar si el sabor está disponible
+    if (!isFlavorAvailable(flavor)) {
+      alert(`Lo sentimos, el sabor ${flavor} no está disponible en este momento.`);
+      return;
+    }
+
     setCustomization(prev => {
       const currentFlavors = prev.flavors;
       const maxFlavors = hasFixedFlavor(selectedItem.name) ? 1 : prev.size?.maxFlavors || 1;
@@ -237,7 +256,14 @@ const Menu = () => {
     });
   };
 
+  // MODIFICADO: Agregar verificación de disponibilidad
   const toggleTopping = (topping) => {
+    // Verificar si el topping está disponible
+    if (!isToppingAvailable(topping)) {
+      alert(`Lo sentimos, el topping ${topping} no está disponible en este momento.`);
+      return;
+    }
+
     setCustomization(prev => ({
       ...prev,
       toppings: prev.toppings.includes(topping)
@@ -258,7 +284,7 @@ const Menu = () => {
     }
   };
 
-  // Calcular precio total
+  // MODIFICADO: Calcular precio total usando precios reales del inventario
   const calculateTotalPrice = () => {
     let total = 0;
     
@@ -270,8 +296,15 @@ const Menu = () => {
       total = selectedItem.basePrice;
     }
     
-    // Agregar precio de toppings
-    total += customization.toppings.length * 0.25;
+    // Agregar precio extra de sabores
+    customization.flavors.forEach(flavor => {
+      total += getFlavorExtraPrice(flavor);
+    });
+    
+    // Agregar precio de toppings usando precios reales
+    customization.toppings.forEach(topping => {
+      total += getToppingExtraPrice(topping);
+    });
     
     return total;
   };
@@ -290,22 +323,6 @@ const Menu = () => {
         return false;
     }
   };
-
-  // Función para agregar al carrito
-  /* const addToCart = () => {
-    const orderDetails = {
-      product: selectedItem,
-      customization: customization,
-      totalPrice: calculateTotalPrice(),
-      timestamp: new Date().toISOString()
-    };
-    
-    console.log('Agregando al carrito:', orderDetails);
-    // Aquí puedes implementar la lógica para agregar al carrito
-    // Por ejemplo, llamar a una función de tu hook o contexto de carrito
-    alert('Producto agregado al carrito exitosamente!');
-    closeModal();
-  };*/
 
   // Renderizar componente de imagen con carrusel (mantener tu lógica existente)
   const ImageCarousel = ({ product, isModal = false }) => {
@@ -454,18 +471,32 @@ const Menu = () => {
             </div>
             
             <div className="flavors-grid">
-              {flavors.map((flavor) => (
-                <button
-                  key={flavor}
-                  onClick={() => toggleFlavor(flavor)}
-                  disabled={!customization.flavors.includes(flavor) && selectedFlavorsCount >= maxFlavors}
-                  className={`flavor-option ${
-                    customization.flavors.includes(flavor) ? 'selected' : ''
-                  } ${!customization.flavors.includes(flavor) && selectedFlavorsCount >= maxFlavors ? 'disabled' : ''}`}
-                >
-                  {flavor}
-                </button>
-              ))}
+              {flavors.map((flavor) => {
+                const isAvailable = isFlavorAvailable(flavor);
+                const isSelected = customization.flavors.includes(flavor);
+                const isDisabled = !isSelected && selectedFlavorsCount >= maxFlavors;
+                const extraPrice = getFlavorExtraPrice(flavor);
+                
+                return (
+                  <button
+                    key={flavor}
+                    onClick={() => toggleFlavor(flavor)}
+                    disabled={!isAvailable || isDisabled}
+                    className={`flavor-option ${
+                      isSelected ? 'selected' : ''
+                    } ${!isAvailable ? 'unavailable' : ''} ${isDisabled ? 'disabled' : ''}`}
+                    title={!isAvailable ? 'Sabor no disponible' : ''}
+                  >
+                    <span className="flavor-name">{flavor}</span>
+                    {extraPrice > 0 && (
+                      <span className="flavor-extra-price">+${extraPrice.toFixed(2)}</span>
+                    )}
+                    {!isAvailable && (
+                      <span className="flavor-status">No disponible</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
             
             <div className="step-actions">
@@ -490,19 +521,33 @@ const Menu = () => {
           <div className="customization-step">
             <div className="step-header">
               <h3 className="step-title">Agrega toppings</h3>
-              <p className="step-description">Cada topping cuesta $0.25 adicional</p>
+              <p className="step-description">Personaliza tu producto con toppings adicionales</p>
             </div>
             
             <div className="toppings-grid">
-              {toppings.map((topping) => (
-                <button
-                  key={topping}
-                  onClick={() => toggleTopping(topping)}
-                  className={`topping-option ${customization.toppings.includes(topping) ? 'selected' : ''}`}
-                >
-                  {topping} (+$0.25)
-                </button>
-              ))}
+              {toppings.map((topping) => {
+                const isAvailable = isToppingAvailable(topping);
+                const isSelected = customization.toppings.includes(topping);
+                const extraPrice = getToppingExtraPrice(topping);
+                
+                return (
+                  <button
+                    key={topping}
+                    onClick={() => toggleTopping(topping)}
+                    disabled={!isAvailable}
+                    className={`topping-option ${
+                      isSelected ? 'selected' : ''
+                    } ${!isAvailable ? 'unavailable' : ''}`}
+                    title={!isAvailable ? 'Topping no disponible' : ''}
+                  >
+                    <span className="topping-name">{topping}</span>
+                    <span className="topping-price">(+${extraPrice.toFixed(2)})</span>
+                    {!isAvailable && (
+                      <span className="topping-status">No disponible</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
             
             {/* Resumen del pedido */}
@@ -543,10 +588,22 @@ const Menu = () => {
                   </span>
                 </div>
                 
+                {/* Mostrar precios extra de sabores */}
+                {customization.flavors.some(flavor => getFlavorExtraPrice(flavor) > 0) && (
+                  <div className="summary-row">
+                    <span className="summary-label">Sabores extra:</span>
+                    <span className="summary-value">
+                      ${customization.flavors.reduce((total, flavor) => total + getFlavorExtraPrice(flavor), 0).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                
                 {customization.toppings.length > 0 && (
                   <div className="summary-row">
                     <span className="summary-label">Toppings ({customization.toppings.length}):</span>
-                    <span className="summary-value">${(customization.toppings.length * 0.25).toFixed(2)}</span>
+                    <span className="summary-value">
+                      ${customization.toppings.reduce((total, topping) => total + getToppingExtraPrice(topping), 0).toFixed(2)}
+                    </span>
                   </div>
                 )}
                 
@@ -575,6 +632,11 @@ const Menu = () => {
         return null;
     }
   };
+
+  // Mostrar mensaje si no hay sabores o toppings disponibles
+  if (!isLoading && flavors.length === 0 && toppings.length === 0) {
+    console.warn('No se han cargado sabores ni toppings del inventario');
+  }
 
   return (
     <>
@@ -638,7 +700,10 @@ const Menu = () => {
           {isLoading && (
             <div className="text-center py-12">
               <div className="loading-spinner"></div>
-              <p className="mt-2 text-gray-600">Cargando productos...</p>
+              <p className="mt-2 text-gray-600">
+                {productsLoading && inventoryLoading ? 'Cargando productos e inventario...' :
+                 productsLoading ? 'Cargando productos...' : 'Cargando inventario...'}
+              </p>
             </div>
           )}
 
@@ -646,6 +711,13 @@ const Menu = () => {
           {error && (
             <div className="error-message">
               {error}
+            </div>
+          )}
+
+          {/* Advertencia si no hay inventario cargado */}
+          {!inventoryLoading && flavors.length === 0 && toppings.length === 0 && !inventoryError && (
+            <div className="warning-message">
+              <p>⚠️ No se han cargado sabores ni toppings del inventario. La personalización podría estar limitada.</p>
             </div>
           )}
 
@@ -723,10 +795,21 @@ const Menu = () => {
                       </p>
                     </div>
                     
+                    {/* Mostrar advertencia si no hay inventario cargado para productos personalizables */}
+                    {needsCustomization(selectedItem.name) && flavors.length === 0 && (
+                      <div className="modal-warning">
+                        <p>⚠️ Los sabores están cargando. La personalización estará disponible en un momento.</p>
+                      </div>
+                    )}
+                    
                     <button 
                       className="action-btn"
                       onClick={() => {
                         if (needsCustomization(selectedItem.name)) {
+                          if (flavors.length === 0 && toppings.length === 0) {
+                            alert('Los sabores y toppings están cargando. Por favor espera un momento.');
+                            return;
+                          }
                           setIsCustomizing(true);
                         } else {
                           addToCart({
@@ -738,6 +821,7 @@ const Menu = () => {
                           closeModal();
                         }
                       }}
+                      disabled={needsCustomization(selectedItem.name) && flavors.length === 0}
                     >
                       {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
                     </button>
@@ -752,21 +836,6 @@ const Menu = () => {
                   </div>
                   
                   {renderCustomizationStep()}
-
-                  <div className="step-actions mt-4">
-                    <button 
-                      className="action-btn"
-                      onClick={() => {
-                        if (needsCustomization(selectedItem.name)) {
-                          setIsCustomizing(true);
-                        } else {
-                          handleAddToCart();
-                        }
-                      }}
-                    >
-                      {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
-                    </button>
-                  </div>
                 </div>
               )}
             </div>

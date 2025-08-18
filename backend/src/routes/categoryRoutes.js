@@ -1,15 +1,15 @@
 import express from 'express';
 import categoryController from '../controllers/categoryController.js';
-
+import { validateAuthToken } from '../middlewares/validateAuthToken.js';
 const router = express.Router();
 
 router.route('/')
-.get(categoryController.getCategory)
-.post(categoryController.insertCategory);
+.get(validateAuthToken(['admin', 'employee', "customer"]), categoryController.getCategory)
+.post(validateAuthToken(['admin', 'employee']),categoryController.insertCategory);
 
 router.route('/:id')
-.delete(categoryController.deleteCategory)
-.put(categoryController.updateCategory)
+.delete(validateAuthToken(['admin', 'employee']),categoryController.deleteCategory)
+.put(validateAuthToken(['admin', 'employee']),categoryController.updateCategory)
 
 
 export default router;
