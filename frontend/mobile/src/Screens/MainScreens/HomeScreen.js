@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import OrderCard from '../../components/orderCard.js';
+import OrderCard from '../../components/Cards/orderCard.js'; // Asegúrate de tener este componente creado
 
 const HomeScreen = () => {
   // Datos quemados - REEMPLAZAR CON API CALLS

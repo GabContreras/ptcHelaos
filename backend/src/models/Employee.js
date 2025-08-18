@@ -21,7 +21,6 @@ const employeesSchema = new Schema({
     type: String,
     required: true,
     trim: true,
-
   },
   hireDate: {
     type: Date,
