@@ -4,7 +4,7 @@ import { validateAuthToken } from '../middlewares/validateAuthToken.js';
 const router = express.Router();
 
 router.route('/')
-.get(validateAuthToken(['admin', 'employee']), categoryController.getCategory)
+.get(validateAuthToken(['admin', 'employee', "customer"]), categoryController.getCategory)
 .post(validateAuthToken(['admin', 'employee']),categoryController.insertCategory);
 
 router.route('/:id')
