@@ -5,37 +5,31 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  // Cargar carrito desde localStorage
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    const savedTimestamp = localStorage.getItem("cartTimestamp");
-
-    if (savedCart && savedTimestamp) {
-      const now = Date.now();
-      const oneHour = 60 * 60 * 1000;
-
-      if (now - parseInt(savedTimestamp, 10) < oneHour) {
-        setCart(JSON.parse(savedCart));
-      } else {
-        localStorage.removeItem("cart");
-        localStorage.removeItem("cartTimestamp");
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (cart.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-      localStorage.setItem("cartTimestamp", Date.now().toString());
-    }
-  }, [cart]);
-
-  const addToCart = (product) => {
-    setCart((prev) => [...prev, product]);
+  const addToCart = (cartItem) => {
+    // Crear un item único para el carrito con un ID especial
+    const cartItemWithUniqueId = {
+      ...cartItem,
+      cartItemId: `${cartItem.product._id}_${Date.now()}_${Math.random()}`, // ID único para cada item del carrito
+      _id: cartItem.product._id, // Mantener el ID original del producto para compatibilidad
+      // Agregar todos los datos del producto al nivel raíz para fácil acceso
+      ...cartItem.product,
+      // Mantener los datos específicos del carrito
+      customization: cartItem.customization,
+      totalPrice: cartItem.totalPrice,
+      timestamp: cartItem.timestamp
+    };
+    
+    setCart((prev) => [...prev, cartItemWithUniqueId]);
   };
 
-  const removeFromCart = (id) => {
-    setCart((prev) => prev.filter((item) => item._id !== id));
+  const removeFromCart = (cartItemId) => {
+    // Usar el cartItemId único para remover items específicos
+    setCart((prev) => prev.filter((item) => item.cartItemId !== cartItemId));
+  };
+
+  // Nueva función para remover por ID de producto (si necesitas mantener compatibilidad)
+  const removeFromCartByProductId = (productId) => {
+    setCart((prev) => prev.filter((item) => item._id !== productId));
   };
 
   const clearCart = () => {
@@ -49,7 +43,14 @@ export const CartProvider = ({ children }) => {
   }, [cart]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, total }}>
+    <CartContext.Provider value={{ 
+      cart, 
+      addToCart, 
+      removeFromCart, 
+      removeFromCartByProductId,
+      clearCart, 
+      total 
+    }}>
       {children}
     </CartContext.Provider>
   );

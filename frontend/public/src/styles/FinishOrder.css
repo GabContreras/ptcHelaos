@@ -10,81 +10,348 @@
 }
 
 body {
-    background-color: #8D6CFF;
+    background: linear-gradient(135deg, #b8a7ff 0%, #9c8bff 100%);
+    min-height: 100vh;
 }
 
 .finishOrder {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    position: relative;
+    min-height: 100vh;
+    padding: 20px 0;
+    gap: 0;
 }
 
+/* Botón de regreso */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #6b52cc;
+    font-family: 'montserratRegular';
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.back-button:active {
+    transform: translateY(0);
+}
+
+/* Sección del resumen */
 .finishOrder .resume {
-    width: 30%;
-    height: 100vh;
-    padding: 20px 20px;
-    background-color: #8D6CFF;
+    width: 35%;
+    min-height: calc(100vh - 40px);
+    padding: 60px 30px 30px;
+    background: linear-gradient(180deg, #7c6aff 0%, #6b52cc 100%);
+    border-radius: 0 20px 20px 0;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.resume-header {
+    margin-bottom: 30px;
 }
 
 .finishOrder .resume h1 {
     color: #fff;
-    font-weight:normal;
+    font-weight: normal;
+    font-size: 28px;
+    margin: 0;
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .finishOrder .resume .cart {
     width: 100%;
-    height: 90%;
-    overflow-y:scroll;
-    scrollbar-width:none;
+    height: calc(100vh - 180px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
 
+.finishOrder .resume .cart::-webkit-scrollbar {
+    width: 6px;
+}
+
+.finishOrder .resume .cart::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.finishOrder .resume .cart::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.finishOrder .resume .cart::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Sección de detalles del pedido */
 .finishOrder .orderDetails {
-    background: #cfc2ff;
-    padding: 35px 0px;
-    width: 70%;
+    background: linear-gradient(135deg, #f8f6ff 0%, #ede8ff 100%);
+    width: 65%;
+    min-height: calc(100vh - 40px);
+    border-radius: 20px 0 0 20px;
+    overflow: hidden;
+}
+
+.orderDetails-content {
+    padding: 60px 40px 40px;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+    flex-direction: column;
+    gap: 40px;
+    height: 100%;
 }
 
-.finishOrder h1 {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
+.section-header {
+    margin-bottom: 25px;
 }
 
-.finishOrder .direction {
-    width: 50%;
+.section-header h2 {
+    color: #4c3a8a;
+    font-size: 24px;
+    font-weight: normal;
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #d4c9ff;
+}
+
+/* Sección de dirección */
+.direction-section {
+    flex: 1;
+}
+
+.location-container {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(107, 82, 204, 0.1);
+    border: 1px solid rgba(212, 201, 255, 0.5);
+}
+
+.details-group {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    gap: 25px;
 }
 
-.finishOrder .direction .details {
-    width: 80%;
+.finishOrder .direction-section .details {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(107, 82, 204, 0.1);
+    border: 1px solid rgba(212, 201, 255, 0.5);
 }
 
- .finishOrder .direction h4 {
-    width: 100%;
-    text-align: left;
+.finishOrder .direction-section h4 {
+    color: #4c3a8a;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 12px 0;
 }
 
-.finishOrder .direction textarea {
+.optional {
+    color: #8a7cc8;
+    font-weight: normal;
+    font-size: 14px;
+}
+
+.finishOrder .direction-section textarea {
     width: 100%;
     resize: none;
-    padding: 12px;
-    font-size: 16px;
-    line-height: 1.5;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    padding: 16px;
+    font-size: 15px;
+    line-height: 1.6;
+    border-radius: 12px;
+    border: 2px solid #e0d9ff;
     box-sizing: border-box;
     overflow-wrap: break-word;
     white-space: pre-wrap;
+    background: rgba(255, 255, 255, 0.9);
+    color: #4c3a8a;
+    font-family: 'montserratRegular';
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.finishOrder .direction-section textarea:focus {
+    outline: none;
+    border-color: #9c8bff;
+    box-shadow: 0 0 0 3px rgba(156, 139, 255, 0.1);
+}
+
+.finishOrder .direction-section textarea::placeholder {
+    color: #a395d3;
+    opacity: 1;
+}
+
+/* Sección de pago */
+.payment-section {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(107, 82, 204, 0.15);
+    border: 2px solid rgba(212, 201, 255, 0.3);
 }
 
 .finishOrder .total {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .finishOrder .resume {
+        width: 40%;
+    }
+    
+    .finishOrder .orderDetails {
+        width: 60%;
+    }
+}
+
+@media (max-width: 768px) {
+    .finishOrder {
+        flex-direction: column;
+        padding: 0;
+    }
+    
+    .back-button {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+    }
+    
+    .finishOrder .resume {
+        width: 100%;
+        min-height: auto;
+        border-radius: 0;
+        padding: 50px 20px 20px;
+    }
+    
+    .finishOrder .resume .cart {
+        height: auto;
+        max-height: 300px;
+    }
+    
+    .finishOrder .orderDetails {
+        width: 100%;
+        border-radius: 0;
+        min-height: auto;
+    }
+    
+    .orderDetails-content {
+        padding: 30px 20px;
+        gap: 30px;
+    }
+    
+    .section-header h2 {
+        font-size: 20px;
+    }
+    
+    .payment-section {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .back-button {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+    
+    .back-button span {
+        display: none;
+    }
+    
+    .finishOrder .resume h1 {
+        font-size: 24px;
+    }
+    
+    .section-header h2 {
+        font-size: 18px;
+    }
+    
+    .orderDetails-content {
+        padding: 20px 15px;
+    }
+    .user-info {
+        margin: 20px 0;
+        padding: 0 20px;
+    }
+    
+    .user-card {
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: 20px;
+        color: white;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        transition: transform 0.3s ease;
+    }
+    
+    .user-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-right: 16px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+    
+    .user-details {
+        flex: 1;
+    }
+    
+    .user-details h3 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 500;
+    }
+    
+    .user-name {
+        margin: 0 0 4px 0;
+        font-size: 20px;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .user-email {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.8;
+        font-weight: 400;
+    }
 }
