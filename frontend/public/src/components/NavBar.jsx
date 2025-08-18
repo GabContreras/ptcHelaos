@@ -10,14 +10,21 @@ import CartIcon from "../imgs/cartIcon.png"
 function NavBar() {
     const navigate = useNavigate()
     const location = useLocation()
-    const { authCokie, user, logout } = useAuth()
+    const { authCokie, user, logout, isAuthenticated } = useAuth() // Agregar isAuthenticated
     const [mostrarCart, setMostrarCart] = useState(false)
     const [showUserMenu, setShowUserMenu] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const userMenuRef = useRef(null)
     const cartRef = useRef(null)
 
+    // MODIFICAR: Solo permitir abrir carrito si hay sesión iniciada
     const toggleCart = () => {
+        if (!isAuthenticated) {
+            // Si no está autenticado, redirigir al login
+            navigate('/LoginPage')
+            return
+        }
+        
         setMostrarCart(!mostrarCart)
         if (showUserMenu) setShowUserMenu(false)
         if (mobileMenuOpen) setMobileMenuOpen(false)
@@ -51,6 +58,7 @@ function NavBar() {
     const handleLogout = () => {
         logout()
         setShowUserMenu(false)
+        setMostrarCart(false) // Cerrar carrito al hacer logout
         navigate('/')
     }
 
@@ -96,6 +104,13 @@ function NavBar() {
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
+    // NUEVO: Cerrar carrito automáticamente si se pierde la sesión
+    useEffect(() => {
+        if (!isAuthenticated && mostrarCart) {
+            setMostrarCart(false)
+        }
+    }, [isAuthenticated, mostrarCart])
+
     return (
         <div className='navbar-container'>
             <div className='navbar'>
@@ -118,11 +133,14 @@ function NavBar() {
                 </div>
 
                 <div className="navbar-right-section">
-                    <div ref={cartRef} className="navbar-cart-container">
-                        <a onClick={toggleCart} className='linkCart'>
-                            <img src={CartIcon} alt="Carrito"/>
-                        </a>
-                    </div>
+                    {/* MODIFICAR: Solo mostrar carrito si hay sesión iniciada */}
+                    {isAuthenticated && (
+                        <div ref={cartRef} className="navbar-cart-container">
+                            <a onClick={toggleCart} className='linkCart' title="Ver carrito">
+                                <img src={CartIcon} alt="Carrito"/>
+                            </a>
+                        </div>
+                    )}
 
                     <div className="logs">
                         {authCokie ? (
@@ -200,17 +218,36 @@ function NavBar() {
                                 Sobre nosotros
                             </a>
                         </div>
+                        
+                        {/* NUEVO: Agregar opción de carrito en menú móvil solo si hay sesión */}
+                        {isAuthenticated && (
+                            <div className="mobile-menu-cart">
+                                <a onClick={() => {
+                                    toggleCart()
+                                    setMobileMenuOpen(false)
+                                }} className="mobile-cart-link">
+                                    <img src={CartIcon} alt="Carrito" className="mobile-cart-icon"/>
+                                    Ver Carrito
+                                </a>
+                            </div>
+                        )}
                     </div>
                 </>
             )}
 
-            {mostrarCart && (
+            {/* MODIFICAR: Solo mostrar carrito deslizante si hay sesión iniciada */}
+            {mostrarCart && isAuthenticated && (
                 <div className="cart-slide" ref={cartRef}>
                     <h1>Tu pedido:</h1>
                     <div className='items'>
                         <Cart />
                     </div>
-                    <Button titulo="Finalizar orden" color="#33A9FE" tipoColor="background" onClick={() => navigate('/FinishOrder')}/>
+                    <Button 
+                        titulo="Finalizar orden" 
+                        color="#33A9FE" 
+                        tipoColor="background" 
+                        onClick={() => navigate('/FinishOrder')}
+                    />
                 </div>
             )}
         </div>

@@ -83,7 +83,7 @@ export function useOrder() {
             }
         } catch (apiError) {
             const defaultCategories = [
-                { _id: '689ecf83887259f3d77453ab', name: 'Waffles' },
+                { _id: '68a2464bffb4ada5f37084ad', name: 'Waffles' },
                 { _id: '689ee0fc544e9c4b4c5bff43', name: 'Helados' },
                 { _id: '689ee107544e9c4b4c5bff5c', name: 'Pancakes' },
                 { _id: '686b4c0f2d74deabc307520a', name: 'Panes' }

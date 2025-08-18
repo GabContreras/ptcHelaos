@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.route('/:id')
 .get(profileController.getCustomerById)
+.put(profileController.updateCustomer);
 
 export default router;

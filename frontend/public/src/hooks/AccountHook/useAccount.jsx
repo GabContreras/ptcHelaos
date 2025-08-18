@@ -1,4 +1,3 @@
-// hooks/useUserProfile.js
 import { useState, useEffect } from "react";
 import { config } from "../../config";
 
@@ -9,7 +8,7 @@ export function useUserProfile(userId) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // GET - Obtener perfil de usuario
+  //Obtener perfil de usuario
   const fetchUserProfile = async () => {
     try {
       setIsLoading(true);
@@ -37,13 +36,36 @@ export function useUserProfile(userId) {
     }
   };
 
+  //actualizar contraseña
+  {/*const handlePasswordUpdate = async (newPassword, confirmPassword) => {
+    if (newPassword.length < 8) {
+        alert("La contraseña debe tener al menos 8 caracteres");
+        return;
+    }
+    if (newPassword !== confirmPassword) {
+        alert("Las contraseñas no coinciden");
+        return;
+    }
+
+    try {
+        await updateUserProfile({ ...profile, password: newPassword });
+        alert("Contraseña actualizada con éxito");
+        setIsPasswordModalOpen(false);
+        setNewPassword("");
+        setConfirmPassword("");
+    } catch (err) {
+        alert("Error al actualizar la contraseña");
+    }
+};*/}
+
+
   //Actualizar perfil
   const updateUserProfile = async (updatedData) => {
     try {
       setIsLoading(true);
       setError("");
 
-      const response = await fetch(`${API_BASE}customers/${userId}`, {
+      const response = await fetch(`${API_BASE}profile/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +79,7 @@ export function useUserProfile(userId) {
       }
 
       const result = await response.json();
-      setProfile(result); // actualizar estado con lo que devuelve la API
+      setProfile(result);
       return result;
     } catch (err) {
       console.error("Error updating user profile:", err);
@@ -84,6 +106,7 @@ export function useUserProfile(userId) {
     setProfile,
     isLoading,
     error,
+    //handlePasswordUpdate,
     fetchUserProfile,
     updateUserProfile,
     refreshProfile,
