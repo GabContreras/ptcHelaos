@@ -8,8 +8,8 @@ router.route('/')
 .post(employeesController.insertEmployee);
 
 router.route('/:id')
+.get(employeesController.getEmployeeById)    
 .delete(employeesController.deleteEmployee)
 .put(employeesController.updateEmployee)
-
 
 export default router;

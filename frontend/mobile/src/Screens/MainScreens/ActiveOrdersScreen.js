@@ -8,7 +8,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import ActiveOrderCard from '../../components/ActiveOrderCard.js';
+import ActiveOrderCard from '../../components/Cards/ActiveOrderCard';
 
 const ActiveOrdersScreen = () => {
   // Datos quemados - REEMPLAZAR CON API CALLS
