@@ -72,7 +72,7 @@ app.use("/api/pettyCash", validateAuthToken(['admin', 'employee']), pettyCashRou
 app.use("/api/registerEmployee", validateAuthToken(['admin']), registerEmployeeRoutes);
 app.use("/api/passwordRecovery", passwordRecoveryRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/profile", profileRoutes);
+app.use('/api/profile', profileRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/events", eventsRoutes)

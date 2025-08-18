@@ -1,6 +1,7 @@
 const profileController = {};
 import customersModel from "../models/Customer.js"
 
+// CONTROLADOR PARA OBTENER UN PERFIL DE CLIENTE POR ID
 profileController.getCustomerById = async (req, res) => {
     try {
         // Buscar un cliente por su ID
@@ -10,7 +11,6 @@ profileController.getCustomerById = async (req, res) => {
         }
         res.json(customer);
     } catch (error) {
-        // Manejar errores del servidor
         res.status(500).json({ message: "Error fetching customer", error })
     }
 }
