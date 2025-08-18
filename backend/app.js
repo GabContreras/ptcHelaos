@@ -20,6 +20,7 @@ import productRoutes from "./src/routes/productRoutes.js";
 import reviewRoutes from "./src/routes/reviewRoutes.js";
 import orderRoutes from "./src/routes/orderRoutes.js";
 import eventsRoutes from "./src/routes/eventsRoutes.js"
+import feedbackRoutes from "./src/routes/feedbackRoutes.js";
 //import orderRoutes from "./src/routes/orderRoutes.js";
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
 
@@ -75,7 +76,8 @@ app.use("/api/products", productRoutes);
 app.use('/api/profile', profileRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/events", eventsRoutes)
+app.use("/api/events", eventsRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 //Exporto esta constante para usar express en todos lados
 export default app;
