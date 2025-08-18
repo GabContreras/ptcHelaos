@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,39 +6,82 @@ import {
   ScrollView,
   SafeAreaView,
   StatusBar,
+  ActivityIndicator,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import OrderCard from '../../components/Cards/orderCard.js'; // Asegúrate de tener este componente creado
+import { useAuth } from '../../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import { useOrders } from '../../hooks/OrdersHook/useOrder.js';
+import OrderCard from '../../components/Cards/orderCard.js';
 
 const HomeScreen = () => {
-  // Datos quemados - REEMPLAZAR CON API CALLS
-  const orders = [
-    {
-      id: 1,
-      clientName: 'NombreCliente',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-      image: 'https://via.placeholder.com/80x60/8D6CFF/FFFFFF?text=Map',
-    },
-    {
-      id: 2,
-      clientName: 'NombreCliente',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-      image: 'https://via.placeholder.com/80x60/8D6CFF/FFFFFF?text=Map',
-    },
-    {
-      id: 3,
-      clientName: 'NombreCliente',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-      image: 'https://via.placeholder.com/80x60/8D6CFF/FFFFFF?text=Map',
-    },
-    {
-      id: 4,
-      clientName: 'NombreCliente',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit...',
-      image: 'https://via.placeholder.com/80x60/8D6CFF/FFFFFF?text=Map',
-    },
-  ];
+  const { user, authToken } = useAuth();
+  const navigation = useNavigation();
+  const {
+    orders,
+    loading,
+    error,
+    updateOrderStatus,
+    clearError
+  } = useOrders();
+
+  console.log('HomeScreen - Orders count:', orders.length);
+  console.log('HomeScreen - Loading:', loading);
+  console.log('HomeScreen - Error:', error);
+
+  // Verificar autenticación al cargar la pantalla
+  useEffect(() => {
+    if (!authToken) {
+      navigation.navigate('Login');
+    }
+  }, [authToken, navigation]);
+
+  // Si no hay token, no mostrar el contenido
+  if (!authToken) {
+    return null;
+  }
+
+  // Función para obtener el nombre a mostrar
+  const getDisplayName = () => {
+    if (!user) return 'Usuario';
+
+    if (user.name && user.name !== user.email) return user.name;
+
+    if (user.email) {
+      const emailName = user.email.split('@')[0];
+      return emailName
+        .replace(/[._-]/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    return 'Usuario';
+  };
+
+  // Función para manejar actualización de estado
+  const handleUpdateStatus = async (orderId, newStatus) => {
+    const success = await updateOrderStatus(orderId, newStatus);
+    if (success) {
+      Alert.alert('Estado Actualizado', 'El estado de la orden se actualizó correctamente');
+    }
+  };
+
+  // Función para mostrar detalles de orden
+  const handleViewDetails = (order) => {
+    Alert.alert(
+      'Detalles de la Orden',
+      `Cliente: ${order.customerName || order.customerId?.name || 'Sin nombre'}
+Estado: ${order.orderStatus}
+Tipo: ${order.orderType}
+Total: ${order.totalAmount}
+Pago: ${order.paymentStatus}`,
+      [{ text: 'OK' }]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -53,8 +96,10 @@ const HomeScreen = () => {
       >
         <Text style={styles.headerTitle}>Pagina Principal</Text>
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>Nombre usuario</Text>
-          <Text style={styles.userRole}>Delivery</Text>
+          <Text style={styles.userName}>{getDisplayName()}</Text>
+          <Text style={styles.userRole}>
+            {user?.userType === 'admin' ? 'Administrador' : 'Empleado'}
+          </Text>
         </View>
         <View style={styles.profileIcon}>
           <Ionicons name="person-circle-outline" size={40} color="#FFFFFF" />
@@ -63,17 +108,43 @@ const HomeScreen = () => {
 
       {/* Content */}
       <View style={styles.content}>
-        <Text style={styles.sectionTitle}>Todos los Pedidos</Text>
+        <Text style={styles.sectionTitle}>Todas las Órdenes</Text>
         
-        <ScrollView 
-          style={styles.ordersList}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 100 }}
-        >
-          {orders.map((order) => (
-            <OrderCard key={order.id} order={order} />
-          ))}
-        </ScrollView>
+        {error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={clearError}>
+              <Text style={styles.retryButtonText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        ) : loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#8D6CFF" />
+            <Text style={styles.loadingText}>Cargando órdenes...</Text>
+          </View>
+        ) : (
+          <ScrollView 
+            style={styles.ordersList}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 100 }}
+          >
+            {orders.length > 0 ? (
+              orders.map((order) => (
+                <OrderCard 
+                  key={order._id} 
+                  order={order}
+                  onUpdateStatus={handleUpdateStatus}
+                  onViewDetails={handleViewDetails}
+                />
+              ))
+            ) : (
+              <View style={styles.emptyContainer}>
+                <Ionicons name="receipt-outline" size={64} color="#CCCCCC" />
+                <Text style={styles.emptyText}>No hay órdenes disponibles</Text>
+              </View>
+            )}
+          </ScrollView>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -132,6 +203,51 @@ const styles = StyleSheet.create({
   },
   ordersList: {
     flex: 1,
+  },
+  errorContainer: {
+    backgroundColor: '#FFE6E6',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  errorText: {
+    color: '#D32F2F',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  retryButton: {
+    backgroundColor: '#8D6CFF',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontWeight: '500',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#8D6CFF',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666666',
+    marginTop: 16,
+    textAlign: 'center',
   },
 });
 
