@@ -60,10 +60,14 @@ function FollowOrder() {
               <h2>Tu pedido está:</h2>
               <h1>En camino</h1>
             </div>
-            <img src={imgStatus} onClick={() => navigate("/RateService")} />
+            <img 
+              src={imgStatus} 
+              alt="Estado del pedido"
+              onClick={() => navigate("/RateService")} 
+            />
           </div>
 
-          <div style={{ height: "50vh", width: "30vw", margin: "0 auto" }}>
+          <div className="map-container">
             {customerLocation && (
               <MapContainer
                 center={deliveryLocation}
@@ -71,8 +75,8 @@ function FollowOrder() {
                 style={{ height: "100%", width: "100%" }}
               >
                 <TileLayer
-                url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"
-                attribution="© OpenStreetMap contributors © CARTO"
+                  url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"
+                  attribution="© OpenStreetMap contributors © CARTO"
                 />
 
                 <Marker position={customerLocation} icon={markerIcon} />
