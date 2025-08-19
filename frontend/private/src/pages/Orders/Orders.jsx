@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Agregar useNavigate
+import { useNavigate } from 'react-router-dom';
 import { 
   Plus,
   RefreshCw,
   Search,
-  Eye
+  Eye,
+  X,
+  Play,
+  CheckCircle
 } from 'lucide-react';
 import OrdersCard from '../../components/Cards/OrdersCard/OrdersCard';
 import { useOrder } from '../../hooks/OrdersHook/useOrder';
 import './Orders.css';
 
 const Orders = () => {
-  const navigate = useNavigate(); // Hook para navegación
+  const navigate = useNavigate();
   
   const {
     orders,
@@ -67,20 +70,37 @@ const Orders = () => {
 
   // Función para navegar a la página de nueva orden
   const handleNewOrder = () => {
-    navigate('/TomaDeOrdenes'); // Cambia esta ruta según tu configuración de rutas
+    navigate('/TomaDeOrdenes');
   };
 
-  const handleStatusUpdate = async (order) => {
-    // Ciclo simple de estados
-    const statusCycle = {
-      'pendiente': 'en preparación',
-      'en preparación': 'en camino',
-      'en camino': 'entregado',
-      'entregado': 'entregado'
-    };
+  // Función para cancelar orden
+  const handleCancelOrder = async (order) => {
+    // Solo permitir cancelar si no está ya cancelada
+    if (order.orderStatus === 'cancelado') {
+      return;
+    }
     
-    const newStatus = statusCycle[order.orderStatus] || 'en preparación';
-    await updateOrderStatus(order._id, newStatus);
+    await updateOrderStatus(order._id, 'cancelado');
+  };
+
+  // Función para marcar como en proceso
+  const handleSetInProcess = async (order) => {
+    // No permitir cambio de estado si está cancelada
+    if (order.orderStatus === 'cancelado') {
+      return;
+    }
+    
+    await updateOrderStatus(order._id, 'en preparación');
+  };
+
+  // Función para marcar como completado
+  const handleMarkCompleted = async (order) => {
+    // No permitir cambio de estado si está cancelada
+    if (order.orderStatus === 'cancelado') {
+      return;
+    }
+    
+    await updateOrderStatus(order._id, 'entregado');
   };
 
   const handleContactClient = (order) => {
@@ -89,10 +109,6 @@ const Orders = () => {
     const message = `Hola ${order.customerName}, te contactamos sobre tu orden #${order._id.slice(-6)}`;
     const whatsappUrl = `https://wa.me/503${phone}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
-  };
-
-  const handleMarkCompleted = async (order) => {
-    await updateOrderStatus(order._id, 'entregado');
   };
 
   const formatCurrency = (amount) => {
@@ -132,27 +148,10 @@ const Orders = () => {
   return (
     <div className="orders-page">
       {/* Header */}
+      {/* Header */}
       <div className="orders-header">
-        <div className="header-left">
-          <h1 className="header-title">Gestión de Órdenes</h1>
-          
-          <div className="stats-container">
-            <div className="stat-card">
-              <span className="stat-number">{stats.activeOrders}</span>
-              <span className="stat-label">Activas</span>
-            </div>
-            
-            <div className="stat-card">
-              <span className="stat-number">{stats.todayOrders}</span>
-              <span className="stat-label">Hoy</span>
-            </div>
-            
-            <div className="stat-card">
-              <span className="stat-number">{stats.averageTime}</span>
-              <span className="stat-label">Promedio</span>
-            </div>
-          </div>
-        </div>
+       
+
         
         <div className="header-actions">
           <button 
@@ -164,6 +163,43 @@ const Orders = () => {
             {loading ? 'Actualizando...' : 'Actualizar'}
           </button>
           
+          <button 
+            className="action-btn btn-primary"
+            onClick={handleNewOrder}
+          >
+            <Plus size={16} />
+            Nueva Orden
+          </button>
+        </div>
+      </div>
+      <div className="orders-header">
+        <div className="header-left">
+          <h1 className="header-title">Gestión de Órdenes</h1>
+          <div className="stats-container">
+            <div className="stat-card">
+              <span className="stat-number">{stats.totalOrders}</span>
+              <span className="stat-label">Total</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">{stats.todayOrders}</span>
+              <span className="stat-label">Hoy</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">{stats.activeOrders}</span>
+              <span className="stat-label">Activas</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="header-actions">
+          <button 
+            className="action-btn btn-secondary"
+            onClick={handleRefreshOrders}
+            disabled={loading}
+          >
+            <RefreshCw size={16} />
+            Actualizar
+          </button>
           <button 
             className="action-btn btn-primary"
             onClick={handleNewOrder}
@@ -258,9 +294,10 @@ const Orders = () => {
                   order={order}
                   isExpanded={expandedOrder === order._id}
                   onToggleExpand={() => handleOrderClick(order._id)}
-                  onStatusUpdate={handleStatusUpdate}
-                  onContactClient={handleContactClient}
+                  onCancelOrder={handleCancelOrder}
+                  onSetInProcess={handleSetInProcess}
                   onMarkCompleted={handleMarkCompleted}
+                  onContactClient={handleContactClient}
                   loading={loading}
                 />
               ))

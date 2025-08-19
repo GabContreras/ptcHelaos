@@ -1,8 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Mantener las pantallas existentes de Moon Ice Cream
-import Home from '../Screens/MainScreens/HomeScreen.js';
+// Pantallas
+import SplashScreen from '../Screens/SplashScreen/SplashScreen';
+import HomeScreen from '../Screens/MainScreens/HomeScreen.js';
 import ActiveOrders from '../Screens/MainScreens/ActiveOrdersScreen.js';
 import ProfileScreen from '../Screens/MainScreens/ProfileScreen.js';
 import TabNavigator from './MainTabNavigator.js';
@@ -14,40 +15,45 @@ import ForgotPasswordScreen1 from '../Screens/PasswordRecovery/ForgotPasswordScr
 import ForgotPasswordScreen2 from '../Screens/PasswordRecovery/ForgotPasswordScreen2.js';
 import ForgotPasswordScreen3 from '../Screens/PasswordRecovery/ForgotPasswordScreen3.js';
 
-// Contexto de autenticación (usar el de Moon Ice Cream)
+// Contexto de autenticación
 import { useAuth } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
-
 export default function Navigation() {
   const { authToken, isLoading } = useAuth();
-  const Stack = createNativeStackNavigator();
 
-  // Verificar si hay token al cargar
+  // Mostrar splash mientras se verifica la autenticación
   if (isLoading) {
-    return null; // O un componente de loading si prefieres
+    return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Splash" component={SplashScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
   }
 
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={authToken ? 'TabNavigator' : 'FirstHome'}
         screenOptions={{ headerShown: false }}
+        initialRouteName={authToken ? 'MainTabs' : 'FirstHomePage'}
       >
         {authToken ? (
-          // Usuario autenticado - usar TabNavigator existente
+          // Usuario autenticado - Mostrar TabNavigator
           <>
-            <Stack.Screen name="TabNavigator" component={TabNavigator} />
-            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="MainTabs" component={TabNavigator} />
+            <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="PedidosActivos" component={ActiveOrders} />
             <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
           </>
         ) : (
-          // Usuario no autenticado
+          // Usuario no autenticado - Mostrar pantallas de auth
           <>
+            <Stack.Screen name="Splash" component={SplashScreen} />
+            <Stack.Screen name="FirstHomePage" component={FirstHomePage} />
             <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="FirstHome" component={FirstHomePage} />
             <Stack.Screen name="Register1" component={RegisterScreen1} /> 
             <Stack.Screen name="Register2" component={RegisterScreen2} /> 
             <Stack.Screen name="ForgotPassword1" component={ForgotPasswordScreen1} /> 

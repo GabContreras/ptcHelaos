@@ -10,11 +10,13 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../context/AuthContext';
 
 const { width, height } = Dimensions.get('window');
 
 const SplashScreen = () => {
   const navigation = useNavigation();
+  const { authToken, isLoading } = useAuth();
   
   // Animaciones
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -25,13 +27,33 @@ const SplashScreen = () => {
     // Iniciar animaciones
     startAnimations();
     
-    // Navegar a FirstHomePage después de 3 segundos
+    // Crear timer pero no navegar automáticamente
     const timer = setTimeout(() => {
-      navigation.replace('FirstHomePage');
+      // Solo navegar si no está autenticado y no está cargando
+      if (!isLoading && !authToken) {
+        navigation.replace('FirstHomePage');
+      }
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [navigation]);
+  }, [navigation, authToken, isLoading]);
+
+  // Efecto separado para manejar la navegación cuando cambia el estado de auth
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        if (authToken) {
+          // Usuario autenticado, ir a MainTabs
+          navigation.replace('MainTabs');
+        } else {
+          // Usuario no autenticado, ir a FirstHomePage
+          navigation.replace('FirstHomePage');
+        }
+      }, 2000); // Tiempo mínimo para mostrar splash
+
+      return () => clearTimeout(timer);
+    }
+  }, [authToken, isLoading, navigation]);
 
   const startAnimations = () => {
     // Animación en paralelo
@@ -135,7 +157,9 @@ const SplashScreen = () => {
                 ]} 
               />
             </View>
-            <Text style={styles.loadingText}>Cargando...</Text>
+            <Text style={styles.loadingText}>
+              {isLoading ? 'Verificando sesión...' : 'Cargando...'}
+            </Text>
           </Animated.View>
         </Animated.View>
 

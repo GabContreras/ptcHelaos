@@ -22,6 +22,20 @@
   border-color: #8B5CF6;
 }
 
+/* Estilo especial para órdenes canceladas */
+.order-card.cancelled {
+  border: 2px solid #dc2626;
+  background: #fef2f2;
+}
+
+.order-card.cancelled .order-header {
+  background: #fef2f2;
+}
+
+.order-card.cancelled .order-details {
+  background: #fee2e2;
+}
+
 .order-header {
   padding: 20px;
   cursor: pointer;
@@ -491,6 +505,26 @@
   color: white;
 }
 
+.btn-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-cancel {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-process {
+  background: #8b5cf6;
+  color: white;
+}
+
 .btn-primary:hover:not(:disabled) { 
   background: #7C3AED; 
   transform: translateY(-1px); 
@@ -505,7 +539,33 @@
   transform: translateY(-1px); 
 }
 
+.btn-warning:hover:not(:disabled) { 
+  background: #d97706; 
+  transform: translateY(-1px); 
+}
+
+.btn-danger:hover:not(:disabled) { 
+  background: #dc2626; 
+  transform: translateY(-1px); 
+}
+
+.btn-cancel:hover:not(:disabled) { 
+  background: #b91c1c; 
+  transform: translateY(-1px); 
+}
+
+.btn-process:hover:not(:disabled) { 
+  background: #7c3aed; 
+  transform: translateY(-1px); 
+}
+
 .action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.action-btn.disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;

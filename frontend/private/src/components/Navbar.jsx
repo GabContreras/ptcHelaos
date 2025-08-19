@@ -37,7 +37,7 @@ const Navbar = () => {
     // Cerrar menú al hacer clic fuera
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (isMobileMenuOpen && !event.target.closest('.image-sidebar') && !event.target.closest('.hamburger-menu')) {
+            if (isMobileMenuOpen && !event.target.closest('.navbar-sidebar') && !event.target.closest('.navbar-hamburger-menu')) {
                 setIsMobileMenuOpen(false);
             }
         };
@@ -131,13 +131,13 @@ const Navbar = () => {
         {
             path: "/products",
             label: "Productos",
-            icon: "",
+            icon: "🍦",
             adminOnly: true 
         },
         {
             path: "/events",
             label: "Eventos",
-            icon: "",
+            icon: "🎉",
             adminOnly: true 
         }
     ];
@@ -160,7 +160,7 @@ const Navbar = () => {
             {/* Botón hamburguesa para móvil - solo mostrar cuando el menú está cerrado */}
             {isMobile && !isMobileMenuOpen && (
                 <button
-                    className={`hamburger-menu`}
+                    className={`navbar-hamburger-menu`}
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     aria-label="Abrir menú"
                 >
@@ -172,34 +172,34 @@ const Navbar = () => {
 
             {/* Overlay para móvil */}
             {isMobile && isMobileMenuOpen && (
-                <div className="mobile-overlay" onClick={() => setIsMobileMenuOpen(false)} />
+                <div className="navbar-mobile-overlay" onClick={() => setIsMobileMenuOpen(false)} />
             )}
 
             {/* Sidebar */}
-            <div className={`image-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+            <div className={`navbar-sidebar ${isMobileMenuOpen ? 'navbar-mobile-open' : ''}`}>
                 {/* Header con logo */}
-                <div className="image-header">
-                    <div className="header-icon">🌙</div>
-                    <div className="header-content">
-                        <h1 className="header-title">Moon's Ice Cream Rolls</h1>
-                        <span className="header-subtitle">Management System</span>
+                <div className="navbar-header">
+                    <div className="navbar-header-icon">🌙</div>
+                    <div className="navbar-header-content">
+                        <h1 className="navbar-header-title">Moon's Ice Cream Rolls</h1>
+                        <span className="navbar-header-subtitle">Management System</span>
                     </div>
                     {/* Eliminamos el botón X ya que se puede cerrar clickeando fuera */}
                 </div>
 
                 {/* User section */}
-                <div className="user-card">
-                    <div className="user-avatar-section">
-                        <div className="user-circle">👤</div>
+                <div className="navbar-user-card">
+                    <div className="navbar-user-avatar-section">
+                        <div className="navbar-user-circle">👤</div>
                     </div>
-                    <div className="user-details">
-                        <span className="username">{getDisplayName()}</span>
+                    <div className="navbar-user-details">
+                        <span className="navbar-username">{getDisplayName()}</span>
                         {/* Mostrar el rol del usuario */}
-                        <span className="user-role">
+                        <span className="navbar-user-role">
                             {isAdmin() ? 'Administrador' : 'Empleado'}
                         </span>
                         <button
-                            className="logout-badge"
+                            className="navbar-logout-badge"
                             onClick={handleLogout}
                             title="Cerrar sesión"
                         >
@@ -209,18 +209,18 @@ const Navbar = () => {
                 </div>
 
                 {/* Navigation buttons */}
-                <div className="nav-buttons">
+                <div className="navbar-nav-buttons">
                     {menuItems.map((item, index) => (
                         <Link
                             key={index}
                             to={item.path}
-                            className={`nav-button ${isActive(item.path) ? 'nav-active' : ''}`}
+                            className={`navbar-nav-button ${isActive(item.path) ? 'navbar-nav-active' : ''}`}
                             onClick={handleMenuItemClick}
                         >
                             {isMobile && (
-                                <span className="nav-icon">{item.icon}</span>
+                                <span className="navbar-nav-icon">{item.icon}</span>
                             )}
-                            <span className="nav-label">{item.label}</span>
+                            <span className="navbar-nav-label">{item.label}</span>
                         </Link>
                     ))}
                 </div>
