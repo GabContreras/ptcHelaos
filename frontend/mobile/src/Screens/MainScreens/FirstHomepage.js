@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     color: '#4A90E2',
   },
   buttonContainer: {
-        marginBottom: 100,
+    marginBottom: 100,
     flex: 1,
     justifyContent: 'flex-end',
     paddingBottom: 80, // Aumenté el padding para bajar más el botón

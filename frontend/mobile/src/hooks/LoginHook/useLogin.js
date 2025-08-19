@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Alert } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 
 export function useLogin() {
@@ -34,7 +33,7 @@ export function useLogin() {
 
             if (result.success) {
                 console.log("Login successful");
-                // La navegación será automática por el cambio de authToken
+                // No manejar navegación aquí, el AuthContext lo hará automáticamente
                 return true;
             } else {
                 const errorMessage = result.message || "Error al iniciar sesión";

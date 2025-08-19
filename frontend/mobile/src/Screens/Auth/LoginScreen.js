@@ -28,7 +28,7 @@ const LoginScreen = ({ navigation }) => {
     error,
     handleLogin,
     clearError
-  } = useLogin();
+  } = useLogin(); // Sin pasar navigation
 
   const miSvgXml = `
    <svg width="448" height="361" viewBox="0 0 448 361" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -41,16 +41,16 @@ const LoginScreen = ({ navigation }) => {
     
     const success = await handleLogin();
     
-    if (success) {
-      // La navegación será automática por el cambio de authToken en Navigation.js
-      console.log("Login exitoso, navegación automática");
-    } else if (error) {
+    // Si hay error, mostrarlo
+    if (!success && error) {
       Alert.alert(
         "Error de inicio de sesión",
         error,
         [{ text: "OK", onPress: () => clearError() }]
       );
     }
+    // Si es exitoso, la navegación será automática via AuthContext
+    // El usuario verá: Login → LoginLoadingScreen → MainTabs
   };
 
   return (

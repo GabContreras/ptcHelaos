@@ -10,9 +10,12 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [authToken, setAuthToken] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isLoginLoading, setIsLoginLoading] = useState(false);
 
     const Login = async (email, password) => {
         try {
+            console.log("🔵 Login - Iniciando proceso de login");
+            
             const response = await fetch(`${SERVER_URL}login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -26,7 +29,6 @@ export const AuthProvider = ({ children }) => {
                 throw new Error(data.message || "Error en la autenticación");
             }
 
-            // Permitir solo employees y admin para Moon Ice Cream dashboard
             if (data.userType === "customer") {
                 return {
                     success: false,
@@ -34,7 +36,6 @@ export const AuthProvider = ({ children }) => {
                 };
             }
 
-            // Crear objeto de usuario con datos completos del servidor
             const userData = {
                 id: data.userId,
                 userType: data.userType,
@@ -42,67 +43,83 @@ export const AuthProvider = ({ children }) => {
                 name: data.user?.name || email.split('@')[0]
             };
 
-            // Guardar en AsyncStorage (equivalente a localStorage en React Native)
-            await AsyncStorage.setItem("authToken", "authenticated");
+            console.log("🟡 Login - Guardando user pero NO authToken, activando isLoginLoading");
+            
+            // Guardar en AsyncStorage PERO NO actualizar authToken todavía
+            await AsyncStorage.setItem("pendingAuthToken", "authenticated");
             await AsyncStorage.setItem("user", JSON.stringify(userData));
 
-            // Actualizar estado inmediatamente
-            setAuthToken("authenticated");
+            // SOLO actualizar user e isLoginLoading, NO authToken
             setUser(userData);
-
-            console.log("Login exitoso Moon Ice Cream:", {
-                userType: data.userType,
-                userId: data.userId,
-                name: userData.name,
-                tokenSaved: true
+            setIsLoginLoading(true);
+            
+            console.log("🟢 Login - Estados actualizados:", {
+                user: userData.name,
+                isLoginLoading: true,
+                authToken: "NOT SET - WAITING FOR COMPLETE"
             });
 
-            return { success: true, message: data.message };
+            return { success: true, message: data.message, user: userData };
         } catch (error) {
-            console.error("Error en login Moon Ice Cream:", error);
+            console.error("🔴 Error en login:", error);
             return { success: false, message: error.message };
         }
     };
 
-    const logout = async () => {
+    const completeLogin = async () => {
+        console.log("🟣 CompleteLogin - Completando login");
+        
         try {
-            // Llamar al endpoint de logout del servidor
+            // Mover el token pendiente a token real
+            const pendingToken = await AsyncStorage.getItem("pendingAuthToken");
+            if (pendingToken) {
+                await AsyncStorage.setItem("authToken", pendingToken);
+                await AsyncStorage.removeItem("pendingAuthToken");
+            }
+            
+            setAuthToken("authenticated");
+            setIsLoginLoading(false);
+            
+            console.log("✅ CompleteLogin - Token activado, navegación a MainTabs debería ocurrir");
+        } catch (error) {
+            console.error("Error en completeLogin:", error);
+        }
+    };
+
+    const logout = async () => {
+        console.log("🔶 Logout - Iniciando logout");
+        try {
             await fetch(`${SERVER_URL}logout`, {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" }
             });
-            console.log("Logout exitoso en el servidor");
         } catch (error) {
             console.error("Error al hacer logout en el servidor:", error);
-            // Continuar con la limpieza local aunque falle el servidor
         } finally {
-            // Limpiar datos locales siempre
             try {
                 await AsyncStorage.removeItem("authToken");
+                await AsyncStorage.removeItem("pendingAuthToken");
                 await AsyncStorage.removeItem("user");
-                console.log("Datos locales limpiados correctamente");
             } catch (storageError) {
                 console.error("Error al limpiar AsyncStorage:", storageError);
             }
             
-            // Actualizar estado inmediatamente
             setAuthToken(null);
             setUser(null);
+            setIsLoginLoading(false);
+            console.log("🔶 Logout - Estados limpiados");
         }
     };
 
-    // Función para obtener headers de autenticación
     const getAuthHeaders = async () => {
         const token = authToken || await AsyncStorage.getItem('authToken');
-
         return {
             'Content-Type': 'application/json',
             ...(token && { 'Authorization': `Bearer ${token}` })
         };
     };
 
-    // Utilidad para fetch autenticado
     const authenticatedFetch = async (url, options = {}) => {
         const isFormData = options.body instanceof FormData;
         const headers = await getAuthHeaders();
@@ -120,9 +137,8 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await fetch(url, config);
 
-            // Si el token expiró o es inválido, hacer logout automático
             if (response.status === 401 || response.status === 403) {
-                console.log("Token expirado o sin permisos, haciendo logout automático...");
+                console.log("Token expirado, haciendo logout automático...");
                 await logout();
                 throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
             }
@@ -133,10 +149,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // Convertimos isAuthenticated en un valor computado
     const isAuthenticated = !!(user && authToken);
-
-    // Verificar si el usuario tiene un rol específico
     const hasRole = (role) => user?.userType === role;
     const hasAnyRole = (roles) => roles.includes(user?.userType);
     const isEmployee = () => user?.userType === 'employee';
@@ -145,30 +158,36 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkAuthState = async () => {
             try {
+                console.log("🔄 CheckAuthState - Verificando estado inicial");
+                
+                // IMPORTANTE: Para testing, limpia el storage al inicio
+                // REMOVER ESTAS LÍNEAS EN PRODUCCIÓN
+                console.log("🧹 CheckAuthState - Limpiando storage para testing");
+                await AsyncStorage.removeItem("authToken");
+                await AsyncStorage.removeItem("pendingAuthToken");
+                await AsyncStorage.removeItem("user");
+                
                 const token = await AsyncStorage.getItem("authToken");
                 const savedUser = await AsyncStorage.getItem("user");
 
-                console.log("🔄 useEffect - Checking stored auth for Moon Ice Cream:", { 
+                console.log("🔄 CheckAuthState - Datos encontrados:", { 
                     hasToken: !!token, 
                     hasSavedUser: !!savedUser
                 });
 
                 if (!token || !savedUser || savedUser === "undefined") {
-                    console.log("No hay datos locales, limpiando...");
-                    await AsyncStorage.removeItem("authToken");
-                    await AsyncStorage.removeItem("user");
+                    console.log("🔄 CheckAuthState - No hay datos válidos");
                     setAuthToken(null);
                     setUser(null);
                     setIsLoading(false);
                     return;
                 }
 
-                // Restaurar desde AsyncStorage
                 try {
                     const parsedUser = JSON.parse(savedUser);
                     setUser(parsedUser);
                     setAuthToken(token);
-                    console.log("Moon Ice Cream auth restored from AsyncStorage:", parsedUser);
+                    console.log("🔄 CheckAuthState - Auth restaurada:", parsedUser.name);
                 } catch (parseError) {
                     console.error("Error parsing saved user:", parseError);
                     await AsyncStorage.removeItem("user");
@@ -180,11 +199,23 @@ export const AuthProvider = ({ children }) => {
                 console.error("Error checking auth state:", error);
             } finally {
                 setIsLoading(false);
+                console.log("🔄 CheckAuthState - Verificación completada");
             }
         };
 
         checkAuthState();
     }, []);
+
+    // Log cuando cambian los estados principales
+    useEffect(() => {
+        console.log("📊 Estados AuthContext:", {
+            isLoading,
+            isLoginLoading,
+            hasUser: !!user,
+            hasAuthToken: !!authToken,
+            userType: user?.userType
+        });
+    }, [isLoading, isLoginLoading, user, authToken]);
 
     return (
         <AuthContext.Provider
@@ -193,9 +224,11 @@ export const AuthProvider = ({ children }) => {
                 authToken,
                 Login,
                 logout,
+                completeLogin,
                 authenticatedFetch,
                 isAuthenticated,
                 isLoading,
+                isLoginLoading,
                 setUser,
                 setAuthToken,
                 getAuthHeaders,
