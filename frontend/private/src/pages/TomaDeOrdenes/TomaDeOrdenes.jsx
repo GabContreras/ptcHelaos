@@ -17,7 +17,7 @@ const TomaDeOrdenes = () => {
     error,
     success,
     setSuccess,
-
+    
     // Estados de modal simplificados
     selectedProduct,
     showCustomizationModal,
@@ -47,53 +47,36 @@ const TomaDeOrdenes = () => {
     error: inventoryError
   } = useOrderInventory();
 
-  // Estados locales para otros modales
-  const [activeTab, setActiveTab] = React.useState(null);
+  // Estados locales para búsqueda y modales
+  const [searchTerm, setSearchTerm] = React.useState('');
   const [showCheckoutModal, setShowCheckoutModal] = React.useState(false);
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);
-  
-  const activeTabRef = useRef(activeTab);
 
   // Cargar productos al montar
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // Establecer primera categoría como activa
-  useEffect(() => {
-    if (categories.length > 0 && !activeTabRef.current) {
-      const firstCategoryId = categories[0]._id;
-      setActiveTab(firstCategoryId);
-      activeTabRef.current = firstCategoryId;
+  // Obtener todos los productos disponibles (sin filtrar por categoría)
+  const allProducts = useMemo(() => {
+    return products.filter(product => product.available);
+  }, [products]);
+
+  // Filtrar productos por búsqueda
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return allProducts;
     }
-  }, [categories]);
-
-  // Obtener icono de categoría
-  const getCategoryIcon = useCallback((categoryName) => {
-    const normalizedName = categoryName?.toLowerCase();
     
-    if (normalizedName?.includes('waffle')) return Cookie;
-    if (normalizedName?.includes('helado')) return IceCream;
-    if (normalizedName?.includes('pancake')) return Layers;
-    if (normalizedName?.includes('pan')) return Sandwich;
-    
-    const icons = [Cookie, IceCream, Layers, Sandwich];
-    const index = categories.findIndex(cat => cat.name === categoryName);
-    return icons[index] || Cookie;
-  }, [categories]);
+    return allProducts.filter(product => 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allProducts, searchTerm]);
 
-  // Obtener productos de la categoría activa
-  const activeProducts = useMemo(() => {
-    if (!activeTab) return [];
-    return getFilteredProducts(activeTab);
-  }, [getFilteredProducts, activeTab]);
-
-  // Manejar cambio de pestaña
-  const handleTabChange = useCallback((categoryId) => {
-    if (activeTabRef.current !== categoryId) {
-      setActiveTab(categoryId);
-      activeTabRef.current = categoryId;
-    }
+  // Manejar cambio en la búsqueda
+  const handleSearchChange = useCallback((e) => {
+    setSearchTerm(e.target.value);
   }, []);
 
   // FUNCIÓN: Determinar si un producto necesita personalización
@@ -268,39 +251,63 @@ const TomaDeOrdenes = () => {
           </div>
         )}
 
-        {/* Header con pestañas */}
-        <div className="header-tabs">
-          {categories.map((category) => {
-            const IconComponent = getCategoryIcon(category.name);
-            const isActive = activeTab === category._id;
+        {/* Barra de búsqueda */}
+        <div className="search-section">
+          <div className="search-container">
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="search-clear-btn"
+                  title="Limpiar búsqueda"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
             
-            return (
-              <button
-                key={`tab-${category._id}`}
-                className={`tab-button ${isActive ? 'active' : ''}`}
-                onClick={() => handleTabChange(category._id)}
-              >
-                <IconComponent size={28} />
-                <span className="tab-label">{category.name}</span>
-              </button>
-            );
-          })}
+            {/* Indicador de resultados */}
+            {searchTerm && (
+              <div className="search-results-indicator">
+                <span>
+                  {filteredProducts.length} {filteredProducts.length === 1 ? 'resultado' : 'resultados'} encontrados
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Lista de productos */}
         <div className="products-section">
-          <h2>Selecciona un producto</h2>
-          {!activeTab ? (
+          <h2>
+            {searchTerm ? `Resultados para "${searchTerm}"` : 'Todos los productos'}
+          </h2>
+          {filteredProducts.length === 0 ? (
             <div className="no-products">
-              <p>Cargando categorías...</p>
-            </div>
-          ) : activeProducts.length === 0 ? (
-            <div className="no-products">
-              <p>No hay productos disponibles en esta categoría</p>
+              {searchTerm ? (
+                <>
+                  <p>No se encontraron productos que coincidan con tu búsqueda</p>
+                  <button 
+                    onClick={() => setSearchTerm('')}
+                    className="clear-search-btn"
+                  >
+                    Ver todos los productos
+                  </button>
+                </>
+              ) : (
+                <p>No hay productos disponibles en este momento</p>
+              )}
             </div>
           ) : (
             <div className="products-grid">
-              {activeProducts.map((product) => (
+              {filteredProducts.map((product) => (
                 <div key={`product-${product._id}`} className="product-card">
                   <div className="product-image">
                     <img 
