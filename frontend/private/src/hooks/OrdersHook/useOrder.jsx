@@ -611,6 +611,7 @@ export function useOrder() {
         loading,
         error,
         success,
+        setSuccess,
         
         // Estados de modal simplificados
         selectedProduct,
