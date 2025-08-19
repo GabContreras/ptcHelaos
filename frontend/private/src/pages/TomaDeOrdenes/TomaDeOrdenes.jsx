@@ -1,9 +1,10 @@
 import React, { useEffect, useCallback, useMemo, useRef } from 'react';
 import { Cookie, IceCream, Layers, Sandwich, Plus, ShoppingCart, CreditCard, MapPin, Trash2, X, AlertCircle, CheckCircle } from 'lucide-react';
 import { useOrder } from '../../hooks/OrdersHook/useOrder';
+import { useOrderInventory } from '../../hooks/OrderInventoryHook/useOrderInventory';
 import UniversalModal from '../../components/Modals/UniversalModal/UniversalModal';
-import CustomizationModal from '../../components/Modals/CustomizationModal/CustomizationModal'; // IMPORTAR EL MODAL SEPARADO
-import CheckoutModal from '../../components/Modals/CheckoutModal/CheckoutModal'; // Modal de checkout separado
+import CustomizationModal from '../../components/Modals/CustomizationModal/CustomizationModal';
+import CheckoutModal from '../../components/Modals/CheckoutModal/CheckoutModal';
 import './TomaDeOrdenes.css';
 
 const TomaDeOrdenes = () => {
@@ -15,19 +16,11 @@ const TomaDeOrdenes = () => {
     loading,
     error,
     success,
+    setSuccess,
     
     // Estados de modal simplificados
     selectedProduct,
     showCustomizationModal,
-    customizationOptions,
-    
-    // Estados del cliente y orden - REMOVIDOS (ahora los maneja el modal)
-    orderType,
-    setOrderType,
-    paymentMethod,
-    setPaymentMethod,
-    customerInfo,
-    setCustomerInfo,
     
     // Funciones principales
     fetchProducts,
@@ -42,60 +35,132 @@ const TomaDeOrdenes = () => {
     clearMessages
   } = useOrder();
 
-  // Estados locales para otros modales
-  const [activeTab, setActiveTab] = React.useState(null);
+  // Hook para inventario real
+  const {
+    getFlavorNames,
+    getToppingNames,
+    getFlavorExtraPrice,
+    getToppingExtraPrice,
+    isFlavorAvailable,
+    isToppingAvailable,
+    isLoading: inventoryLoading,
+    error: inventoryError
+  } = useOrderInventory();
+
+  // Estados locales para búsqueda y modales
+  const [searchTerm, setSearchTerm] = React.useState('');
   const [showCheckoutModal, setShowCheckoutModal] = React.useState(false);
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);
-  
-  const activeTabRef = useRef(activeTab);
 
   // Cargar productos al montar
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // Establecer primera categoría como activa
-  useEffect(() => {
-    if (categories.length > 0 && !activeTabRef.current) {
-      const firstCategoryId = categories[0]._id;
-      setActiveTab(firstCategoryId);
-      activeTabRef.current = firstCategoryId;
+  // Obtener todos los productos disponibles (sin filtrar por categoría)
+  const allProducts = useMemo(() => {
+    return products.filter(product => product.available);
+  }, [products]);
+
+  // Filtrar productos por búsqueda
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return allProducts;
     }
-  }, [categories]);
-
-  // Obtener icono de categoría
-  const getCategoryIcon = useCallback((categoryName) => {
-    const normalizedName = categoryName?.toLowerCase();
     
-    if (normalizedName?.includes('waffle')) return Cookie;
-    if (normalizedName?.includes('helado')) return IceCream;
-    if (normalizedName?.includes('pancake')) return Layers;
-    if (normalizedName?.includes('pan')) return Sandwich;
-    
-    const icons = [Cookie, IceCream, Layers, Sandwich];
-    const index = categories.findIndex(cat => cat.name === categoryName);
-    return icons[index] || Cookie;
-  }, [categories]);
+    return allProducts.filter(product => 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allProducts, searchTerm]);
 
-  // Obtener productos de la categoría activa
-  const activeProducts = useMemo(() => {
-    if (!activeTab) return [];
-    return getFilteredProducts(activeTab);
-  }, [getFilteredProducts, activeTab]);
-
-  // Manejar cambio de pestaña
-  const handleTabChange = useCallback((categoryId) => {
-    if (activeTabRef.current !== categoryId) {
-      setActiveTab(categoryId);
-      activeTabRef.current = categoryId;
-    }
+  // Manejar cambio en la búsqueda
+  const handleSearchChange = useCallback((e) => {
+    setSearchTerm(e.target.value);
   }, []);
+
+  // FUNCIÓN: Determinar si un producto necesita personalización
+  const needsCustomization = useCallback((productName) => {
+    // Solo "Helado de Rollo" necesita personalización
+    return productName === 'Helado de Rollo';
+  }, []);
+
+  // FUNCIÓN: Agregar producto directamente al carrito (sin personalización)
+  const addSimpleProductToCart = useCallback((product) => {
+    // Usar el mismo formato que espera la función addToCart del hook
+    const itemData = {
+      product,
+      customizations: {
+        quantity: 1,
+        specialInstructions: '',
+        size: null,
+        flavors: [],
+        toppings: [],
+        additions: [],
+        sizeName: null,
+        flavorNames: [],
+        toppingNames: [],
+        additionNames: []
+      },
+      totalPrice: product.basePrice
+    };
+    
+    addToCart(itemData);
+    
+    // Mensaje de éxito personalizado
+    clearMessages();
+    setTimeout(() => {
+      setSuccess && setSuccess(`${product.name} agregado al carrito`);
+      setTimeout(() => setSuccess && setSuccess(''), 2000);
+    }, 100);
+  }, [addToCart, clearMessages, setSuccess]);
 
   // Manejar selección de producto
   const handleProductSelect = useCallback((product) => {
     clearMessages();
-    openCustomizationModal(product);
-  }, [clearMessages, openCustomizationModal]);
+    
+    if (needsCustomization(product.name)) {
+      // Solo abrir modal de personalización para Helado de Rollo
+      openCustomizationModal(product);
+    } else {
+      // Agregar directamente al carrito
+      addSimpleProductToCart(product);
+    }
+  }, [clearMessages, needsCustomization, openCustomizationModal, addSimpleProductToCart]);
+
+  // Crear opciones de personalización dinámicas usando inventario real
+  const dynamicCustomizationOptions = useMemo(() => {
+    const flavors = getFlavorNames();
+    const toppings = getToppingNames();
+    
+    return {
+      sizes: [
+        { id: 'small', name: 'Un Sabor (Pequeño)', price: 3.00, maxFlavors: 1 },
+        { id: 'medium', name: 'Dos Sabores (Mediano)', price: 3.50, maxFlavors: 2 },
+        { id: 'large', name: 'Tres Sabores (Grande)', price: 4.00, maxFlavors: 3 }
+      ],
+      flavors: flavors.map((flavorName, index) => ({
+        id: `flavor_${index}`,
+        name: flavorName,
+        price: getFlavorExtraPrice(flavorName),
+        available: isFlavorAvailable(flavorName)
+      })),
+      toppings: toppings.map((toppingName, index) => ({
+        id: `topping_${index}`,
+        name: toppingName,
+        price: getToppingExtraPrice(toppingName),
+        available: isToppingAvailable(toppingName)
+      })),
+      additions: [
+        { id: 'butter', name: 'Mantequilla', price: 0.50 },
+        { id: 'honey', name: 'Miel', price: 0.70 },
+        { id: 'jam', name: 'Mermelada', price: 0.80 },
+        { id: 'cheese', name: 'Queso Crema', price: 1.20 },
+        { id: 'ham', name: 'Jamón', price: 1.60 },
+        { id: 'avocado', name: 'Aguacate', price: 1.40 }
+      ]
+    };
+  }, [getFlavorNames, getToppingNames, getFlavorExtraPrice, getToppingExtraPrice, isFlavorAvailable, isToppingAvailable]);
 
   // Callbacks para modales
   const handleCloseCheckoutModal = useCallback(() => {
@@ -122,12 +187,6 @@ const TomaDeOrdenes = () => {
       setShowSuccessModal(true);
     }
   }, [createOrder]);
-
-  const handleCustomerInfoChange = useCallback((field, value) => {
-    // Esta función ya no es necesaria, se maneja en el modal
-  }, []);
-
-  // Modal de checkout - ELIMINADO (ahora es un componente separado)
 
   // Modal de éxito
   const SuccessModal = React.memo(() => (
@@ -166,6 +225,14 @@ const TomaDeOrdenes = () => {
           </div>
         )}
 
+        {/* Mensaje de error de inventario */}
+        {inventoryError && (
+          <div className="alert alert-error">
+            <AlertCircle size={16} />
+            Error de inventario: {inventoryError}
+          </div>
+        )}
+
         {success && (
           <div className="alert alert-success">
             <CheckCircle size={16} />
@@ -176,39 +243,71 @@ const TomaDeOrdenes = () => {
           </div>
         )}
 
-        {/* Header con pestañas */}
-        <div className="header-tabs">
-          {categories.map((category) => {
-            const IconComponent = getCategoryIcon(category.name);
-            const isActive = activeTab === category._id;
+        {/* Mensaje de carga de inventario */}
+        {inventoryLoading && (
+          <div className="alert alert-info" style={{background: '#e3f2fd', color: '#1565c0', border: '1px solid #bbdefb'}}>
+            <AlertCircle size={16} />
+            Cargando sabores del inventario...
+          </div>
+        )}
+
+        {/* Barra de búsqueda */}
+        <div className="search-section">
+          <div className="search-container">
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="search-clear-btn"
+                  title="Limpiar búsqueda"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
             
-            return (
-              <button
-                key={`tab-${category._id}`}
-                className={`tab-button ${isActive ? 'active' : ''}`}
-                onClick={() => handleTabChange(category._id)}
-              >
-                <IconComponent size={28} />
-                <span className="tab-label">{category.name}</span>
-              </button>
-            );
-          })}
+            {/* Indicador de resultados */}
+            {searchTerm && (
+              <div className="search-results-indicator">
+                <span>
+                  {filteredProducts.length} {filteredProducts.length === 1 ? 'resultado' : 'resultados'} encontrados
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Lista de productos */}
         <div className="products-section">
-          <h2>Selecciona un producto</h2>
-          {!activeTab ? (
+          <h2>
+            {searchTerm ? `Resultados para "${searchTerm}"` : 'Todos los productos'}
+          </h2>
+          {filteredProducts.length === 0 ? (
             <div className="no-products">
-              <p>Cargando categorías...</p>
-            </div>
-          ) : activeProducts.length === 0 ? (
-            <div className="no-products">
-              <p>No hay productos disponibles en esta categoría</p>
+              {searchTerm ? (
+                <>
+                  <p>No se encontraron productos que coincidan con tu búsqueda</p>
+                  <button 
+                    onClick={() => setSearchTerm('')}
+                    className="clear-search-btn"
+                  >
+                    Ver todos los productos
+                  </button>
+                </>
+              ) : (
+                <p>No hay productos disponibles en este momento</p>
+              )}
             </div>
           ) : (
             <div className="products-grid">
-              {activeProducts.map((product) => (
+              {filteredProducts.map((product) => (
                 <div key={`product-${product._id}`} className="product-card">
                   <div className="product-image">
                     <img 
@@ -230,10 +329,10 @@ const TomaDeOrdenes = () => {
                   <button 
                     className="select-product-btn"
                     onClick={() => handleProductSelect(product)}
-                    disabled={loading}
+                    disabled={loading || inventoryLoading}
                   >
                     <Plus size={16} />
-                    Personalizar
+                    {needsCustomization(product.name) ? 'Personalizar' : 'Agregar al carrito'}
                   </button>
                 </div>
               ))}
@@ -287,6 +386,9 @@ const TomaDeOrdenes = () => {
                     {item.customizations.flavorNames.length > 0 && (
                       <small>Sabores: {item.customizations.flavorNames.join(', ')}</small>
                     )}
+                    {item.customizations.toppingNames.length > 0 && (
+                      <small>Toppings: {item.customizations.toppingNames.join(', ')}</small>
+                    )}
                   </div>
                   <div className="item-price">${item.totalPrice.toFixed(2)}</div>
                 </div>
@@ -329,9 +431,9 @@ const TomaDeOrdenes = () => {
         isOpen={showCustomizationModal}
         onClose={closeCustomizationModal}
         product={selectedProduct}
-        customizationOptions={customizationOptions}
+        customizationOptions={dynamicCustomizationOptions} // USAR OPCIONES DINÁMICAS
         onAddToCart={addToCart}
-        loading={loading}
+        loading={loading || inventoryLoading}
       />
       <CheckoutModal
         isOpen={showCheckoutModal}
