@@ -1,14 +1,16 @@
 import express from 'express';
 import customersController from '../controllers/customerController.js';
+import { validateAuthToken } from '../middlewares/validateAuthToken.js';
 
 const router = express.Router();
 
 router.route('/')
-.get(customersController.getCustomer)
-.post(customersController.insertCustomer);
+.get(validateAuthToken(['admin', 'employee']),customersController.getCustomer)
+.post(validateAuthToken(['admin', 'employee']),customersController.insertCustomer);
 
 router.route('/:id')
-.delete(customersController.deleteCustomer)
-.put(customersController.updateCustomer)
+.get(customersController.getCustomerById)
+.delete(validateAuthToken(['admin', 'employee']),customersController.deleteCustomer)
+.put(validateAuthToken(['admin', 'employee','customer']),customersController.updateCustomer)
 
-export default router;
+export default router;  

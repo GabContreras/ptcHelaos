@@ -58,15 +58,6 @@ function Cart() {
           >
             Vaciar carrito
           </button>
-          <button 
-            className="btn-checkout"
-            onClick={() => {
-              // Aquí puedes agregar la lógica para proceder al checkout
-              console.log('Procediendo al checkout con:', cart);
-            }}
-          >
-            Proceder al pago
-          </button>
         </div>
       )}
     </div>

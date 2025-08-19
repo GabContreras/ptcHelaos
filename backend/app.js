@@ -62,8 +62,8 @@ app.get('/api/status', (req, res) => {
 
 //Rutas de la API
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use("/api/employees", validateAuthToken(['admin']), employeesRoutes);
-app.use("/api/customers", validateAuthToken(['admin', 'employee']), customersRoutes);
+app.use("/api/employees",  employeesRoutes);
+app.use("/api/customers", customersRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/login", loginRoutes);
