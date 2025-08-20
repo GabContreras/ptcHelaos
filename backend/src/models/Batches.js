@@ -46,7 +46,7 @@ const batchSchema = new Schema({
             quantity: {
                 type: Number,
                 required: true,
-                min: 1
+                min: 0
             },
             reason: {
                 type: String,

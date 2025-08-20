@@ -6,11 +6,6 @@ const ingredientSchema = new Schema({
         ref: "inventory",
         required: false  // Cambiar a false para que sea opcional
     },
-    // Agregar nombre como alternativa para ingredientes no registrados
-    ingredientName: {
-        type: String,
-        required: false
-    },
     quantity: {
         type: Number,
         default: 1,
@@ -32,7 +27,10 @@ const productOrderSchema = new Schema({
     flavors: [ingredientSchema], // Solo para helados (1-3 sabores)
     toppings: [ingredientSchema], // Helados y algún otro producto
     additions: [ingredientSchema], // Para otros productos (café con azúcar, waffle con miel, etc.)
-    specialInstructions: String,
+    specialInstructions:{
+        type: String,
+        maxlength: 500
+    },
     subtotal: Number
 }, { _id: false });
 
@@ -43,15 +41,20 @@ const orderSchema = new Schema({
         ref: "customer"
     },
     // Datos del cliente (solo para ventas en local sin cuenta)
-    customerName: String,
-    customerPhone: String,
-    
+    customerName: {
+        type: String,
+        maxlength: 150
+    },
+    customerPhone:{
+        type: String,
+        maxlength: 15
+    },
     // Empleado: ObjectId para ventas en local, "online" para ventas en línea
     employeeId: {
         type: Schema.Types.Mixed,
         ref: "employee"
     },
-    
+
     products: [productOrderSchema],
     totalAmount: {
         type: Number,
@@ -64,7 +67,7 @@ const orderSchema = new Schema({
     },
     paymentStatus: {
         type: String,
-        enum: ["pagado", "pendiente", "rechazado","reembolsado","cancelado"],
+        enum: ["pagado", "pendiente", "rechazado", "reembolsado", "cancelado"],
         required: true
     },
     orderStatus: {
@@ -77,7 +80,10 @@ const orderSchema = new Schema({
         required: true,
         enum: ["delivery", "local"]
     },
-    deliveryAddress: String,
+    deliveryAddress:{
+        type: String,
+        maxlength: 500
+    },
     reviewId: {
         type: Schema.Types.ObjectId,
         ref: "review"

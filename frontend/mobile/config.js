@@ -1,6 +1,6 @@
 export const config = {
     api: {
-        API_BASE: "http://192.168.126.171:4000/api/"
+        API_BASE: "https://ptchelaos.onrender.com/api/"
         // Para producción o testing con dispositivo físico:
         // API_BASE: "https://tu-servidor.onrender.com/api/"
         // Para testing con dispositivo físico en la misma red:
