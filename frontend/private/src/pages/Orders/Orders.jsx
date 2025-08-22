@@ -1,332 +1,336 @@
-import React, { useState } from 'react';
-import { MapPin, Clock, Phone, User, Package, ChevronDown, ChevronUp, Star, Copy } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Plus,
+  RefreshCw,
+  Search,
+  Eye,
+  X,
+  Play,
+  CheckCircle
+} from 'lucide-react';
+import OrdersCard from '../../components/Cards/OrdersCard/OrdersCard';
+import { useOrder } from '../../hooks/OrdersHook/useOrder';
 import './Orders.css';
 
-const Delivery = () => {
-  const [expandedOrder, setExpandedOrder] = useState(null);
+const Orders = () => {
+  const navigate = useNavigate();
+  
+  const {
+    orders,
+    loading,
+    error,
+    success,
+    fetchOrders,
+    updateOrderStatus,
+    clearMessages
+  } = useOrder();
 
-  const orders = [
-    {
-      id: '00',
-      status: 'en preparacion',
-      client: {
-        name: 'Nombre Apellido',
-        phone: '0000-0000',
-        rating: 4.5
-      },
-      address: 'Calle Principal #123, San Salvador',
-      coordinates: { lat: 13.7028, lng: -89.2181 },
-      products: [
-        {
-          name: 'Producto 3',
-          quantity: 1,
-          size: 'opcion 2',
-          flavors: ['opcion 2', 'opcion 8'],
-          complements: ['opcion 6'],
-          extras: ['opcion 8'],
-          price: 5.80
-        }
-      ],
-      subtotal: 13.45,
-      discount: 0.00,
-      total: 15.95,
-      estimatedTime: '25-30 min',
-      orderTime: '14:30',
-      paymentMethod: 'contra entrega'
-    },
-    {
-      id: '01',
-      status: 'recibido',
-      client: {
-        name: 'María González',
-        phone: '2222-3333',
-        rating: 5.0
-      },
-      address: 'Colonia Escalón, Block A, Casa 45',
-      coordinates: { lat: 13.7089, lng: -89.2348 },
-      products: [
-        {
-          name: 'Producto 1',
-          quantity: 2,
-          size: 'opcion 2',
-          flavors: ['opcion 2', 'opcion 8'],
-          complements: ['opcion 6'],
-          extras: ['opcion 8'],
-          price: 7.65
-        }
-      ],
-      subtotal: 18.30,
-      discount: 0.00,
-      total: 18.30,
-      estimatedTime: '20-25 min',
-      orderTime: '14:45',
-      paymentMethod: 'tarjeta'
-    },
-    {
-      id: '02',
-      status: 'recibido',
-      client: {
-        name: 'Carlos Mendoza',
-        phone: '7777-8888',
-        rating: 4.2
-      },
-      address: 'Centro Comercial Galerías, Local 234',
-      coordinates: { lat: 13.6929, lng: -89.2182 },
-      products: [
-        {
-          name: 'Producto 2',
-          quantity: 1,
-          size: 'grande',
-          flavors: ['chocolate', 'vainilla'],
-          complements: ['crema'],
-          extras: ['extra dulce'],
-          price: 8.50
-        }
-      ],
-      subtotal: 8.50,
-      discount: 1.00,
-      total: 7.50,
-      estimatedTime: '30-35 min',
-      orderTime: '15:00',
-      paymentMethod: 'efectivo'
-    },
-    {
-      id: '03',
-      status: 'en camino',
-      client: {
-        name: 'Ana Rodríguez',
-        phone: '5555-6666',
-        rating: 4.8
-      },
-      address: 'Zona Rosa, Edificio Torre Sur, Apt 502',
-      coordinates: { lat: 13.7156, lng: -89.2456 },
-      products: [
-        {
-          name: 'Producto 4',
-          quantity: 3,
-          size: 'mediano',
-          flavors: ['fresa'],
-          complements: ['frutas', 'miel'],
-          extras: [],
-          price: 6.25
-        }
-      ],
-      subtotal: 18.75,
-      discount: 0.50,
-      total: 18.25,
-      estimatedTime: '10-15 min',
-      orderTime: '14:15',
-      paymentMethod: 'contra entrega'
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [expandedOrder, setExpandedOrder] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+
+  // Cargar órdenes al montar el componente
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  // Filtrar órdenes cuando cambien los filtros o las órdenes
+  useEffect(() => {
+    let filtered = [...orders];
+
+    if (searchTerm) {
+      filtered = filtered.filter(order =>
+        order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order._id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customerPhone?.includes(searchTerm)
+      );
     }
-  ];
+
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(order => order.orderStatus === statusFilter);
+    }
+
+    if (typeFilter !== 'all') {
+      filtered = filtered.filter(order => order.orderType === typeFilter);
+    }
+
+    setFilteredOrders(filtered);
+  }, [orders, searchTerm, statusFilter, typeFilter]);
 
   const handleOrderClick = (orderId) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'en preparacion': return '#f59e0b';
-      case 'recibido': return '#10b981';
-      case 'en camino': return '#3b82f6';
-      case 'entregado': return '#6b7280';
-      default: return '#6b7280';
-    }
+  const handleRefreshOrders = () => {
+    fetchOrders();
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'en preparacion': return <Package size={16} />;
-      case 'recibido': return <Clock size={16} />;
-      case 'en camino': return <MapPin size={16} />;
-      default: return <Package size={16} />;
-    }
+  // Función para navegar a la página de nueva orden
+  const handleNewOrder = () => {
+    navigate('/TomaDeOrdenes');
   };
 
-  const MiniMap = ({ coordinates, address }) => (
-    <div className="mini-map">
-      <div className="map-placeholder">
-        <MapPin className="map-icon" />
-        <div className="coordinates">
-          {coordinates.lat.toFixed(4)}, {coordinates.lng.toFixed(4)}
+  // Función para cancelar orden
+  const handleCancelOrder = async (order) => {
+    // Solo permitir cancelar si no está ya cancelada
+    if (order.orderStatus === 'cancelado') {
+      return;
+    }
+    
+    await updateOrderStatus(order._id, 'cancelado');
+  };
+
+  // Función para marcar como en proceso
+  const handleSetInProcess = async (order) => {
+    // No permitir cambio de estado si está cancelada
+    if (order.orderStatus === 'cancelado') {
+      return;
+    }
+    
+    await updateOrderStatus(order._id, 'en preparación');
+  };
+
+  // Función para marcar como completado
+  const handleMarkCompleted = async (order) => {
+    // No permitir cambio de estado si está cancelada
+    if (order.orderStatus === 'cancelado') {
+      return;
+    }
+    
+    await updateOrderStatus(order._id, 'entregado');
+  };
+
+  const handleContactClient = (order) => {
+    // Crear enlace de WhatsApp
+    const phone = order.customerPhone?.replace(/\D/g, '');
+    const message = `Hola ${order.customerName}, te contactamos sobre tu orden #${order._id.slice(-6)}`;
+    const whatsappUrl = `https://wa.me/503${phone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const formatCurrency = (amount) => {
+    return `$${(amount || 0).toFixed(2)}`;
+  };
+
+  const calculateStats = () => {
+    const today = new Date().toDateString();
+    const todayOrders = orders.filter(order => 
+      new Date(order.createdAt).toDateString() === today
+    );
+
+    return {
+      totalOrders: orders.length,
+      todayOrders: todayOrders.length,
+      activeOrders: orders.filter(order => 
+        ['pendiente', 'recibido', 'en preparación', 'en camino'].includes(order.orderStatus)
+      ).length,
+      todayRevenue: todayOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0),
+      averageTime: '22 min'
+    };
+  };
+
+  const stats = calculateStats();
+
+  if (loading && orders.length === 0) {
+    return (
+      <div className="loading-container">
+        <div className="loading-content">
+          <div className="loading-spinner" />
+          <p>Cargando órdenes...</p>
         </div>
       </div>
-      <div className="map-overlay">
-        <button className="copy-link-btn">
-          <Copy size={12} />
-          copiar link
-        </button>
-      </div>
-    </div>
-  );
+    );
+  }
 
   return (
-    <div className="delivery-container">
-      <div className="delivery-header">
-        <h1>Gestión de Delivery</h1>
-        <div className="delivery-stats">
-          <div className="stat-card">
-            <span className="stat-number">4</span>
-            <span className="stat-label">Órdenes activas</span>
+    <div className="orders-page">
+      {/* Header */}
+      {/* Header */}
+      <div className="orders-header">
+       
+
+        
+        <div className="header-actions">
+          <button 
+            className="action-btn btn-secondary"
+            onClick={handleRefreshOrders}
+            disabled={loading}
+          >
+            <RefreshCw size={16} />
+            {loading ? 'Actualizando...' : 'Actualizar'}
+          </button>
+          
+          <button 
+            className="action-btn btn-primary"
+            onClick={handleNewOrder}
+          >
+            <Plus size={16} />
+            Nueva Orden
+          </button>
+        </div>
+      </div>
+      <div className="orders-header">
+        <div className="header-left">
+          <h1 className="header-title">Gestión de Órdenes</h1>
+          <div className="stats-container">
+            <div className="stat-card">
+              <span className="stat-number">{stats.totalOrders}</span>
+              <span className="stat-label">Total</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">{stats.todayOrders}</span>
+              <span className="stat-label">Hoy</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">{stats.activeOrders}</span>
+              <span className="stat-label">Activas</span>
+            </div>
           </div>
-          <div className="stat-card">
-            <span className="stat-number">25 min</span>
-            <span className="stat-label">Tiempo promedio</span>
-          </div>
+        </div>
+        
+        <div className="header-actions">
+          <button 
+            className="action-btn btn-secondary"
+            onClick={handleRefreshOrders}
+            disabled={loading}
+          >
+            <RefreshCw size={16} />
+            Actualizar
+          </button>
+          <button 
+            className="action-btn btn-primary"
+            onClick={handleNewOrder}
+          >
+            <Plus size={16} />
+            Nueva Orden
+          </button>
         </div>
       </div>
 
+      {/* Contenido principal */}
       <div className="orders-container">
-        {orders.map((order) => (
-          <div key={order.id} className={`order-card ${expandedOrder === order.id ? 'expanded' : ''}`}>
-            <div className="order-header" onClick={() => handleOrderClick(order.id)}>
-              <div className="order-info">
-                <div className="order-number">
-                  <span className="order-label">orden:</span>
-                  <span className="order-id">{order.id}</span>
-                </div>
-                
-                <div className="client-info">
-                  <div className="client-name">
-                    <User size={16} />
-                    {order.client.name}
-                    <div className="client-rating">
-                      <Star size={12} fill="currentColor" />
-                      {order.client.rating}
-                    </div>
-                  </div>
-                  <div className="client-phone">
-                    <Phone size={14} />
-                    {order.client.phone}
-                  </div>
-                </div>
+        <div className="main-content">
+          {/* Mensajes de estado */}
+          {error && (
+            <div className="alert alert-error">
+              {error}
+              <button className="alert-close" onClick={clearMessages}>×</button>
+            </div>
+          )}
+          
+          {success && (
+            <div className="alert alert-success">
+              {success}
+              <button className="alert-close" onClick={clearMessages}>×</button>
+            </div>
+          )}
 
-                <div className="order-status">
-                  <span 
-                    className="status-badge" 
-                    style={{ backgroundColor: getStatusColor(order.status) }}
+          {/* Filtros */}
+          <div className="filters-section">
+            <div className="search-container">
+              <Search size={16} color="#64748b" />
+              <input
+                type="text"
+                placeholder="Buscar por cliente, teléfono o ID..."
+                className="search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <select
+              className="filter-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">Todos los estados</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="recibido">Recibido</option>
+              <option value="en preparación">En Preparación</option>
+              <option value="en camino">En Camino</option>
+              <option value="entregado">Entregado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+
+            <select
+              className="filter-select"
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+            >
+              <option value="all">Todos los tipos</option>
+              <option value="delivery">Delivery</option>
+              <option value="local">Local</option>
+            </select>
+          </div>
+
+          {/* Lista de órdenes */}
+          <div className="orders-list">
+            {!filteredOrders || filteredOrders.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-state-icon">📋</div>
+                <h3>No se encontraron órdenes</h3>
+                <p>
+                  {searchTerm || statusFilter !== 'all' || typeFilter !== 'all'
+                    ? 'Intenta ajustar los filtros de búsqueda'
+                    : 'Las órdenes aparecerán aquí cuando se carguen.'}
+                </p>
+                {!loading && (
+                  <button 
+                    className="action-btn btn-primary"
+                    onClick={handleRefreshOrders}
                   >
-                    {getStatusIcon(order.status)}
-                    {order.status}
-                  </span>
-                </div>
-
-                <div className="order-time">
-                  <Clock size={14} />
-                  <span>{order.orderTime}</span>
-                  <span className="estimated-time">{order.estimatedTime}</span>
-                </div>
+                    <RefreshCw size={16} />
+                    Cargar Órdenes
+                  </button>
+                )}
               </div>
-
-              <div className="expand-icon">
-                {expandedOrder === order.id ? <ChevronUp /> : <ChevronDown />}
-              </div>
-            </div>
-
-            <div className="order-preview">
-              <div className="address-section">
-                <span className="address-label">dirección:</span>
-                <div className="address-content">
-                  <MiniMap coordinates={order.coordinates} address={order.address} />
-                  <span className="address-text">{order.address}</span>
-                </div>
-              </div>
-            </div>
-
-            {expandedOrder === order.id && (
-              <div className="order-details">
-                <div className="products-section">
-                  <h4>Productos:</h4>
-                  {order.products.map((product, index) => (
-                    <div key={index} className="product-detail">
-                      <div className="product-header">
-                        <span className="product-name">{product.name}</span>
-                        <span className="product-quantity">x{product.quantity}</span>
-                        <span className="product-price">${product.price}</span>
-                      </div>
-                      <div className="product-specs">
-                        <div className="spec-item">
-                          <span className="spec-label">tamaño:</span>
-                          <span className="spec-value">{product.size}</span>
-                        </div>
-                        {product.flavors.length > 0 && (
-                          <div className="spec-item">
-                            <span className="spec-label">sabor:</span>
-                            <span className="spec-value">{product.flavors.join(', ')}</span>
-                          </div>
-                        )}
-                        {product.complements.length > 0 && (
-                          <div className="spec-item">
-                            <span className="spec-label">complemento:</span>
-                            <span className="spec-value">{product.complements.join(', ')}</span>
-                          </div>
-                        )}
-                        {product.extras.length > 0 && (
-                          <div className="spec-item">
-                            <span className="spec-label">extras:</span>
-                            <span className="spec-value">{product.extras.join(', ')}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="order-summary">
-                  <div className="summary-row">
-                    <span>subtotal:</span>
-                    <span>${order.subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="summary-row">
-                    <span>descuento:</span>
-                    <span>-${order.discount.toFixed(2)}</span>
-                  </div>
-                  <div className="summary-row total-row">
-                    <span>Total:</span>
-                    <span>${order.total.toFixed(2)}</span>
-                  </div>
-                  <div className="payment-method">
-                    <span>forma de pago:</span>
-                    <span className="payment-badge">{order.paymentMethod}</span>
-                  </div>
-                </div>
-
-                <div className="order-actions">
-                  <button className="action-btn secondary">Contactar Cliente</button>
-                  <button className="action-btn primary">Actualizar Estado</button>
-                  <button className="action-btn success">Marcar Entregado</button>
-                </div>
-              </div>
+            ) : (
+              filteredOrders.map((order) => (
+                <OrdersCard
+                  key={order._id}
+                  order={order}
+                  isExpanded={expandedOrder === order._id}
+                  onToggleExpand={() => handleOrderClick(order._id)}
+                  onCancelOrder={handleCancelOrder}
+                  onSetInProcess={handleSetInProcess}
+                  onMarkCompleted={handleMarkCompleted}
+                  onContactClient={handleContactClient}
+                  loading={loading}
+                />
+              ))
             )}
           </div>
-        ))}
-      </div>
+        </div>
 
-      <div className="summary-panel">
-        <div className="panel-content">
-          <h3>Resumen del día</h3>
-          <div className="daily-stats">
-            <div className="daily-stat">
-              <span className="stat-value">12</span>
-              <span className="stat-text">Órdenes completadas</span>
-            </div>
-            <div className="daily-stat">
-              <span className="stat-value">$245.80</span>
-              <span className="stat-text">Ingresos totales</span>
-            </div>
-            <div className="daily-stat">
-              <span className="stat-value">4.7</span>
-              <span className="stat-text">Rating promedio</span>
+        {/* Panel de resumen */}
+        <div className="summary-panel">
+          <div className="panel-content">
+            <h3>Resumen del Día</h3>
+            
+            <div className="daily-stats">
+              <div className="daily-stat">
+                <span className="daily-stat-value">{stats.todayOrders}</span>
+                <span className="daily-stat-label">Órdenes completadas</span>
+              </div>
+              
+              <div className="daily-stat">
+                <span className="daily-stat-value">{formatCurrency(stats.todayRevenue)}</span>
+                <span className="daily-stat-label">Ingresos del día</span>
+              </div>
+              
+              <div className="daily-stat">
+                <span className="daily-stat-value">{stats.activeOrders}</span>
+                <span className="daily-stat-label">Órdenes activas</span>
+              </div>
             </div>
           </div>
-          
-          <button className="order-list-btn">
-            Orden lista
-          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default Delivery;
+export default Orders;

@@ -19,6 +19,33 @@ employeesController.getEmployees = async (req, res) => {
     }
 }
 
+// NUEVO: CONTROLADOR PARA OBTENER UN EMPLEADO POR ID
+employeesController.getEmployeeById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Buscar el empleado por ID, excluyendo la contraseña por seguridad
+        const employee = await employeesModel.findById(id).select('-password -loginAttempts -lockTime');
+        
+        if (!employee) {
+            return res.status(404).json({ message: "Empleado no encontrado" });
+        }
+        
+        // Enviar respuesta exitosa con el empleado encontrado
+        res.json(employee);
+    } catch (error) {
+        console.error('Error fetching employee by ID:', error);
+        
+        // Verificar si es un error de ID inválido
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: "ID de empleado inválido" });
+        }
+        
+        // Manejar otros errores del servidor
+        res.status(500).json({ message: "Error fetching employee" });
+    }
+}
+
 // CONTROLADOR PARA INSERTAR UN NUEVO EMPLEADO
 employeesController.insertEmployee = async (req, res) => {
     try {
@@ -75,11 +102,22 @@ employeesController.insertEmployee = async (req, res) => {
 employeesController.deleteEmployee = async (req, res) => {
     try {
         // Buscar y eliminar el empleado por su ID
-        await employeesModel.findByIdAndDelete(req.params.id)
+        const deletedEmployee = await employeesModel.findByIdAndDelete(req.params.id);
+        
+        if (!deletedEmployee) {
+            return res.status(404).json({ message: "Empleado no encontrado" });
+        }
 
         // Enviar respuesta exitosa de eliminación
         res.json({ message: "Deleted successfully" })
     } catch (error) {
+        console.error('Error deleting employee:', error);
+        
+        // Verificar si es un error de ID inválido
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: "ID de empleado inválido" });
+        }
+        
         // Manejar errores del servidor
         res.status(500).json({ message: "Error deleting employee" })
     }
@@ -122,6 +160,11 @@ employeesController.updateEmployee = async (req, res) => {
     } catch (error) {
         // LOG PARA DEPURACIÓN (DEBUG)
         console.error('Error actualizando empleado:', error);
+
+        // Verificar si es un error de ID inválido
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: "ID de empleado inválido" });
+        }
 
         // VERIFICAR SI EL ERROR ES POR CAMPO DUPLICADO (EMAIL O DUI)
         if (error.code === 11000) {

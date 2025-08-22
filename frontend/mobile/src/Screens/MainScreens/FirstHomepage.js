@@ -9,8 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import TexturaInicio from "../../../assets/images/TexturaInicio2.png"
-;
+import TexturaInicio from "../../../assets/images/TexturaInicio2.png";
 
 const FirstHomepage = ({ navigation }) => {
   return (
@@ -33,7 +32,7 @@ const FirstHomepage = ({ navigation }) => {
             {/* TODO: Reemplazar con tu logo de Moon's */}
             <View style={styles.logoPlaceholder}>
               <Text style={styles.logoText}>MOON'S</Text>
-              <Text style={styles.logoSubtext}>Cupcakes</Text>
+              <Text style={styles.logoSubtext}>Ice Cream Rolls</Text>
             </View>
           </View>
 
@@ -43,18 +42,8 @@ const FirstHomepage = ({ navigation }) => {
               style={styles.primaryButton}
               onPress={() => navigation.navigate('Login')}
             >
-              <Text style={styles.primaryButtonText}>Iniciar Sesion</Text>
+              <Text style={styles.primaryButtonText}>Iniciar Sesión</Text>
             </TouchableOpacity>
-
-            <Text style={styles.accountText}>¿No tienes una cuenta? Registrate</Text>
-
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={() => navigation.navigate('Register1')}
-            >
-              <Text style={styles.secondaryButtonText}>Registrarse</Text>
-            </TouchableOpacity>
-
           </View>
         </View>
       </LinearGradient>
@@ -114,9 +103,10 @@ const styles = StyleSheet.create({
     color: '#4A90E2',
   },
   buttonContainer: {
+    marginBottom: 100,
     flex: 1,
     justifyContent: 'flex-end',
-    paddingBottom: 50,
+    paddingBottom: 80, // Aumenté el padding para bajar más el botón
   },
   primaryButton: {
     backgroundColor: 'white',
@@ -125,7 +115,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 40,
     borderRadius: 30,
     alignItems: 'center',
-    marginBottom: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -137,35 +126,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
   },
-  secondaryButton: {
-    backgroundColor: 'white',
-    borderWidth: 2,
-    borderColor: 'white',
-    paddingVertical: 12,
-    paddingHorizontal: 50,
-    marginHorizontal: 40,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginBottom: 150,
-
-    //sombra de debajo
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  secondaryButtonText: {
-    color: '#8D6CFF',
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  accountText: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 14,
-    margin: 5,
-  },
+  // Eliminé todos los estilos relacionados con secondaryButton, accountText, etc.
   formContainer: {
     flex: 1,
     paddingTop: 20,

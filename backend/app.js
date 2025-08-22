@@ -15,10 +15,12 @@ import registerCustomerRoutes from "./src/routes/registerCustomerRoutes.js";
 import registerEmployeeRoutes from "./src/routes/registerEmployeeRoutes.js";
 import passwordRecoveryRoutes from "./src/routes/passwordRecoveryRoutes.js";
 import pettyCashRoutes from "./src/routes/pettyCashRoutes.js"
+import profileRoutes from "./src/routes/profileRoutes.js";
 import productRoutes from "./src/routes/productRoutes.js";
 import reviewRoutes from "./src/routes/reviewRoutes.js";
 import orderRoutes from "./src/routes/orderRoutes.js";
 import eventsRoutes from "./src/routes/eventsRoutes.js"
+import feedbackRoutes from "./src/routes/feedbackRoutes.js";
 //import orderRoutes from "./src/routes/orderRoutes.js";
 import { validateAuthToken } from "./src/middlewares/validateAuthToken.js";
 
@@ -60,10 +62,10 @@ app.get('/api/status', (req, res) => {
 
 //Rutas de la API
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use("/api/employees", validateAuthToken(['admin']), employeesRoutes);
-app.use("/api/customers", validateAuthToken(['admin', 'employee']), customersRoutes);
-app.use("/api/category", validateAuthToken(['admin', 'employee']), categoryRoutes);
-app.use("/api/inventory", validateAuthToken(['admin', 'employee']), inventoryRoutes);
+app.use("/api/employees",  employeesRoutes);
+app.use("/api/customers", customersRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/inventory", inventoryRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/logout", logoutRoutes);
 app.use("/api/registerCustomer", registerCustomerRoutes);
@@ -71,9 +73,11 @@ app.use("/api/pettyCash", validateAuthToken(['admin', 'employee']), pettyCashRou
 app.use("/api/registerEmployee", validateAuthToken(['admin']), registerEmployeeRoutes);
 app.use("/api/passwordRecovery", passwordRecoveryRoutes);
 app.use("/api/products", productRoutes);
+app.use('/api/profile', profileRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/events", eventsRoutes)
+app.use("/api/events", eventsRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 //Exporto esta constante para usar express en todos lados
 export default app;

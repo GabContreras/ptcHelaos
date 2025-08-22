@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { config } from "../config";
 import './RateService.css';
 import Button from "../assets/Button";
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+
+const API_BASE = config.api.API_BASE;
 
 function RateService() {
     const navigate = useNavigate();
@@ -15,23 +18,32 @@ function RateService() {
   const handleMouseEnter = (value) => setHover(value);
   const handleMouseLeave = () => setHover(0);
 
-  const handleSubmit = () => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Opinión enviada',
-          text: 'Gracias por darnos a conocer tu opinión.',
-          confirmButtonText: 'OK!',
-          backdrop: `
-            #00000080
-            left top
-            no-repeat
-          `
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate('/');
-          }
-        });
+  const userEmail = localStorage.getItem("userEmail");
+
+const handleSubmit = async () => {
+  try {
+    const response = await fetch(`${API_BASE}feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rating, comentario, email: userEmail }),
+    });
+
+    if (!response.ok) throw new Error("Error al enviar feedback");
+
+    Swal.fire({
+      icon: "success",
+      title: "Opinión enviada",
+      text: "Gracias por darnos a conocer tu opinión.",
+    }).then(() => navigate("/"));
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo enviar tu opinión. Intenta más tarde.",
+      });
+    }
   };
+
 
   return (
     <>

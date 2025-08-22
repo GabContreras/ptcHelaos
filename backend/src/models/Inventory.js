@@ -4,8 +4,8 @@ const inventorySchema = new Schema({
     name: {
         type: String,
         required: true,
-        trim: true,
-        unique: true
+        maxlength: 100,
+        trim: true
     },
     categoryId: {
         type: Schema.Types.ObjectId,
@@ -14,6 +14,7 @@ const inventorySchema = new Schema({
     },
     supplier: {
         type: String,
+        maxlength: 100,
         trim: true
     },
     extraPrice: {
@@ -24,10 +25,11 @@ const inventorySchema = new Schema({
     unitType: {
         type: String,
         enum: ["kilogramos", "kilos", "unidades", "litros", "libras", "gramos"],
-        required: true 
+        required: true
     },
     description: {
         type: String,
+        maxlength: 500,
         trim: true
     },
     // Array de IDs de lotes (solo referencias)
@@ -40,6 +42,10 @@ const inventorySchema = new Schema({
         type: Number,
         default: 0,
         min: 0
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true,

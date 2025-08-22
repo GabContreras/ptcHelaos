@@ -1,458 +1,452 @@
-import React, { useState } from 'react';
-import { Cookie, IceCream, Layers, Sandwich } from 'lucide-react';
+import React, { useEffect, useCallback, useMemo, useRef } from 'react';
+import { Cookie, IceCream, Layers, Sandwich, Plus, ShoppingCart, CreditCard, MapPin, Trash2, X, AlertCircle, CheckCircle } from 'lucide-react';
+import { useOrder } from '../../hooks/OrdersHook/useOrder';
+import { useOrderInventory } from '../../hooks/OrderInventoryHook/useOrderInventory';
+import UniversalModal from '../../components/Modals/UniversalModal/UniversalModal';
+import CustomizationModal from '../../components/Modals/CustomizationModal/CustomizationModal';
+import CheckoutModal from '../../components/Modals/CheckoutModal/CheckoutModal';
 import './TomaDeOrdenes.css';
 
-const Orders = () => {
-  const [activeTab, setActiveTab] = useState('waffles');
-  const [selectedOptions, setSelectedOptions] = useState({
-    waffles: { tamano: '', sabor: [], complemento: [], etcetera: [] },
-    helados: { tamano: '', sabor: [], complemento: [], etcetera: [] },
-    pancakes: { tamano: '', sabor: [], complemento: [], etcetera: [] },
-    panes: { tamano: '', sabor: [], complemento: [], etcetera: [] }
-  });
-  const [quantity, setQuantity] = useState(1);
+const TomaDeOrdenes = () => {
+  const {
+    // Estados principales
+    products,
+    categories,
+    cart,
+    loading,
+    error,
+    success,
+    setSuccess,
+    
+    // Estados de modal simplificados
+    selectedProduct,
+    showCustomizationModal,
+    
+    // Funciones principales
+    fetchProducts,
+    getFilteredProducts,
+    openCustomizationModal,
+    closeCustomizationModal,
+    addToCart,
+    removeFromCart,
+    getCartTotal,
+    clearCart,
+    createOrder,
+    clearMessages
+  } = useOrder();
 
-  const menuItems = {
-    waffles: { icon: Cookie, name: 'Waffles', basePrice: 5.80 },
-    helados: { icon: IceCream, name: 'Helados', basePrice: 4.50 },
-    pancakes: { icon: Layers, name: 'Pancakes', basePrice: 6.20 },
-    panes: { icon: Sandwich, name: 'Panes', basePrice: 3.80 }
-  };
+  // Hook para inventario real
+  const {
+    getFlavorNames,
+    getToppingNames,
+    getFlavorExtraPrice,
+    getToppingExtraPrice,
+    isFlavorAvailable,
+    isToppingAvailable,
+    isLoading: inventoryLoading,
+    error: inventoryError
+  } = useOrderInventory();
 
-  const optionsData = {
-    waffles: {
-      tamano: [
-        { id: 'opcion1', name: 'Mini', price: 0 },
-        { id: 'opcion2', name: 'Regular', price: 1.20 },
-        { id: 'opcion3', name: 'Grande', price: 2.50 },
-        { id: 'opcion4', name: 'Jumbo', price: 3.80 },
-        { id: 'opcion5', name: 'Familiar', price: 5.00 }
+  // Estados locales para búsqueda y modales
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [showCheckoutModal, setShowCheckoutModal] = React.useState(false);
+  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+
+  // Cargar productos al montar
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  // Obtener todos los productos disponibles (sin filtrar por categoría)
+  const allProducts = useMemo(() => {
+    return products.filter(product => product.available);
+  }, [products]);
+
+  // Filtrar productos por búsqueda
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return allProducts;
+    }
+    
+    return allProducts.filter(product => 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allProducts, searchTerm]);
+
+  // Manejar cambio en la búsqueda
+  const handleSearchChange = useCallback((e) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  // FUNCIÓN: Determinar si un producto necesita personalización
+  const needsCustomization = useCallback((productName) => {
+    // Solo "Helado de Rollo" necesita personalización
+    return productName === 'Helado de Rollo';
+  }, []);
+
+  // FUNCIÓN: Agregar producto directamente al carrito (sin personalización)
+  const addSimpleProductToCart = useCallback((product) => {
+    // Usar el mismo formato que espera la función addToCart del hook
+    const itemData = {
+      product,
+      customizations: {
+        quantity: 1,
+        specialInstructions: '',
+        size: null,
+        flavors: [],
+        toppings: [],
+        additions: [],
+        sizeName: null,
+        flavorNames: [],
+        toppingNames: [],
+        additionNames: []
+      },
+      totalPrice: product.basePrice
+    };
+    
+    addToCart(itemData);
+    
+    // Mensaje de éxito personalizado
+    clearMessages();
+    setTimeout(() => {
+      setSuccess && setSuccess(`${product.name} agregado al carrito`);
+      setTimeout(() => setSuccess && setSuccess(''), 2000);
+    }, 100);
+  }, [addToCart, clearMessages, setSuccess]);
+
+  // Manejar selección de producto
+  const handleProductSelect = useCallback((product) => {
+    clearMessages();
+    
+    if (needsCustomization(product.name)) {
+      // Solo abrir modal de personalización para Helado de Rollo
+      openCustomizationModal(product);
+    } else {
+      // Agregar directamente al carrito
+      addSimpleProductToCart(product);
+    }
+  }, [clearMessages, needsCustomization, openCustomizationModal, addSimpleProductToCart]);
+
+  // Crear opciones de personalización dinámicas usando inventario real
+  const dynamicCustomizationOptions = useMemo(() => {
+    const flavors = getFlavorNames();
+    const toppings = getToppingNames();
+    
+    return {
+      sizes: [
+        { id: 'small', name: 'Un Sabor (Pequeño)', price: 3.00, maxFlavors: 1 },
+        { id: 'medium', name: 'Dos Sabores (Mediano)', price: 3.50, maxFlavors: 2 },
+        { id: 'large', name: 'Tres Sabores (Grande)', price: 4.00, maxFlavors: 3 }
       ],
-      sabor: [
-        { id: 'opcion1', name: 'Original', price: 0 },
-        { id: 'opcion2', name: 'Chocolate', price: 0.50 },
-        { id: 'opcion3', name: 'Vainilla', price: 0.50 },
-        { id: 'opcion4', name: 'Fresa', price: 0.80 },
-        { id: 'opcion5', name: 'Canela', price: 0.60 },
-        { id: 'opcion6', name: 'Limón', price: 0.70 },
-        { id: 'opcion7', name: 'Nutella', price: 1.20 },
-        { id: 'opcion8', name: 'Red Velvet', price: 1.50 },
-        { id: 'opcion9', name: 'Coco', price: 0.40 },
-        { id: 'opcion10', name: 'Maple', price: 0.80 }
-      ],
-      complemento: [
-        { id: 'opcion1', name: 'Mantequilla', price: 0.50 },
-        { id: 'opcion2', name: 'Miel', price: 1.00 },
-        { id: 'opcion3', name: 'Jarabe Maple', price: 0.80 },
-        { id: 'opcion4', name: 'Chantilly', price: 0.30 },
-        { id: 'opcion5', name: 'Helado', price: 1.40 },
-        { id: 'opcion6', name: 'Frutas Frescas', price: 1.60 },
-        { id: 'opcion7', name: 'Nutella', price: 1.50 },
-        { id: 'opcion8', name: 'Dulce de Leche', price: 1.20 },
-        { id: 'opcion9', name: 'Chocolate Chips', price: 0.90 },
-        { id: 'opcion10', name: 'Caramelo', price: 1.20 }
-      ],
-      etcetera: [
-        { id: 'opcion1', name: 'Extra Crujiente', price: 0.20 },
-        { id: 'opcion2', name: 'Sin Gluten', price: 0.80 },
-        { id: 'opcion3', name: 'Vegano', price: 0.50 },
-        { id: 'opcion4', name: 'Integral', price: 0.30 },
-        { id: 'opcion5', name: 'Proteína Extra', price: 1.00 },
-        { id: 'opcion6', name: 'Bajo en Azúcar', price: 0.30 },
-        { id: 'opcion7', name: 'Caliente', price: 0.20 },
-        { id: 'opcion8', name: 'Para Llevar', price: 0.10 },
-        { id: 'opcion9', name: 'Doble Porción', price: 2.50 },
-        { id: 'opcion10', name: 'Presentación Especial', price: 1.00 }
+      flavors: flavors.map((flavorName, index) => ({
+        id: `flavor_${index}`,
+        name: flavorName,
+        price: getFlavorExtraPrice(flavorName),
+        available: isFlavorAvailable(flavorName)
+      })),
+      toppings: toppings.map((toppingName, index) => ({
+        id: `topping_${index}`,
+        name: toppingName,
+        price: getToppingExtraPrice(toppingName),
+        available: isToppingAvailable(toppingName)
+      })),
+      additions: [
+        { id: 'butter', name: 'Mantequilla', price: 0.50 },
+        { id: 'honey', name: 'Miel', price: 0.70 },
+        { id: 'jam', name: 'Mermelada', price: 0.80 },
+        { id: 'cheese', name: 'Queso Crema', price: 1.20 },
+        { id: 'ham', name: 'Jamón', price: 1.60 },
+        { id: 'avocado', name: 'Aguacate', price: 1.40 }
       ]
-    },
-    helados: {
-      tamano: [
-        { id: 'opcion1', name: 'Una Bola', price: 0 },
-        { id: 'opcion2', name: 'Dos Bolas', price: 1.20 },
-        { id: 'opcion3', name: 'Tres Bolas', price: 2.50 },
-        { id: 'opcion4', name: 'Sundae', price: 3.80 },
-        { id: 'opcion5', name: 'Banana Split', price: 5.00 }
-      ],
-      sabor: [
-        { id: 'opcion1', name: 'Vainilla', price: 0 },
-        { id: 'opcion2', name: 'Chocolate', price: 0.50 },
-        { id: 'opcion3', name: 'Fresa', price: 0.50 },
-        { id: 'opcion4', name: 'Cookies & Cream', price: 0.80 },
-        { id: 'opcion5', name: 'Menta Chip', price: 0.60 },
-        { id: 'opcion6', name: 'Caramelo Salado', price: 0.70 },
-        { id: 'opcion7', name: 'Pistacho', price: 1.20 },
-        { id: 'opcion8', name: 'Ron con Pasas', price: 1.50 },
-        { id: 'opcion9', name: 'Limón', price: 0.40 },
-        { id: 'opcion10', name: 'Coconut', price: 0.80 }
-      ],
-      complemento: [
-        { id: 'opcion1', name: 'Chantilly', price: 0.50 },
-        { id: 'opcion2', name: 'Frutas', price: 1.00 },
-        { id: 'opcion3', name: 'Granola', price: 0.80 },
-        { id: 'opcion4', name: 'Sprinkles', price: 0.30 },
-        { id: 'opcion5', name: 'Jarabe Chocolate', price: 0.40 },
-        { id: 'opcion6', name: 'Cerezas', price: 0.60 },
-        { id: 'opcion7', name: 'Salsa Fresa', price: 0.50 },
-        { id: 'opcion8', name: 'Canela', price: 0.20 },
-        { id: 'opcion9', name: 'Almendras', price: 0.90 },
-        { id: 'opcion10', name: 'Brownie', price: 1.20 }
-      ],
-      etcetera: [
-        { id: 'opcion1', name: 'Sin Lactosa', price: 0.20 },
-        { id: 'opcion2', name: 'Sugar Free', price: 0.30 },
-        { id: 'opcion3', name: 'Yogurt Frozen', price: 0.50 },
-        { id: 'opcion4', name: 'Orgánico', price: 0.80 },
-        { id: 'opcion5', name: 'Probióticos', price: 1.00 },
-        { id: 'opcion6', name: 'Bajo en Grasa', price: 0.30 },
-        { id: 'opcion7', name: 'Extra Frío', price: 0.10 },
-        { id: 'opcion8', name: 'Keto', price: 1.20 },
-        { id: 'opcion9', name: 'Copa Premium', price: 0.60 },
-        { id: 'opcion10', name: 'Milkshake', price: 1.40 }
-      ]
-    },
-    pancakes: {
-      tamano: [
-        { id: 'opcion1', name: 'Stack de 2', price: 0 },
-        { id: 'opcion2', name: 'Stack de 3', price: 1.20 },
-        { id: 'opcion3', name: 'Stack de 4', price: 2.50 },
-        { id: 'opcion4', name: 'Stack Jumbo', price: 3.80 },
-        { id: 'opcion5', name: 'Mega Stack', price: 5.00 }
-      ],
-      sabor: [
-        { id: 'opcion1', name: 'Clásico', price: 0 },
-        { id: 'opcion2', name: 'Chocolate Chip', price: 0.50 },
-        { id: 'opcion3', name: 'Blueberry', price: 0.50 },
-        { id: 'opcion4', name: 'Banana', price: 0.80 },
-        { id: 'opcion5', name: 'Avena', price: 0.60 },
-        { id: 'opcion6', name: 'Buttermilk', price: 0.70 },
-        { id: 'opcion7', name: 'Red Velvet', price: 1.20 },
-        { id: 'opcion8', name: 'Lemon Ricotta', price: 1.50 },
-        { id: 'opcion9', name: 'Cinnamon', price: 0.40 },
-        { id: 'opcion10', name: 'Protein', price: 0.80 }
-      ],
-      complemento: [
-        { id: 'opcion1', name: 'Mantequilla', price: 0.50 },
-        { id: 'opcion2', name: 'Jarabe Maple', price: 1.00 },
-        { id: 'opcion3', name: 'Miel', price: 0.80 },
-        { id: 'opcion4', name: 'Whipped Cream', price: 0.30 },
-        { id: 'opcion5', name: 'Frutas del Bosque', price: 1.40 },
-        { id: 'opcion6', name: 'Compota', price: 1.60 },
-        { id: 'opcion7', name: 'Nutella', price: 1.50 },
-        { id: 'opcion8', name: 'Peanut Butter', price: 1.20 },
-        { id: 'opcion9', name: 'Bacon', price: 1.90 },
-        { id: 'opcion10', name: 'Huevo Frito', price: 1.20 }
-      ],
-      etcetera: [
-        { id: 'opcion1', name: 'Extra Esponjoso', price: 0.20 },
-        { id: 'opcion2', name: 'Sin Gluten', price: 0.80 },
-        { id: 'opcion3', name: 'Vegano', price: 0.50 },
-        { id: 'opcion4', name: 'Integral', price: 0.30 },
-        { id: 'opcion5', name: 'High Protein', price: 1.00 },
-        { id: 'opcion6', name: 'Low Carb', price: 0.90 },
-        { id: 'opcion7', name: 'Caliente', price: 0.20 },
-        { id: 'opcion8', name: 'Mini Pancakes', price: 0.50 },
-        { id: 'opcion9', name: 'Forma Especial', price: 0.80 },
-        { id: 'opcion10', name: 'Desayuno Completo', price: 2.40 }
-      ]
-    },
-    panes: {
-      tamano: [
-        { id: 'opcion1', name: 'Rebanada', price: 0 },
-        { id: 'opcion2', name: 'Tostada Doble', price: 1.20 },
-        { id: 'opcion3', name: 'Sandwich', price: 2.50 },
-        { id: 'opcion4', name: 'Baguette', price: 3.80 },
-        { id: 'opcion5', name: 'Pan Completo', price: 5.00 }
-      ],
-      sabor: [
-        { id: 'opcion1', name: 'Blanco', price: 0 },
-        { id: 'opcion2', name: 'Integral', price: 0.50 },
-        { id: 'opcion3', name: 'Centeno', price: 0.50 },
-        { id: 'opcion4', name: 'Multigrano', price: 0.80 },
-        { id: 'opcion5', name: 'Avena', price: 0.60 },
-        { id: 'opcion6', name: 'Brioche', price: 0.70 },
-        { id: 'opcion7', name: 'Focaccia', price: 1.20 },
-        { id: 'opcion8', name: 'Sourdough', price: 1.50 },
-        { id: 'opcion9', name: 'Pita', price: 0.40 },
-        { id: 'opcion10', name: 'Ciabatta', price: 0.80 }
-      ],
-      complemento: [
-        { id: 'opcion1', name: 'Mantequilla', price: 0.50 },
-        { id: 'opcion2', name: 'Mermelada', price: 1.00 },
-        { id: 'opcion3', name: 'Miel', price: 0.80 },
-        { id: 'opcion4', name: 'Queso Crema', price: 0.30 },
-        { id: 'opcion5', name: 'Aguacate', price: 1.40 },
-        { id: 'opcion6', name: 'Jamón', price: 1.60 },
-        { id: 'opcion7', name: 'Queso', price: 1.50 },
-        { id: 'opcion8', name: 'Tomate', price: 0.20 },
-        { id: 'opcion9', name: 'Lechuga', price: 0.30 },
-        { id: 'opcion10', name: 'Hummus', price: 1.20 }
-      ],
-      etcetera: [
-        { id: 'opcion1', name: 'Tostado', price: 0.20 },
-        { id: 'opcion2', name: 'Sin Gluten', price: 0.80 },
-        { id: 'opcion3', name: 'Vegano', price: 0.50 },
-        { id: 'opcion4', name: 'Artesanal', price: 0.80 },
-        { id: 'opcion5', name: 'Recién Horneado', price: 0.50 },
-        { id: 'opcion6', name: 'Bajo en Sodio', price: 0.30 },
-        { id: 'opcion7', name: 'Caliente', price: 0.20 },
-        { id: 'opcion8', name: 'Para Llevar', price: 0.10 },
-        { id: 'opcion9', name: 'Cortado Especial', price: 0.40 },
-        { id: 'opcion10', name: 'Con Semillas', price: 0.60 }
-      ]
-    }
-  };
+    };
+  }, [getFlavorNames, getToppingNames, getFlavorExtraPrice, getToppingExtraPrice, isFlavorAvailable, isToppingAvailable]);
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
+  // Callbacks para modales
+  const handleCloseCheckoutModal = useCallback(() => {
+    setShowCheckoutModal(false);
+  }, []);
 
-  const handleOptionChange = (category, optionId, isMultiple = false) => {
-    setSelectedOptions(prev => ({
-      ...prev,
-      [activeTab]: {
-        ...prev[activeTab],
-        [category]: isMultiple 
-          ? prev[activeTab][category].includes(optionId)
-            ? prev[activeTab][category].filter(id => id !== optionId)
-            : [...prev[activeTab][category], optionId]
-          : optionId
-      }
-    }));
-  };
+  const handleCloseSuccessModal = useCallback(() => {
+    setShowSuccessModal(false);
+  }, []);
 
-  const calculatePrice = () => {
-    const basePrice = menuItems[activeTab].basePrice;
-    const current = selectedOptions[activeTab];
-    
-    if (!optionsData[activeTab]) return basePrice;
-    
-    let totalPrice = basePrice;
-    
-    // Tamaño (radio button)
-    if (current.tamano && optionsData[activeTab].tamano) {
-      const tamanoOption = optionsData[activeTab].tamano.find(opt => opt.id === current.tamano);
-      if (tamanoOption) totalPrice += tamanoOption.price;
+  const handleProceedToCheckout = useCallback(() => {
+    if (cart.length === 0) {
+      alert('El carrito está vacío');
+      return;
     }
-    
-    // Sabor (multiple)
-    if (optionsData[activeTab].sabor) {
-      current.sabor.forEach(saborId => {
-        const saborOption = optionsData[activeTab].sabor.find(opt => opt.id === saborId);
-        if (saborOption) totalPrice += saborOption.price;
-      });
-    }
-    
-    // Complemento (multiple)
-    if (optionsData[activeTab].complemento) {
-      current.complemento.forEach(complementoId => {
-        const complementoOption = optionsData[activeTab].complemento.find(opt => opt.id === complementoId);
-        if (complementoOption) totalPrice += complementoOption.price;
-      });
-    }
-    
-    // Etcetera (multiple)
-    if (optionsData[activeTab].etcetera) {
-      current.etcetera.forEach(etcId => {
-        const etcOption = optionsData[activeTab].etcetera.find(opt => opt.id === etcId);
-        if (etcOption) totalPrice += etcOption.price;
-      });
-    }
-    
-    return totalPrice;
-  };
+    clearMessages();
+    setShowCheckoutModal(true);
+  }, [cart.length, clearMessages]);
 
-  const getSelectedOptionName = (category, optionId) => {
-    if (!optionsData[activeTab] || !optionsData[activeTab][category]) return '';
-    const option = optionsData[activeTab][category].find(opt => opt.id === optionId);
-    return option ? option.name : '';
-  };
+  const handleCreateOrder = useCallback(async (orderData) => {
+    const result = await createOrder(orderData);
+    if (result.success) {
+      setShowCheckoutModal(false);
+      setShowSuccessModal(true);
+    }
+  }, [createOrder]);
 
-  const getCurrentSelections = () => {
-    const current = selectedOptions[activeTab];
-    const selections = [];
-    
-    if (current.tamano) {
-      selections.push(`tamaño: ${getSelectedOptionName('tamano', current.tamano)}`);
-    }
-    
-    if (current.sabor.length > 0) {
-      const sabores = current.sabor.map(id => getSelectedOptionName('sabor', id));
-      selections.push(`sabor: ${sabores.join(', ')}`);
-    }
-    
-    if (current.complemento.length > 0) {
-      const complementos = current.complemento.map(id => getSelectedOptionName('complemento', id));
-      selections.push(`complemento: ${complementos.join(', ')}`);
-    }
-    
-    if (current.etcetera.length > 0) {
-      const etcs = current.etcetera.map(id => getSelectedOptionName('etcetera', id));
-      selections.push(`etcetera: ${etcs.join(', ')}`);
-    }
-    
-    return selections;
-  };
+  // Modal de éxito
+  const SuccessModal = React.memo(() => (
+    <UniversalModal
+      isOpen={showSuccessModal}
+      onClose={handleCloseSuccessModal}
+      type="success"
+      title="¡Pedido Creado!"
+      message="El pedido se ha registrado exitosamente y se ha enviado a cocina."
+    />
+  ), [showSuccessModal, handleCloseSuccessModal]);
 
-  const unitPrice = calculatePrice();
-  const subtotal = unitPrice * quantity;
+  // Loading inicial
+  if (loading && products.length === 0) {
+    return (
+      <div className="order-container">
+        <div className="loading-container">
+          <div className="loading-spinner" />
+          <p>Cargando productos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="order-container">
       <div className="main-content">
-        {/* Header con pestañas */}
-        <div className="header-tabs">
-          {Object.entries(menuItems).map(([key, item]) => {
-            const IconComponent = item.icon;
-            return (
-              <button
-                key={key}
-                className={`tab-button ${activeTab === key ? 'active' : ''}`}
-                onClick={() => handleTabChange(key)}
-              >
-                <IconComponent size={28} />
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Sección de opciones */}
-        <div className="options-section">
-          {/* Tamaño */}
-          <div className="option-group">
-            <h3>Tamaño</h3>
-            <div className="options-grid">
-              {optionsData[activeTab]?.tamano?.map(option => (
-                <label key={option.id} className="option-item">
-                  <input
-                    type="radio"
-                    name="tamano"
-                    value={option.id}
-                    checked={selectedOptions[activeTab].tamano === option.id}
-                    onChange={() => handleOptionChange('tamano', option.id)}
-                  />
-                  <span className="option-label">{option.name}</span>
-                </label>
-              )) || []}
-            </div>
+        {/* Mensajes de estado */}
+        {error && (
+          <div className="alert alert-error">
+            <AlertCircle size={16} />
+            {error}
+            <button onClick={clearMessages} className="alert-close">
+              <X size={14} />
+            </button>
           </div>
+        )}
 
-          {/* Sabor */}
-          <div className="option-group">
-            <h3>Sabor</h3>
-            <div className="options-grid">
-              {optionsData[activeTab]?.sabor?.map(option => (
-                <label key={option.id} className="option-item">
-                  <input
-                    type="checkbox"
-                    checked={selectedOptions[activeTab].sabor.includes(option.id)}
-                    onChange={() => handleOptionChange('sabor', option.id, true)}
-                  />
-                  <span className="option-label">{option.name}</span>
-                </label>
-              )) || []}
-            </div>
+        {/* Mensaje de error de inventario */}
+        {inventoryError && (
+          <div className="alert alert-error">
+            <AlertCircle size={16} />
+            Error de inventario: {inventoryError}
           </div>
+        )}
 
-          {/* Complemento */}
-          <div className="option-group">
-            <h3>Complemento</h3>
-            <div className="options-grid">
-              {optionsData[activeTab]?.complemento?.map(option => (
-                <label key={option.id} className="option-item">
-                  <input
-                    type="checkbox"
-                    checked={selectedOptions[activeTab].complemento.includes(option.id)}
-                    onChange={() => handleOptionChange('complemento', option.id, true)}
-                  />
-                  <span className="option-label">{option.name}</span>
-                </label>
-              )) || []}
-            </div>
+        {success && (
+          <div className="alert alert-success">
+            <CheckCircle size={16} />
+            {success}
+            <button onClick={clearMessages} className="alert-close">
+              <X size={14} />
+            </button>
           </div>
+        )}
 
-          {/* Etcetera */}
-          <div className="option-group">
-            <h3>Etcetera</h3>
-            <div className="options-grid">
-              {optionsData[activeTab]?.etcetera?.map(option => (
-                <label key={option.id} className="option-item">
-                  <input
-                    type="checkbox"
-                    checked={selectedOptions[activeTab].etcetera.includes(option.id)}
-                    onChange={() => handleOptionChange('etcetera', option.id, true)}
-                  />
-                  <span className="option-label">{option.name}</span>
-                </label>
-              )) || []}
+        {/* Mensaje de carga de inventario */}
+        {inventoryLoading && (
+          <div className="alert alert-info" style={{background: '#e3f2fd', color: '#1565c0', border: '1px solid #bbdefb'}}>
+            <AlertCircle size={16} />
+            Cargando sabores del inventario...
+          </div>
+        )}
+
+        {/* Barra de búsqueda */}
+        <div className="search-section">
+          <div className="search-container">
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="search-clear-btn"
+                  title="Limpiar búsqueda"
+                >
+                  <X size={16} />
+                </button>
+              )}
             </div>
+            
+            {/* Indicador de resultados */}
+            {searchTerm && (
+              <div className="search-results-indicator">
+                <span>
+                  {filteredProducts.length} {filteredProducts.length === 1 ? 'resultado' : 'resultados'} encontrados
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Cantidad y botones */}
-        <div className="bottom-section">
-          <div className="quantity-section">
-            <label>cantidad:</label>
-            <div className="quantity-controls">
-              <button 
-                className="quantity-btn"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                -
-              </button>
-              <span className="quantity-display">{quantity}</span>
-              <button 
-                className="quantity-btn"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                +
-              </button>
+        {/* Lista de productos */}
+        <div className="products-section">
+          <h2>
+            {searchTerm ? `Resultados para "${searchTerm}"` : 'Todos los productos'}
+          </h2>
+          {filteredProducts.length === 0 ? (
+            <div className="no-products">
+              {searchTerm ? (
+                <>
+                  <p>No se encontraron productos que coincidan con tu búsqueda</p>
+                  <button 
+                    onClick={() => setSearchTerm('')}
+                    className="clear-search-btn"
+                  >
+                    Ver todos los productos
+                  </button>
+                </>
+              ) : (
+                <p>No hay productos disponibles en este momento</p>
+              )}
             </div>
-          </div>
-          
-          <div className="action-buttons">
-            <button className="add-btn">Agregar {quantity}</button>
-            <button className="pay-btn">pago</button>
-          </div>
+          ) : (
+            <div className="products-grid">
+              {filteredProducts.map((product) => (
+                <div key={`product-${product._id}`} className="product-card">
+                  <div className="product-image">
+                    <img 
+                      src={product.images?.[0]?.url || '/placeholder-product.jpg'} 
+                      alt={product.name}
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NSA2NUgxMTVWOTVIODVWNjVaIiBmaWxsPSIjRTJFOEYwIi8+PC9zdmc+';
+                      }}
+                    />
+                  </div>
+                  <div className="product-info">
+                    <h3>{product.name}</h3>
+                    <p>{product.description}</p>
+                    <div className="product-details">
+                      <span className="product-price">${product.basePrice.toFixed(2)}</span>
+                      <span className="product-time">{product.preparationTime}</span>
+                    </div>
+                  </div>
+                  <button 
+                    className="select-product-btn"
+                    onClick={() => handleProductSelect(product)}
+                    disabled={loading || inventoryLoading}
+                  >
+                    <Plus size={16} />
+                    {needsCustomization(product.name) ? 'Personalizar' : 'Agregar al carrito'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Botón de checkout */}
+        <div className="checkout-button-container">
+          <button 
+            className="checkout-btn"
+            onClick={handleProceedToCheckout}
+            disabled={cart.length === 0 || loading}
+          >
+            <ShoppingCart size={20} />
+            Proceder al Pago ({cart.length} productos) - ${getCartTotal.toFixed(2)}
+          </button>
         </div>
       </div>
 
       {/* Resumen lateral */}
       <div className="summary-section">
-        <h3>resumen</h3>
-        <div className="summary-content">
-          <div className="product-summary">
-            <div className="product-name">
-              {menuItems[activeTab].name} 
-              <span className="product-quantity">{quantity}</span>
-            </div>
-            <div className="product-selections">
-              {getCurrentSelections().map((selection, index) => (
-                <div key={index} className="selection-item">
-                  {selection}
+        <h3>Resumen del Pedido</h3>
+        
+        {cart.length === 0 ? (
+          <div className="empty-cart">
+            <ShoppingCart size={48} />
+            <p>Tu carrito está vacío</p>
+            <small>Selecciona productos para comenzar</small>
+          </div>
+        ) : (
+          <div className="cart-summary">
+            <div className="cart-items">
+              {cart.map((item) => (
+                <div key={item.id} className="cart-item-summary">
+                  <div className="item-header">
+                    <span className="item-name">{item.product.name}</span>
+                    <span className="item-quantity">x{item.customizations.quantity}</span>
+                    <button 
+                      className="remove-item-btn"
+                      onClick={() => removeFromCart(item.id)}
+                      title="Eliminar"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  <div className="item-customizations">
+                    {item.customizations.sizeName && (
+                      <small>Tamaño: {item.customizations.sizeName}</small>
+                    )}
+                    {item.customizations.flavorNames.length > 0 && (
+                      <small>Sabores: {item.customizations.flavorNames.join(', ')}</small>
+                    )}
+                    {item.customizations.toppingNames.length > 0 && (
+                      <small>Toppings: {item.customizations.toppingNames.join(', ')}</small>
+                    )}
+                  </div>
+                  <div className="item-price">${item.totalPrice.toFixed(2)}</div>
                 </div>
               ))}
             </div>
-            <div className="product-price">
-              precio: {unitPrice.toFixed(2)} $
+            
+            <div className="cart-total">
+              <div className="total-row">
+                <span>Subtotal:</span>
+                <span>${getCartTotal.toFixed(2)}</span>
+              </div>
+              <div className="total-row final-total">
+                <strong>Total: ${getCartTotal.toFixed(2)}</strong>
+              </div>
+            </div>
+
+            <div className="cart-actions">
+              <button 
+                className="clear-cart-btn"
+                onClick={clearCart}
+                disabled={loading}
+              >
+                Limpiar Carrito
+              </button>
+              <button 
+                className="checkout-btn-sidebar"
+                onClick={handleProceedToCheckout}
+                disabled={loading}
+              >
+                <CreditCard size={16} />
+                Pagar
+              </button>
             </div>
           </div>
-        </div>
-        
-        <div className="summary-totals">
-          <div className="subtotal">
-            <span>subtotal: {subtotal.toFixed(2)}</span>
-          </div>
-          <div className="discount">
-            <span>descuento: 0.00</span>
-            <button className="edit-btn">(editar)</button>
-          </div>
-          <div className="total">
-            <strong>Total: {subtotal.toFixed(2)}</strong>
-          </div>
-        </div>
+        )}
       </div>
+
+      {/* Modales */}
+      <CustomizationModal
+        isOpen={showCustomizationModal}
+        onClose={closeCustomizationModal}
+        product={selectedProduct}
+        customizationOptions={dynamicCustomizationOptions} // USAR OPCIONES DINÁMICAS
+        onAddToCart={addToCart}
+        loading={loading || inventoryLoading}
+      />
+      <CheckoutModal
+        isOpen={showCheckoutModal}
+        onClose={handleCloseCheckoutModal}
+        cart={cart}
+        onCreateOrder={handleCreateOrder}
+        onRemoveFromCart={removeFromCart}
+        loading={loading}
+        error={error}
+      />
+      <SuccessModal />
     </div>
   );
 };
 
-export default Orders;
+export default TomaDeOrdenes;

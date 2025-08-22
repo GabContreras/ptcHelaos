@@ -27,6 +27,7 @@ export function useProductsManager() {
     const [available, setAvailable] = useState(true);
     const [selectedImages, setSelectedImages] = useState([]);
     const [imagePreview, setImagePreview] = useState([]);
+    const [existingImages, setExistingImages] = useState([]); // Nuevo estado para imágenes existentes
 
     // GET - Obtener todos los productos
     const fetchProducts = async () => {
@@ -118,6 +119,42 @@ export function useProductsManager() {
         setSelectedImages([]);
     };
 
+    // Eliminar imagen del preview
+    const removeImagePreview = (index) => {
+        const updatedFiles = [...selectedImages];
+        const updatedPreviews = [...imagePreview];
+        
+        // Liberar URL del objeto
+        URL.revokeObjectURL(updatedPreviews[index]);
+        
+        // Eliminar del array
+        updatedFiles.splice(index, 1);
+        updatedPreviews.splice(index, 1);
+        
+        setSelectedImages(updatedFiles);
+        setImagePreview(updatedPreviews);
+    };
+
+    // Agregar más imágenes
+    const addMoreImages = (files) => {
+        const totalImages = selectedImages.length + files.length + existingImages.length;
+        
+        if (totalImages > 5) {
+            setError('Máximo 5 imágenes permitidas en total');
+            return;
+        }
+
+        const newFiles = [...selectedImages, ...files];
+        const newPreviews = [...imagePreview];
+        
+        files.forEach(file => {
+            newPreviews.push(URL.createObjectURL(file));
+        });
+        
+        setSelectedImages(newFiles);
+        setImagePreview(newPreviews);
+    };
+
     // POST/PUT - Crear o actualizar producto
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -153,6 +190,12 @@ export function useProductsManager() {
                 return;
             }
 
+            // Para productos editados, verificar que tengan al menos una imagen (existente o nueva)
+            if (isEditing && selectedImages.length === 0 && existingImages.length === 0) {
+                setError('Debes mantener o subir al menos una imagen');
+                return;
+            }
+
             // Crear FormData para enviar archivos
             const formData = new FormData();
             formData.append('name', name.trim());
@@ -162,10 +205,17 @@ export function useProductsManager() {
             formData.append('basePrice', parseFloat(basePrice));
             formData.append('available', available);
 
-            // Agregar imágenes al FormData
+            // Agregar imágenes nuevas al FormData
             selectedImages.forEach(image => {
                 formData.append('images', image);
             });
+
+            // Si estamos editando, enviar las URLs de las imágenes existentes que queremos mantener
+            if (isEditing) {
+                const imagesToKeep = existingImages.map(img => img.url);
+                formData.append('existingImages', JSON.stringify(imagesToKeep));
+                console.log('Imágenes existentes a mantener:', imagesToKeep);
+            }
             
             let response;
             
@@ -299,6 +349,7 @@ export function useProductsManager() {
         setBasePrice('');
         setAvailable(true);
         clearImagePreviews();
+        setExistingImages([]); // Limpiar imágenes existentes
         setIsEditing(false);
         setCurrentProductId(null);
         setError('');
@@ -313,8 +364,11 @@ export function useProductsManager() {
         setBasePrice(product.basePrice?.toString() || '');
         setAvailable(product.available !== undefined ? product.available : true);
         
-        // Para edición, no cargamos las imágenes existentes en el preview
-        // El usuario puede subir nuevas imágenes si lo desea
+        // Cargar las imágenes existentes del producto
+        const productImages = product.images || [];
+        setExistingImages(productImages);
+        
+        // Limpiar imágenes nuevas
         clearImagePreviews();
         
         setIsEditing(true);
@@ -374,12 +428,16 @@ export function useProductsManager() {
         setSelectedImages,
         imagePreview,
         setImagePreview,
+        existingImages,
+        setExistingImages,
         
         // Funciones
         fetchProducts,
         fetchCategories,
         handleImageChange,
         clearImagePreviews,
+        addMoreImages,
+        removeImagePreview,
         handleSubmit,
         startDeleteProduct,
         confirmDeleteProduct,

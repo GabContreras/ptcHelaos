@@ -4,12 +4,16 @@ const customersSchema = new Schema({
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    maxlength: 100
+   
+    
   },
   phone: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    maxlength: 15
 
   },
   email: {
@@ -18,13 +22,38 @@ const customersSchema = new Schema({
     unique: true,
     trim: true
   },
-  address: [{
-
+  addresses: [{
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 50
+    },
+    latitude: {
+      type: Number,
+      required: true,
+      min: -90,
+      max: 90
+    },
+    longitude: {
+      type: Number,
+      required: true,
+      min: -180,
+      max: 180
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 200
+    }
   }],
   password: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    minlength: 8
+
   },
   birthday: {
     type: Date,

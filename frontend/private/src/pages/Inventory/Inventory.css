@@ -1,0 +1,1687 @@
+/* Inventory.css - Responsive mejorado con tarjetas más grandes */
+.inventory-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8e3ff 0%, #f0f4ff 50%, #fdf2ff 100%);
+  padding: 1rem;
+}
+
+/* Indicador de carga */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  color: #666;
+  font-size: 1rem;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e0e0e0;
+  border-top: 2px solid #8B7CF6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Header con pestañas */
+.header-tabs {
+  display: flex;
+  background: linear-gradient(135deg, #8B5CF6, #A855F7);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 1rem;
+  gap: 4px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.tab-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-button.active {
+  background: white;
+  color: #8B5CF6;
+  font-weight: 600;
+}
+
+/* Barra de búsqueda */
+.search-bar {
+  max-width: 1200px;
+  margin: 0 auto 1rem auto;
+  width: 100%;
+}
+
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #6B7280;
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #8B5CF6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.search-input::placeholder {
+  color: #9CA3AF;
+}
+
+/* Filtros de lotes */
+.batch-filters {
+  max-width: 1200px;
+  margin: 0 auto 1rem auto;
+  width: 100%;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.filter-toggle-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.filter-toggle-btn:hover {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: #8B5CF6;
+  color: #8B5CF6;
+}
+
+.filter-content {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filter-group select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: #8B5CF6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* Información de resultados */
+.results-info {
+  padding: 0.5rem 1rem;
+  color: #666;
+  font-size: 0.9rem;
+  text-align: right;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Contenedor principal */
+.inventory-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 2rem;
+  flex-grow: 1;
+  box-sizing: border-box;
+}
+
+.main-content {
+  flex: 1;
+  background-color: transparent;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* GRIDS RESPONSIVOS - INVENTARIOS Y LOTES CON TARJETAS MÁS GRANDES */
+
+/* Grid de inventarios - Tarjetas más grandes como en la imagen */
+.inventories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); /* Aumentado min-width */
+  gap: 1.5rem; /* Aumentado el gap */
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 1rem;
+}
+
+/* Grid de lotes - mantener diseño original */
+.batches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 1rem;
+}
+
+/* Secciones de inventarios y lotes */
+.inventories-section,
+.batches-section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+
+/* Tablet grande (1024px - 1200px) */
+@media (max-width: 1200px) and (min-width: 1025px) {
+  .inventories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.25rem;
+  }
+  
+  .batches-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.875rem;
+  }
+}
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .inventory-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .side-panel {
+    width: 100%;
+    max-height: 400px;
+  }
+  
+  .inventories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    max-height: calc(100vh - 350px);
+    gap: 1rem;
+  }
+  
+  .batches-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    max-height: calc(100vh - 350px);
+    gap: 0.75rem;
+  }
+
+  .filter-content {
+    padding: 0.75rem;
+  }
+
+  .filter-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .filter-group label {
+    min-width: 120px;
+    margin-bottom: 0;
+  }
+
+  .filter-group select {
+    flex: 1;
+  }
+}
+
+/* Tablet pequeño y móvil landscape (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+  .inventory-page {
+    padding: 0.75rem;
+  }
+  
+  .header-tabs {
+    margin-bottom: 0.75rem;
+  }
+  
+  .tab-button {
+    font-size: 0.875rem;
+    padding: 10px 14px;
+  }
+
+  .filter-toggle-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .filter-content {
+    padding: 0.75rem;
+  }
+  
+  .results-info {
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+  
+  .inventory-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .side-panel {
+    width: 100%;
+    padding: 1rem;
+    max-height: 350px;
+  }
+
+  /* INVENTARIOS: Una sola columna en móviles */
+  .inventories-grid {
+    grid-template-columns: 1fr; /* Una columna para inventarios */
+    max-height: calc(100vh - 400px);
+    gap: 1rem;
+  }
+  
+  /* LOTES: Mantener diseño flexible */
+  .batches-grid {
+    grid-template-columns: 1fr;
+    max-height: calc(100vh - 400px);
+    gap: 0.75rem;
+  }
+  
+  .search-input {
+    padding: 0.625rem 0.625rem 0.625rem 2.25rem;
+    font-size: 0.8rem;
+  }
+  
+  .search-icon {
+    left: 10px;
+  }
+}
+
+/* Móvil (≤ 480px) */
+@media (max-width: 480px) {
+  .inventory-page {
+    padding: 0.5rem;
+  }
+  
+  .header-tabs {
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .tab-button {
+    font-size: 0.875rem;
+    padding: 0.75rem;
+  }
+
+  .filter-toggle-btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    gap: 0.375rem;
+  }
+
+  .filter-content {
+    padding: 0.5rem;
+  }
+
+  .filter-group {
+    gap: 0.375rem;
+  }
+
+  .filter-group label {
+    font-size: 0.8rem;
+  }
+
+  .filter-group select {
+    font-size: 0.8rem;
+    padding: 0.375rem 0.5rem;
+  }
+  
+  .results-info {
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+  
+  .inventory-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .side-panel {
+    width: 100%;
+    padding: 0.75rem;
+    max-height: 300px;
+  }
+
+  /* INVENTARIOS: Una columna en móviles */
+  .inventories-grid {
+    grid-template-columns: 1fr; /* Una sola columna */
+    max-height: calc(100vh - 450px);
+    gap: 0.75rem;
+    padding-right: 4px;
+  }
+
+  /* LOTES: Una columna en móviles */
+  .batches-grid {
+    grid-template-columns: 1fr;
+    max-height: calc(100vh - 450px);
+    gap: 0.5rem;
+    padding-right: 4px;
+  }
+
+  .search-input {
+    padding: 0.5rem 0.5rem 0.5rem 2rem;
+    font-size: 0.8rem;
+  }
+  
+  .search-icon {
+    left: 8px;
+  }
+  
+  .inventory-card {
+    min-height: 200px;
+    padding: 1.25rem;
+  }
+
+  .inventory-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .inventory-actions {
+    align-self: flex-end;
+  }
+}
+
+/* Móvil muy pequeño (≤ 320px) */
+@media (max-width: 320px) {
+  .inventory-page {
+    padding: 0.25rem;
+  }
+  
+  .header-tabs {
+    margin-bottom: 0.25rem;
+  }
+  
+  .tab-button {
+    font-size: 0.8rem;
+    padding: 0.625rem;
+  }
+
+  .filter-toggle-btn {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.7rem;
+  }
+
+  .filter-content {
+    padding: 0.375rem;
+  }
+
+  .filter-group label {
+    font-size: 0.75rem;
+  }
+
+  .filter-group select {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.375rem;
+  }
+  
+  .results-info {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
+  
+  .inventory-container {
+    gap: 0.5rem;
+  }
+  
+  .side-panel {
+    padding: 0.5rem;
+    max-height: 250px;
+  }
+
+  .inventories-grid,
+  .batches-grid {
+    max-height: calc(100vh - 500px);
+    gap: 0.375rem;
+    padding-right: 2px;
+  }
+
+  .search-input {
+    padding: 0.375rem 0.375rem 0.375rem 1.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .search-icon {
+    left: 6px;
+  }
+  
+  .inventory-card {
+    padding: 1rem;
+    min-height: 180px;
+  }
+
+  .inventory-header h3 {
+    font-size: 1rem;
+  }
+
+  .info-item {
+    margin-bottom: 0.125rem;
+  }
+
+  .info-label,
+  .info-value {
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape específico para móviles */
+@media (max-width: 768px) and (orientation: landscape) {
+  .inventory-page {
+    padding: 0.5rem;
+  }
+  
+  .inventory-container {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .side-panel {
+    width: 300px;
+    max-height: calc(100vh - 150px);
+  }
+
+  /* INVENTARIOS: Una columna incluso en landscape */
+  .inventories-grid {
+    grid-template-columns: 1fr; /* Mantener una columna */
+    max-height: calc(100vh - 200px);
+  }
+
+  /* LOTES: Permitir 2 columnas en landscape si hay espacio */
+  .batches-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    max-height: calc(100vh - 200px);
+  }
+
+  .filter-content {
+    padding: 0.5rem;
+  }
+
+  .filter-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .filter-group label {
+    min-width: 100px;
+    margin-bottom: 0;
+  }
+}
+
+/* Estilos para scroll personalizado */
+.inventories-grid::-webkit-scrollbar,
+.batches-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.inventories-grid::-webkit-scrollbar-track,
+.batches-grid::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.inventories-grid::-webkit-scrollbar-thumb,
+.batches-grid::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+
+.inventories-grid::-webkit-scrollbar-thumb:hover,
+.batches-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* Botón de cargar más */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+  margin-top: auto;
+}
+
+.load-more-btn {
+  background: #8B5CF6;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.load-more-btn:hover:not(:disabled) {
+  background: #7C3AED;
+  transform: translateY(-1px);
+}
+
+.load-more-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mensaje cuando no hay datos */
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  border: 2px dashed #ccc;
+  grid-column: 1 / -1;
+}
+
+.no-data-message p {
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+/* Tarjetas de inventario más grandes como en la imagen */
+.inventory-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.5rem; /* Aumentado el padding */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  height: fit-content;
+  min-height: 220px; /* Aumentado para que coincida con la imagen */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.inventory-card:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.inventory-card.selected {
+  border-color: #8B5CF6;
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.inventory-card.inactive {
+  opacity: 0.6;
+  background: rgba(248, 250, 252, 0.8);
+  cursor: not-allowed;
+}
+
+.inventory-card.inactive:hover {
+  border-color: #e9ecef;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Header de inventario con más espacio */
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem; /* Aumentado el margen */
+}
+
+.inventory-header h3 {
+  font-size: 1.2rem; /* Aumentado el tamaño de fuente */
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.inventory-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.375rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn {
+  color: #6B7280;
+}
+
+.edit-btn:hover {
+  color: #8B5CF6;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.toggle-btn.active {
+  color: #10b981;
+}
+
+.toggle-btn.active:hover {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.toggle-btn.inactive {
+  color: #ef4444;
+}
+
+.toggle-btn.inactive:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.delete-btn {
+  color: #ef4444;
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Info de inventario con más espacio */
+.inventory-info {
+  margin-bottom: 1rem; /* Aumentado el margen */
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem; /* Ligeramente aumentado */
+  margin-bottom: 0.5rem; /* Aumentado el margen */
+}
+
+.info-label {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #374151;
+  font-weight: 400;
+}
+
+/* Stock con más prominencia */
+.inventory-stock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem; /* Aumentado el margen */
+  padding: 0.5rem 0; /* Agregado padding */
+  border-top: 1px solid #f3f4f6; /* Línea sutil para separar */
+}
+
+.stock-label {
+  font-size: 0.9rem; /* Aumentado */
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.stock-amount {
+  font-size: 1rem; /* Aumentado */
+  color: #374151;
+  font-weight: 600;
+}
+
+.inventory-status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.inactive {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Estilos para productos perdidos */
+.lost-inventory {
+  color: #ef4444 !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.lost-inventory::before {
+  content: "⚠️";
+  font-size: 0.875rem;
+}
+
+/* Batch value con color específico para productos perdidos */
+.batch-value.lost-inventory {
+  color: #ef4444;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.batch-value.lost-inventory::before {
+  content: "⚠️";
+  font-size: 0.875rem;
+}
+
+/* Botón de agregar inventario ajustado para el nuevo tamaño */
+.add-inventory-container {
+  border: 2px dashed #bbb;
+  border-radius: 12px;
+  padding: 1.5rem; /* Aumentado */
+  text-align: center;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 120px; /* Aumentado */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  margin-top: auto;
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.add-inventory-container:hover {
+  border-color: #8B7CF6;
+  background: rgba(139, 124, 246, 0.1);
+}
+
+.add-inventory-btn-inline {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.add-inventory-btn-inline:hover {
+  color: #8B7CF6;
+}
+
+.add-icon {
+  width: 36px; /* Ligeramente aumentado */
+  height: 36px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px; /* Aumentado */
+  font-weight: bold;
+  background: white;
+  flex-shrink: 0;
+}
+
+.add-text {
+  font-weight: 500;
+  font-size: 1.1rem; /* Ligeramente aumentado */
+}
+
+/* Panel lateral */
+.side-panel {
+  width: 350px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1.5rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.no-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #6B7280;
+  text-align: center;
+}
+
+.no-selection-icon {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.no-selection h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.no-selection p {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.inventory-details h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.detail-category {
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin-bottom: 1rem;
+}
+
+.detail-info {
+  margin-bottom: 1.5rem;
+}
+
+/* Ajustes en el panel lateral para productos perdidos */
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.875rem; /* Aumentado */
+  min-height: 24px;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 500;
+  text-align: right;
+}
+
+.detail-value.active {
+  color: #10b981;
+}
+
+.detail-value.inactive {
+  color: #ef4444;
+}
+
+.detail-value.lost-inventory {
+  color: #ef4444;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.detail-value.lost-inventory::before {
+  content: "⚠️";
+  font-size: 0.75rem;
+}
+
+/* Aviso de inventario inactivo */
+.inactive-notice {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  color: #dc2626;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.inventory-inactive-notice {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Sección de lotes activos */
+.active-batches-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.add-batch-btn {
+  background: #8B5CF6;
+  border: none;
+  border-radius: 6px;
+  padding: 0.375rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-batch-btn:hover:not(:disabled) {
+  background: #7C3AED;
+  transform: scale(1.05);
+}
+
+.add-batch-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.batches-list-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.batch-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.batch-card:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.batch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.batch-header h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.batch-status {
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+}
+
+.batch-info {
+  margin-bottom: 0.5rem;
+}
+
+.batch-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  margin-bottom: 0.125rem;
+}
+
+.batch-label {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.batch-value {
+  color: #374151;
+  font-weight: 400;
+}
+
+.batch-value.expiring {
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.batch-value.expired {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.warning-icon {
+  color: #f59e0b;
+}
+
+.batch-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.withdraw-btn {
+  background: #ef4444;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.withdraw-btn:hover {
+  background: #dc2626;
+}
+
+.expire-btn {
+  background: #f59e0b;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.expire-btn:hover {
+  background: #d97706;
+}
+
+.expire-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.no-batches {
+  text-align: center;
+  padding: 1rem;
+  color: #6B7280;
+}
+
+.no-batches p {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.add-first-batch-btn {
+  background: #8B5CF6;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-first-batch-btn:hover {
+  background: #7C3AED;
+}
+
+/* Operaciones rápidas */
+.quick-operations {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.quick-operations h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.quick-op-btn {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.quick-op-btn.withdraw {
+  background: #ef4444;
+  color: white;
+}
+
+.quick-op-btn.withdraw:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.quick-op-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tarjetas de lote para vista completa - mejoradas con espaciado */
+.batch-card-full {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.25rem; /* Aumentado el padding */
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  height: fit-content;
+  min-height: 220px; /* Aumentado para consistencia */
+}
+
+.batch-card-full:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.batch-card-full.selected {
+  border-color: #8B5CF6;
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.batch-card-full .batch-header {
+  margin-bottom: 1rem;
+}
+
+.batch-card-full h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.batch-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.batch-details .batch-row {
+  font-size: 0.9rem; /* Ligeramente aumentado */
+  margin-bottom: 0.375rem; /* Aumentado el margen */
+}
+
+/* Detalles del lote en panel lateral */
+.batch-details-full {
+  margin-bottom: 1.5rem;
+}
+
+.batch-details-full h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+/* Sección de movimientos */
+.movements-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.movements-section .section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.movements-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.movements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.movement-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.movement-card:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.movement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.movement-type {
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+}
+
+.movement-date {
+  font-size: 0.75rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.movement-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.movement-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+.movement-label {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.movement-value {
+  color: #374151;
+  font-weight: 400;
+  text-align: right;
+}
+
+.no-movements {
+  text-align: center;
+  padding: 1rem;
+  color: #6B7280;
+}
+
+.no-movements p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Estilos de formularios */
+.inventory-form,
+.batch-form,
+.operation-form {
+  padding: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.375rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #8B5CF6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #E5E7EB;
+}
+
+.cancel-button,
+.save-button {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cancel-button:hover {
+  background: #e5e7eb;
+}
+
+.save-button {
+  background: #8B5CF6;
+  color: white;
+}
+
+.save-button:hover:not(:disabled) {
+  background: #7C3AED;
+}
+
+.cancel-button:disabled,
+.save-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Estilos adicionales para el identificador de lote */
+.batch-identifier {
+  font-weight: 600;
+  color: #8B5CF6;
+  font-size: 0.875rem;
+}
+
+/* Responsive para formularios */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .form-group.full-width {
+    grid-column: 1;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .cancel-button,
+  .save-button {
+    width: 100%;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .detail-value {
+    text-align: left;
+  }
+  
+  .batch-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-grid {
+    gap: 0.5rem;
+  }
+  
+  .cancel-button,
+  .save-button {
+    padding: 0.75rem;
+  }
+  
+  .load-more-btn {
+    padding: 0.625rem 1.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .no-data-message {
+    min-height: 200px;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .no-data-message p {
+    font-size: 0.9rem;
+  }
+  
+  .add-inventory-container {
+    min-height: 100px;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .add-inventory-btn-inline {
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    flex-direction: column;
+  }
+  
+  .add-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+  
+  .add-text {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .form-grid {
+    gap: 0.375rem;
+  }
+  
+  .cancel-button,
+  .save-button {
+    padding: 0.625rem;
+    font-size: 0.8rem;
+  }
+  
+  .load-more-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+  
+  .no-data-message {
+    min-height: 150px;
+    padding: 0.75rem;
+  }
+  
+  .no-data-message p {
+    font-size: 0.85rem;
+  }
+  
+  .add-inventory-container {
+    min-height: 90px;
+    padding: 0.75rem;
+  }
+  
+  .add-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+  
+  .add-text {
+    font-size: 0.8rem;
+  }
+}

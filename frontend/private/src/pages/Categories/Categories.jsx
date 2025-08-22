@@ -395,17 +395,7 @@ const CategoriesPage = () => {
           </>
         )}
 
-        {/* Botón flotante para mobile */}
-        {isMobile && !isLoading && (
-          <button 
-            className="floating-add-btn"
-            onClick={handleAddNew}
-            disabled={isLoading}
-            title="Agregar categoría"
-          >
-            +
-          </button>
-        )}
+        
       </div>
       
       {/* Modal de edición/creación usando UniversalModal */}

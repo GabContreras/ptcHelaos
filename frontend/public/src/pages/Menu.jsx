@@ -1,25 +1,44 @@
-import React, { createContext ,useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Agregar useNavigate
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext'; // Agregar useAuth
 import { ChevronDown, X, ArrowLeft, ArrowRight, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import '../styles/Menu.css';
 import Navbar from "../components/NavBar";
 import Footer from "../components/Footer";
 import { usePublicProducts } from '../hooks/MenuHook/usePublicProducts';
+import { useInventory } from '../hooks/MenuHook/useInventory';
+import toast, { Toaster } from 'react-hot-toast'; // Importar react-hot-toast
 
 const Menu = () => {
+  const navigate = useNavigate(); // Hook para navegación
+  const { isAuthenticated } = useAuth(); // Hook de autenticación
+
   // Hook para productos públicos (mantener tu lógica existente)
   const {
     products,
     filteredProducts,
-    isLoading,
-    error,
+    isLoading: productsLoading,
+    error: productsError,
     searchTerm,
     filterBySearch,
     resetFilters,
     getProductById
   } = usePublicProducts();
 
-  const {addToCart} = useCart();
+  // NUEVO: Hook para inventario
+  const {
+    getFlavorNames,
+    getToppingNames,
+    getFlavorExtraPrice,
+    getToppingExtraPrice,
+    isFlavorAvailable,
+    isToppingAvailable,
+    isLoading: inventoryLoading,
+    error: inventoryError
+  } = useInventory();
+
+  const { addToCart } = useCart();
 
   // Estados del modal
   const [selectedItem, setSelectedItem] = useState(null);
@@ -31,6 +50,132 @@ const Menu = () => {
     flavors: [],
     toppings: []
   });
+
+  // MODIFICAR: Verificar autenticación antes de agregar al carrito
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error('Necesitas iniciar sesión para agregar productos al carrito');
+      navigate('/LoginPage');
+      return;
+    }
+
+    try {
+      // Crear el objeto completo del carrito con todos los datos del producto
+      const cartItem = {
+        product: {
+          ...selectedItem, // Todos los datos del producto original
+          // Asegurar que tenemos las propiedades esenciales
+          _id: selectedItem._id,
+          name: selectedItem.name,
+          description: selectedItem.description,
+          basePrice: selectedItem.basePrice,
+          images: selectedItem.images,
+          // Cualquier otro dato del producto que necesites
+        },
+        customization: needsCustomization(selectedItem.name) ? {
+          ...customization,
+          // Agregar información adicional de la personalización
+          productName: selectedItem.name,
+          hasFixedFlavor: hasFixedFlavor(selectedItem.name),
+          sizeName: customization.size?.name,
+          flavorPrices: customization.flavors.map(flavor => ({
+            name: flavor,
+            extraPrice: getFlavorExtraPrice(flavor)
+          })),
+          toppingPrices: customization.toppings.map(topping => ({
+            name: topping,
+            extraPrice: getToppingExtraPrice(topping)
+          }))
+        } : null,
+        totalPrice: needsCustomization(selectedItem.name) ? calculateTotalPrice() : selectedItem.basePrice,
+        timestamp: new Date().toISOString(),
+        // Agregar información adicional para el carrito
+        addedBy: 'menu', // Para saber desde dónde se agregó
+        sessionId: Date.now() // Para tracking si es necesario
+      };
+
+      console.log('Agregando al carrito:', cartItem);
+      addToCart(cartItem);
+
+      // Mostrar notificación de éxito
+      const productName = selectedItem.name;
+      const totalPrice = needsCustomization(selectedItem.name) ? calculateTotalPrice() : selectedItem.basePrice;
+      toast.success(`${productName} agregado al carrito - $${totalPrice.toFixed(2)}`, {
+        duration: 3000,
+        position: 'top-right',
+        style: {
+          background: '#10b981',
+          color: 'white',
+          borderRadius: '12px',
+          padding: '12px 16px',
+          fontSize: '14px',
+          fontWeight: '500'
+        },
+        iconTheme: {
+          primary: 'white',
+          secondary: '#10b981',
+        },
+      });
+
+      closeModal();
+    } catch (error) {
+      console.error('Error agregando al carrito:', error);
+      toast.error('Error al agregar el producto al carrito. Inténtalo de nuevo.');
+    }
+  };
+
+  // FUNCIÓN AUXILIAR: Para agregar productos simples (sin personalización) al carrito
+  const handleAddSimpleToCart = (product) => {
+    if (!isAuthenticated) {
+      toast.error('Necesitas iniciar sesión para agregar productos al carrito');
+      navigate('/LoginPage');
+      return;
+    }
+
+    try {
+      const cartItemSimple = {
+        product: {
+          ...product,
+          _id: product._id,
+          name: product.name,
+          description: product.description,
+          basePrice: product.basePrice,
+          images: product.images
+        },
+        customization: null,
+        totalPrice: product.basePrice,
+        timestamp: new Date().toISOString(),
+        addedBy: 'menu-simple',
+        sessionId: Date.now()
+      };
+
+      console.log('Agregando producto simple al carrito:', cartItemSimple);
+      addToCart(cartItemSimple);
+
+      // Mostrar notificación de éxito
+      toast.success(`${product.name} agregado al carrito - $${product.basePrice.toFixed(2)}`, {
+        duration: 3000,
+        position: 'top-right',
+        style: {
+          background: '#10b981',
+          color: 'white',
+          borderRadius: '12px',
+          padding: '12px 16px',
+          fontSize: '14px',
+          fontWeight: '500'
+        },
+        iconTheme: {
+          primary: 'white',
+          secondary: '#10b981',
+        },
+      });
+
+      closeModal();
+    } catch (error) {
+      console.error('Error agregando producto simple al carrito:', error);
+      toast.error('Error al agregar el producto al carrito. Inténtalo de nuevo.');
+    }
+  };
 
   // Estado para el carrusel de imágenes
   const [currentImageIndex, setCurrentImageIndex] = useState({});
@@ -54,26 +199,60 @@ const Menu = () => {
     { id: 3, name: "Tres Sabores (Grande)", price: 4.50, maxFlavors: 3 }
   ];
 
-  const flavors = [
-    "Vainilla", "Chocolate", "Fresa", "Matcha", "Cookies & Cream", 
-    "Caramelo", "Mango", "Coco", "Piña", "Frambuesa"
-  ];
+  // MODIFICADO: Usar sabores reales del inventario
+  const flavors = getFlavorNames();
 
-  const toppings = [
-    "Maní", "Pistacho", "Mango", "Crispy", "Jalea de mora", "Mora",
-    "Galleta", "Jalea de chocolate", "Piña", "Pixie", "Nueces", "Jalea de piña",
-    "Chocolate", "Almendras", "Jalea de Caramelo", "Jalea de Fresa", "Fresa", "Uva"
-  ];
+  // MODIFICADO: Usar toppings reales del inventario  
+  const toppings = getToppingNames();
+
+  // Estados de carga combinados
+  const isLoading = productsLoading || inventoryLoading;
+  const error = productsError || inventoryError;
+
+  // Mostrar errores usando toast
+  useEffect(() => {
+    if (productsError) {
+      toast.error(`Error al cargar productos: ${productsError}`, {
+        duration: 5000,
+        position: 'top-right',
+        style: {
+          background: '#ef4444',
+          color: 'white',
+          borderRadius: '12px',
+          padding: '12px 16px',
+          fontSize: '14px',
+          fontWeight: '500'
+        }
+      });
+    }
+  }, [productsError]);
+
+  useEffect(() => {
+    if (inventoryError) {
+      toast.error(`Error al cargar inventario: ${inventoryError}`, {
+        duration: 5000,
+        position: 'top-right',
+        style: {
+          background: '#f59e0b',
+          color: 'white',
+          borderRadius: '12px',
+          padding: '12px 16px',
+          fontSize: '14px',
+          fontWeight: '500'
+        }
+      });
+    }
+  }, [inventoryError]);
 
   // Función para obtener imágenes del producto (mantener tu lógica existente)
   const getProductImages = (product) => {
     if (!product) return ['/api/placeholder/300/200'];
-    
+
     // Debug: mostrar estructura del producto en consola
     if (process.env.NODE_ENV === 'development') {
       console.log('Producto:', product.name, 'Images data:', product.images);
     }
-    
+
     // Si el producto tiene un array de imágenes (formato: [{url: "...", _id: "..."}])
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
       const urls = product.images.map(img => {
@@ -87,7 +266,7 @@ const Menu = () => {
         }
         return '/api/placeholder/300/200';
       }).filter(url => url && url !== '/api/placeholder/300/200'); // Filtrar URLs válidas
-      
+
       // Si encontramos URLs válidas, usarlas; sino, usar placeholder
       if (urls.length > 0) {
         if (process.env.NODE_ENV === 'development') {
@@ -96,12 +275,12 @@ const Menu = () => {
         return urls;
       }
     }
-    
+
     // Si tiene una sola imagen (propiedad image)
     if (product.image) {
       return [product.image];
     }
-    
+
     // Imagen por defecto
     return ['/api/placeholder/300/200'];
   };
@@ -111,14 +290,14 @@ const Menu = () => {
     const product = filteredProducts.find(p => p._id === productId);
     const images = getProductImages(product);
     const currentIndex = currentImageIndex[productId] || 0;
-    
+
     let newIndex;
     if (direction === 'next') {
       newIndex = (currentIndex + 1) % images.length;
     } else {
       newIndex = (currentIndex - 1 + images.length) % images.length;
     }
-    
+
     setCurrentImageIndex(prev => ({
       ...prev,
       [productId]: newIndex
@@ -174,7 +353,7 @@ const Menu = () => {
   const needsCustomization = (productName) => {
     const customizableProducts = [
       'Helado de Rollo',
-      'Crepas', 
+      'Crepas',
       'Cono con Helados de Rollo',
       'Mini Donitas',
       'Wafles'
@@ -207,11 +386,18 @@ const Menu = () => {
     setCustomizationStep(1);
   };
 
+  // MODIFICADO: Agregar verificación de disponibilidad
   const toggleFlavor = (flavor) => {
+    // Verificar si el sabor está disponible
+    if (!isFlavorAvailable(flavor)) {
+      toast.error(`Lo sentimos, el sabor ${flavor} no está disponible en este momento.`);
+      return;
+    }
+
     setCustomization(prev => {
       const currentFlavors = prev.flavors;
       const maxFlavors = hasFixedFlavor(selectedItem.name) ? 1 : prev.size?.maxFlavors || 1;
-      
+
       if (currentFlavors.includes(flavor)) {
         return {
           ...prev,
@@ -227,7 +413,14 @@ const Menu = () => {
     });
   };
 
+  // MODIFICADO: Agregar verificación de disponibilidad
   const toggleTopping = (topping) => {
+    // Verificar si el topping está disponible
+    if (!isToppingAvailable(topping)) {
+      toast.error(`Lo sentimos, el topping ${topping} no está disponible en este momento.`);
+      return;
+    }
+
     setCustomization(prev => ({
       ...prev,
       toppings: prev.toppings.includes(topping)
@@ -248,10 +441,10 @@ const Menu = () => {
     }
   };
 
-  // Calcular precio total
+  // MODIFICADO: Calcular precio total usando precios reales del inventario
   const calculateTotalPrice = () => {
     let total = 0;
-    
+
     if (hasFixedFlavor(selectedItem.name)) {
       total = selectedItem.basePrice;
     } else if (customization.size) {
@@ -259,10 +452,17 @@ const Menu = () => {
     } else {
       total = selectedItem.basePrice;
     }
-    
-    // Agregar precio de toppings
-    total += customization.toppings.length * 0.25;
-    
+
+    // Agregar precio extra de sabores
+    customization.flavors.forEach(flavor => {
+      total += getFlavorExtraPrice(flavor);
+    });
+
+    // Agregar precio de toppings usando precios reales
+    customization.toppings.forEach(topping => {
+      total += getToppingExtraPrice(topping);
+    });
+
     return total;
   };
 
@@ -281,29 +481,13 @@ const Menu = () => {
     }
   };
 
-  // Función para agregar al carrito
-  /* const addToCart = () => {
-    const orderDetails = {
-      product: selectedItem,
-      customization: customization,
-      totalPrice: calculateTotalPrice(),
-      timestamp: new Date().toISOString()
-    };
-    
-    console.log('Agregando al carrito:', orderDetails);
-    // Aquí puedes implementar la lógica para agregar al carrito
-    // Por ejemplo, llamar a una función de tu hook o contexto de carrito
-    alert('Producto agregado al carrito exitosamente!');
-    closeModal();
-  };*/
-
   // Renderizar componente de imagen con carrusel (mantener tu lógica existente)
   const ImageCarousel = ({ product, isModal = false }) => {
     const images = getProductImages(product);
     const currentIndex = currentImageIndex[product._id] || 0;
     const hasMultipleImages = images.length > 1;
 
-    const imageClass = isModal ? "modal-image" : "card-image";
+    const imageClass = isModal ? "menu-modal-image" : "menu-card-image";
 
     // Función para manejar error de imagen
     const handleImageError = (e, imageIndex) => {
@@ -315,18 +499,18 @@ const Menu = () => {
     };
 
     return (
-      <div className={`${imageClass} image-carousel-container`}>
-        <img 
-          src={images[currentIndex]} 
+      <div className={`${imageClass} menu-image-carousel-container`}>
+        <img
+          src={images[currentIndex]}
           alt={`${product.name} - imagen ${currentIndex + 1}`}
           onError={(e) => handleImageError(e, currentIndex)}
           loading="lazy"
         />
-        
+
         {hasMultipleImages && (
           <>
-            <button 
-              className="image-nav-btn image-nav-prev"
+            <button
+              className="menu-image-nav-btn menu-image-nav-prev"
               onClick={(e) => {
                 e.stopPropagation();
                 changeImage(product._id, 'prev');
@@ -335,9 +519,9 @@ const Menu = () => {
             >
               <ChevronLeft size={18} />
             </button>
-            
-            <button 
-              className="image-nav-btn image-nav-next"
+
+            <button
+              className="menu-image-nav-btn menu-image-nav-next"
               onClick={(e) => {
                 e.stopPropagation();
                 changeImage(product._id, 'next');
@@ -346,12 +530,12 @@ const Menu = () => {
             >
               <ChevronRight size={18} />
             </button>
-            
-            <div className="image-indicators">
+
+            <div className="menu-image-indicators">
               {images.map((_, index) => (
                 <button
                   key={index}
-                  className={`image-dot ${index === currentIndex ? 'active' : ''}`}
+                  className={`menu-image-dot ${index === currentIndex ? 'active' : ''}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setCurrentImageIndex(prev => ({
@@ -365,10 +549,10 @@ const Menu = () => {
             </div>
           </>
         )}
-        
+
         {/* Contador de imágenes */}
         {hasMultipleImages && (
-          <div className="image-counter">
+          <div className="menu-image-counter">
             {currentIndex + 1}/{images.length}
           </div>
         )}
@@ -388,37 +572,37 @@ const Menu = () => {
         // Paso 1: Seleccionar tamaño (solo para productos que lo requieren)
         if (isFixedFlavor) {
           // Para productos con sabor fijo, saltar directamente a selección de sabores
-          return <div className="customization-loading">Cargando...</div>;
+          return <div className="menu-customization-loading">Cargando...</div>;
         }
-        
+
         return (
-          <div className="customization-step">
-            <div className="step-header">
-              <h3 className="step-title">Elige tu tamaño</h3>
-              <p className="step-description">Selecciona el tamaño que prefieras</p>
+          <div className="menu-customization-step">
+            <div className="menu-step-header">
+              <h3 className="menu-step-title">Elige tu tamaño</h3>
+              <p className="menu-step-description">Selecciona el tamaño que prefieras</p>
             </div>
-            
-            <div className="size-options-grid">
+
+            <div className="menu-size-options-grid">
               {sizeOptions.map((size) => (
                 <div
                   key={size.id}
                   onClick={() => selectSize(size)}
-                  className={`size-option ${customization.size?.id === size.id ? 'selected' : ''}`}
+                  className={`menu-size-option ${customization.size?.id === size.id ? 'selected' : ''}`}
                 >
-                  <div className="size-option-content">
-                    <h4 className="size-name">{size.name}</h4>
-                    <p className="size-price">${size.price.toFixed(2)}</p>
-                    <p className="size-info">
+                  <div className="menu-size-option-content">
+                    <h4 className="menu-size-name">{size.name}</h4>
+                    <p className="menu-size-price">${size.price.toFixed(2)}</p>
+                    <p className="menu-size-info">
                       Hasta {size.maxFlavors} {size.maxFlavors === 1 ? 'sabor' : 'sabores'}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
-            
+
             {customization.size && (
-              <div className="step-actions">
-                <button onClick={nextStep} className="btn-continue">
+              <div className="menu-step-actions">
+                <button onClick={nextStep} className="menu-btn-continue">
                   Continuar
                 </button>
               </div>
@@ -430,43 +614,56 @@ const Menu = () => {
         // Paso 2: Seleccionar sabores
         const maxFlavors = isFixedFlavor ? 1 : customization.size?.maxFlavors || 1;
         const selectedFlavorsCount = customization.flavors.length;
-        
+
         return (
-          <div className="customization-step">
-            <div className="step-header">
-              <h3 className="step-title">Elige tus sabores</h3>
-              <p className="step-description">
+          <div className="menu-customization-step">
+            <div className="menu-step-header">
+              <h3 className="menu-step-title">Elige tus sabores</h3>
+              <p className="menu-step-description">
                 Selecciona {maxFlavors === 1 ? '1 sabor' : `hasta ${maxFlavors} sabores`}
               </p>
-              <div className="flavor-counter">
+              <div className="menu-flavor-counter">
                 {selectedFlavorsCount} de {maxFlavors} sabores seleccionados
               </div>
             </div>
-            
-            <div className="flavors-grid">
-              {flavors.map((flavor) => (
-                <button
-                  key={flavor}
-                  onClick={() => toggleFlavor(flavor)}
-                  disabled={!customization.flavors.includes(flavor) && selectedFlavorsCount >= maxFlavors}
-                  className={`flavor-option ${
-                    customization.flavors.includes(flavor) ? 'selected' : ''
-                  } ${!customization.flavors.includes(flavor) && selectedFlavorsCount >= maxFlavors ? 'disabled' : ''}`}
-                >
-                  {flavor}
-                </button>
-              ))}
+
+            <div className="menu-flavors-grid">
+              {flavors.map((flavor) => {
+                const isAvailable = isFlavorAvailable(flavor);
+                const isSelected = customization.flavors.includes(flavor);
+                const isDisabled = !isSelected && selectedFlavorsCount >= maxFlavors;
+                const extraPrice = getFlavorExtraPrice(flavor);
+
+                return (
+                  <button
+                    key={flavor}
+                    onClick={() => toggleFlavor(flavor)}
+                    disabled={!isAvailable || isDisabled}
+                    className={`menu-flavor-option ${isSelected ? 'selected' : ''
+                      } ${!isAvailable ? 'unavailable' : ''} ${isDisabled ? 'disabled' : ''}`}
+                    title={!isAvailable ? 'Sabor no disponible' : ''}
+                  >
+                    <span className="menu-flavor-name">{flavor}</span>
+                    {extraPrice > 0 && (
+                      <span className="menu-flavor-extra-price">+${extraPrice.toFixed(2)}</span>
+                    )}
+                    {!isAvailable && (
+                      <span className="menu-flavor-status">No disponible</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
-            
-            <div className="step-actions">
+
+            <div className="menu-step-actions">
               {!isFixedFlavor && (
-                <button onClick={prevStep} className="btn-back">
+                <button onClick={prevStep} className="menu-btn-back">
                   Atrás
                 </button>
               )}
-              
+
               {canProceedToNextStep() && (
-                <button onClick={nextStep} className="btn-continue">
+                <button onClick={nextStep} className="menu-btn-continue">
                   Continuar
                 </button>
               )}
@@ -477,84 +674,109 @@ const Menu = () => {
       case 2:
         // Paso 3: Seleccionar toppings y resumen
         return (
-          <div className="customization-step">
-            <div className="step-header">
-              <h3 className="step-title">Agrega toppings</h3>
-              <p className="step-description">Cada topping cuesta $0.25 adicional</p>
+          <div className="menu-customization-step">
+            <div className="menu-step-header">
+              <h3 className="menu-step-title">Agrega toppings</h3>
+              <p className="menu-step-description">Personaliza tu producto con toppings adicionales</p>
             </div>
-            
-            <div className="toppings-grid">
-              {toppings.map((topping) => (
-                <button
-                  key={topping}
-                  onClick={() => toggleTopping(topping)}
-                  className={`topping-option ${customization.toppings.includes(topping) ? 'selected' : ''}`}
-                >
-                  {topping} (+$0.25)
-                </button>
-              ))}
+
+            <div className="menu-toppings-grid">
+              {toppings.map((topping) => {
+                const isAvailable = isToppingAvailable(topping);
+                const isSelected = customization.toppings.includes(topping);
+                const extraPrice = getToppingExtraPrice(topping);
+
+                return (
+                  <button
+                    key={topping}
+                    onClick={() => toggleTopping(topping)}
+                    disabled={!isAvailable}
+                    className={`menu-topping-option ${isSelected ? 'selected' : ''
+                      } ${!isAvailable ? 'unavailable' : ''}`}
+                    title={!isAvailable ? 'Topping no disponible' : ''}
+                  >
+                    <span className="menu-topping-name">{topping}</span>
+                    <span className="menu-topping-price">(+${extraPrice.toFixed(2)})</span>
+                    {!isAvailable && (
+                      <span className="menu-topping-status">No disponible</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
-            
+
             {/* Resumen del pedido */}
-            <div className="order-summary">
-              <h4 className="summary-title">Resumen de tu pedido</h4>
-              
-              <div className="summary-details">
-                <div className="summary-row">
-                  <span className="summary-label">Producto:</span>
-                  <span className="summary-value">{selectedItem.name}</span>
+            <div className="menu-order-summary">
+              <h4 className="menu-summary-title">Resumen de tu pedido</h4>
+
+              <div className="menu-summary-details">
+                <div className="menu-summary-row">
+                  <span className="menu-summary-label">Producto:</span>
+                  <span className="menu-summary-value">{selectedItem.name}</span>
                 </div>
-                
+
                 {customization.size && (
-                  <div className="summary-row">
-                    <span className="summary-label">Tamaño:</span>
-                    <span className="summary-value">{customization.size.name}</span>
+                  <div className="menu-summary-row">
+                    <span className="menu-summary-label">Tamaño:</span>
+                    <span className="menu-summary-value">{customization.size.name}</span>
                   </div>
                 )}
-                
-                <div className="summary-row">
-                  <span className="summary-label">Sabores:</span>
-                  <span className="summary-value">{customization.flavors.join(', ')}</span>
+
+                <div className="menu-summary-row">
+                  <span className="menu-summary-label">Sabores:</span>
+                  <span className="menu-summary-value">{customization.flavors.join(', ')}</span>
                 </div>
-                
+
                 {customization.toppings.length > 0 && (
-                  <div className="summary-row">
-                    <span className="summary-label">Toppings:</span>
-                    <span className="summary-value">{customization.toppings.join(', ')}</span>
+                  <div className="menu-summary-row">
+                    <span className="menu-summary-label">Toppings:</span>
+                    <span className="menu-summary-value">{customization.toppings.join(', ')}</span>
                   </div>
                 )}
-                
-                <div className="summary-divider"></div>
-                
-                <div className="summary-row">
-                  <span className="summary-label">Precio base:</span>
-                  <span className="summary-value">
+
+                <div className="menu-summary-divider"></div>
+
+                <div className="menu-summary-row">
+                  <span className="menu-summary-label">Precio base:</span>
+                  <span className="menu-summary-value">
                     ${isFixedFlavor ? formatPrice(selectedItem.basePrice) : formatPrice(customization.size?.price || 0)}
                   </span>
                 </div>
-                
-                {customization.toppings.length > 0 && (
-                  <div className="summary-row">
-                    <span className="summary-label">Toppings ({customization.toppings.length}):</span>
-                    <span className="summary-value">${(customization.toppings.length * 0.25).toFixed(2)}</span>
+
+                {/* Mostrar precios extra de sabores */}
+                {customization.flavors.some(flavor => getFlavorExtraPrice(flavor) > 0) && (
+                  <div className="menu-summary-row">
+                    <span className="menu-summary-label">Sabores extra:</span>
+                    <span className="menu-summary-value">
+                      ${customization.flavors.reduce((total, flavor) => total + getFlavorExtraPrice(flavor), 0).toFixed(2)}
+                    </span>
                   </div>
                 )}
-                
-                <div className="summary-divider"></div>
-                
-                <div className="summary-row total-row">
-                  <span className="summary-label">Total:</span>
-                  <span className="summary-value">${calculateTotalPrice().toFixed(2)}</span>
+
+                {customization.toppings.length > 0 && (
+                  <div className="menu-summary-row">
+                    <span className="menu-summary-label">Toppings ({customization.toppings.length}):</span>
+                    <span className="menu-summary-value">
+                      ${customization.toppings.reduce((total, topping) => total + getToppingExtraPrice(topping), 0).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+
+                <div className="menu-summary-divider"></div>
+
+                <div className="menu-summary-row menu-total-row">
+                  <span className="menu-summary-label">Total:</span>
+                  <span className="menu-summary-value">${calculateTotalPrice().toFixed(2)}</span>
                 </div>
               </div>
             </div>
-            
-            <div className="step-actions">
-              <button onClick={prevStep} className="btn-back">
+
+            <div className="menu-step-actions">
+              <button onClick={prevStep} className="menu-btn-back">
                 Atrás
               </button>
-              
-              <button onClick={addToCart} className="btn-add-to-cart">
+
+              <button onClick={handleAddToCart} className="menu-btn-add-to-cart">
                 Agregar al carrito - ${calculateTotalPrice().toFixed(2)}
               </button>
             </div>
@@ -566,42 +788,47 @@ const Menu = () => {
     }
   };
 
+  // Mostrar mensaje si no hay sabores o toppings disponibles
+  if (!isLoading && flavors.length === 0 && toppings.length === 0) {
+    console.warn('No se han cargado sabores ni toppings del inventario');
+  }
+
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 font-sans">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-800 mb-4">Nuestro menú</h1>
             <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-pink-400 mx-auto rounded-full"></div>
           </div>
-          
+
           {/* Barra de búsqueda profesional y limpia */}
           <div className="mb-12">
             <div className="max-w-2xl mx-auto">
-              <div className="search-container">
-                <div className="search-input-wrapper">
-                  <Search className="search-icon" size={20} />
+              <div className="menu-search-container">
+                <div className="menu-search-input-wrapper">
+                  <Search className="menu-search-icon" size={20} />
                   <input
                     type="text"
                     placeholder="Buscar productos..."
                     value={searchTerm}
                     onChange={handleSearch}
-                    className="search-input"
+                    className="menu-search-input"
                   />
                   {searchTerm && (
                     <button
                       onClick={resetFilters}
-                      className="search-clear-btn"
+                      className="menu-search-clear-btn"
                     >
                       <X size={16} />
                     </button>
                   )}
                 </div>
-                
+
                 {/* Indicador de resultados */}
                 {searchTerm && (
-                  <div className="search-results-indicator">
+                  <div className="menu-search-results-indicator">
                     <Filter size={16} />
                     <span>
                       {filteredProducts.length} {filteredProducts.length === 1 ? 'resultado' : 'resultados'}
@@ -609,13 +836,13 @@ const Menu = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Botón para limpiar filtros */}
               {searchTerm && (
                 <div className="text-center mt-4">
                   <button
                     onClick={resetFilters}
-                    className="clear-filters-btn"
+                    className="menu-clear-filters-btn"
                   >
                     Ver todos los productos
                   </button>
@@ -627,30 +854,33 @@ const Menu = () => {
           {/* Estado de carga */}
           {isLoading && (
             <div className="text-center py-12">
-              <div className="loading-spinner"></div>
-              <p className="mt-2 text-gray-600">Cargando productos...</p>
+              <div className="menu-loading-spinner"></div>
+              <p className="mt-2 text-gray-600">
+                {productsLoading && inventoryLoading ? 'Cargando productos e inventario...' :
+                  productsLoading ? 'Cargando productos...' : 'Cargando inventario...'}
+              </p>
             </div>
           )}
 
-          {/* Mensaje de error */}
-          {error && (
-            <div className="error-message">
-              {error}
+          {/* Advertencia si no hay inventario cargado */}
+          {!inventoryLoading && flavors.length === 0 && toppings.length === 0 && !inventoryError && (
+            <div className="menu-warning-message">
+              <p>⚠️ No se han cargado sabores ni toppings del inventario. La personalización podría estar limitada.</p>
             </div>
           )}
 
           {/* Mensaje cuando no hay productos */}
           {!isLoading && !error && filteredProducts.length === 0 && (
-            <div className="no-products-message">
+            <div className="menu-no-products-message">
               <p>
-                {searchTerm 
-                  ? 'No se encontraron productos que coincidan con tu búsqueda.' 
+                {searchTerm
+                  ? 'No se encontraron productos que coincidan con tu búsqueda.'
                   : 'No hay productos disponibles en este momento.'}
               </p>
               {searchTerm && (
                 <button
                   onClick={resetFilters}
-                  className="show-all-btn"
+                  className="menu-show-all-btn"
                 >
                   Ver todos los productos
                 </button>
@@ -663,17 +893,17 @@ const Menu = () => {
             {filteredProducts.map((item) => (
               <div key={item._id} className="menu-card">
                 <ImageCarousel product={item} />
-                <div className="card-content">
-                  <h3 className="card-title">{item.name}</h3>
-                  <p className="card-description">{item.description}</p>
+                <div className="menu-card-content">
+                  <h3 className="menu-card-title">{item.name}</h3>
+                  <p className="menu-card-description">{item.description}</p>
                   <div className="flex items-center justify-between mt-4">
                     <span className="text-lg font-bold text-purple-600">
                       ${formatPrice(item.basePrice)}
                     </span>
                   </div>
                   <div>
-                    <button 
-                      className="view-more-btn" 
+                    <button
+                      className="menu-view-more-btn"
                       onClick={() => openModal(item)}
                     >
                       Ver más
@@ -686,52 +916,85 @@ const Menu = () => {
 
           {/* Modal */}
           {isModalOpen && selectedItem && (
-            <div className="modal-overlay" onClick={closeModal}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <button className="modal-close" onClick={closeModal}>
+            <div className="menu-modal-overlay" onClick={closeModal}>
+              <div className="menu-modal-content" onClick={(e) => e.stopPropagation()}>
+                <button className="menu-modal-close" onClick={closeModal}>
                   <X size={20} />
                 </button>
-                
+
                 {!isCustomizing ? (
-                  <div className="modal-body">
+                  <div className="menu-modal-body">
                     <ImageCarousel product={selectedItem} isModal={true} />
-                    
-                    <div className="modal-info">
-                      <h2 className="modal-title">{selectedItem.name}</h2>
-                      
-                      <div className="modal-section">
-                        <h3 className="modal-subtitle">Descripción:</h3>
-                        <p className="modal-description">
+
+                    <div className="menu-modal-info">
+                      <h2 className="menu-modal-title">{selectedItem.name}</h2>
+
+                      <div className="menu-modal-section">
+                        <h3 className="menu-modal-subtitle">Descripción:</h3>
+                        <p className="menu-modal-description">
                           {selectedItem.fullDescription || selectedItem.description}
                         </p>
                       </div>
-                      
-                      <div className="modal-section">
-                        <h3 className="modal-subtitle">Precio:</h3>
-                        <p className="modal-price">
+
+                      <div className="menu-modal-section">
+                        <h3 className="menu-modal-subtitle">Precio:</h3>
+                        <p className="menu-modal-price">
                           ${formatPrice(selectedItem.basePrice)}
                         </p>
                       </div>
-                      
-                      <button 
-                        className="action-btn"
+
+                      {/* Mostrar advertencia si no hay inventario cargado para productos personalizables */}
+                      {needsCustomization(selectedItem.name) && flavors.length === 0 && (
+                        <div className="menu-modal-warning">
+                          <p>⚠️ Los sabores están cargando. La personalización estará disponible en un momento.</p>
+                        </div>
+                      )}
+
+                      {/* Agregar mensaje si no hay sesión iniciada */}
+                      {!isAuthenticated && (
+                        <div className="menu-auth-warning">
+                          <p>⚠️ Necesitas iniciar sesión para agregar productos al carrito.</p>
+                        </div>
+                      )}
+
+                      <button
+                        className="menu-action-btn"
                         onClick={() => {
-                          addToCart(selectedItem);
-                          closeModal();
-                          //selectedItem.isSpecial ? startCustomization : closeModal
+                          if (!isAuthenticated) {
+                            navigate('/LoginPage');
+                            return;
+                          }
+
+                          if (needsCustomization(selectedItem.name)) {
+                            if (flavors.length === 0 && toppings.length === 0) {
+                              toast.error('Los sabores y toppings están cargando. Por favor espera un momento.');
+                              return;
+                            }
+                            setIsCustomizing(true);
+                          } else {
+                            // Usar la función auxiliar para productos simples
+                            handleAddSimpleToCart(selectedItem);
+                          }
                         }}
+                        disabled={needsCustomization(selectedItem.name) && flavors.length === 0}
                       >
-                        {needsCustomization(selectedItem.name) ? 'Personalizar producto' : 'Añadir al carrito'}
+                        {!isAuthenticated
+                          ? 'Iniciar sesión para comprar'
+                          : needsCustomization(selectedItem.name)
+                            ? 'Personalizar producto'
+                            : 'Añadir al carrito'
+                        }
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="customization-modal">
-                    <div className="customization-header">
-                      <h1 className="customization-main-title">
+                  <div className="menu-customization-modal">
+                    <div className="menu-customization-header">
+                      <h1 className="menu-customization-main-title">
                         Personaliza tu {selectedItem.name}
                       </h1>
                     </div>
+
                     {renderCustomizationStep()}
                   </div>
                 )}
@@ -740,7 +1003,53 @@ const Menu = () => {
           )}
         </div>
       </div>
-      <Footer/>
+      <Footer />
+
+      {/* Toaster para notificaciones */}
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName="menu-toast-container"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#ffffff',
+            color: '#374151',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            fontSize: '14px',
+            fontWeight: '500',
+            padding: '12px 16px',
+            maxWidth: '400px',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#ffffff',
+            },
+            style: {
+              background: '#10b981',
+              color: '#ffffff',
+              border: '1px solid #059669',
+            },
+          },
+          error: {
+            duration: 5000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff',
+            },
+            style: {
+              background: '#ef4444',
+              color: '#ffffff',
+              border: '1px solid #dc2626',
+            },
+          },
+        }}
+      />
     </>
   );
 };

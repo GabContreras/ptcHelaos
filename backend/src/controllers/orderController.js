@@ -73,7 +73,7 @@ orderCtrl.getOrdersByType = async (req, res) => {
         // VALIDAR QUE EL TIPO SEA VÁLIDO
         if (!["delivery", "local"].includes(type)) {
             return res.status(400).json({
-                message: 'Tipo no válido. Use: delivery o Local'
+                message: 'Tipo no válido. Use: delivery o local'
             });
         }
 
@@ -107,8 +107,9 @@ orderCtrl.createOrder = async (req, res) => {
             deliveryAddress
         } = req.body;
 
-        // Obtener información del usuario autenticado
-        const { userType, user } = req.user;
+        // Obtener información del usuario autenticado (puede ser undefined)
+        const userInfo = req.user || {};
+        const { userType, user } = userInfo;
 
         // VALIDAR QUE SE PROPORCIONEN PRODUCTOS
         if (!products || products.length === 0) {
@@ -123,6 +124,23 @@ orderCtrl.createOrder = async (req, res) => {
                 message: 'Se requiere dirección de entrega para pedidos a domicilio'
             });
         }
+
+        // PROCESAR PRODUCTOS para manejar ingredientes opcionales
+        const processedProducts = products.map(product => ({
+            ...product,
+            flavors: (product.flavors || []).map(flavor => ({
+                ingredientId: flavor.ingredientId,
+                quantity: flavor.quantity || 1
+            })),
+            toppings: (product.toppings || []).map(topping => ({
+                ingredientId: topping.ingredientId,
+                quantity: topping.quantity || 1
+            })),
+            additions: (product.additions || []).map(addition => ({
+                ingredientId: addition.ingredientId,
+                quantity: addition.quantity || 1
+            }))
+        }));
 
         // DETERMINAR EMPLOYEEID SEGÚN EL TIPO DE USUARIO
         let employeeId;
@@ -140,7 +158,7 @@ orderCtrl.createOrder = async (req, res) => {
             customerName,
             customerPhone,
             employeeId,
-            products,
+            products: processedProducts,
             totalAmount,
             paymentMethod,
             paymentStatus,
@@ -161,7 +179,11 @@ orderCtrl.createOrder = async (req, res) => {
             order: newOrder
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('❌ Error al crear orden:', error);
+        res.status(500).json({ 
+            message: 'Error al crear la orden: ' + error.message,
+            details: error.message
+        });
     }
 };
 
