@@ -3,6 +3,7 @@ import {Schema, model} from "mongoose";
 const categoriesSchema = new Schema({
   name: {
     type: String,
+    maxlength: 100,
     required: true,
     trim: true
   },
@@ -18,6 +19,7 @@ const categoriesSchema = new Schema({
   },
   type: {
     type: String,
+    maxlength: 50,
     required: true,
     trim: true
   },
