@@ -18,7 +18,9 @@ function RateService() {
   const handleMouseEnter = (value) => setHover(value);
   const handleMouseLeave = () => setHover(0);
 
-  const userEmail = localStorage.getItem("userEmail");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userEmail = user?.email || null;
+
 
 const handleSubmit = async () => {
   try {

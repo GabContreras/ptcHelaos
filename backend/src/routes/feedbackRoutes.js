@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
 
     await transporter.sendMail({
       from: `<${process.env.EMAIL_USER}>`,
-      to: "morenoadriel9@gmail.com", // destinatario
+      to: "noreply.moonsicecreamrolls@gmail.com", // destinatario
       subject: "Nueva calificación de servicio",
       text: `Cliente: ${email || "Correo no proporcionado"}
              Puntaje: ${rating}/5
